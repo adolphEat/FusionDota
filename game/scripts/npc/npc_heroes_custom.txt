@@ -50,7 +50,7 @@
 		"StatusHealth"	"500"
 		"StatusHealthRegen"	"0"
 		"StatusMana"	"50"
-		"StatusManaRegen"	"0"
+		"StatusManaRegen"	"10"
 		"StatusStartingMana"	"0"
 		"CanBeDominated"	"0"
 		"AutoAttacksByDefault"	"1"

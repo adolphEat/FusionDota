@@ -309,4 +309,19 @@
 			}
 		}
 	}
+
+"dummy_magic_immunity"
+    {
+        "BaseClass" "ability_datadriven"
+        "AbilityBehavior" "DOTA_ABILITY_BEHAVIOR_PASSIVE"
+        "AbilityTextureName" "item_black_king_bar"
+
+        "Modifiers"
+        {
+            "modifier_black_king_bar_immune"
+            {
+                "Passive" "1"
+            }
+        }
+    }
 }
