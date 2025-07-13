@@ -5,10 +5,10 @@
 	IsTemplate = false
 	maps = 
 	[
-		"dota",
+		"temp",
 	]
 	CheckAFKPlayers = false
-	DefaultMap = "dota"
+	DefaultMap = "temp"
 	Default_Keys = 
 	[
 	]
@@ -24,7 +24,7 @@
 	map_options = 
 	[
 		{
-			map = "dota"
+			map = "temp"
 		},
 	]
 	PenaltiesEnabled = false
