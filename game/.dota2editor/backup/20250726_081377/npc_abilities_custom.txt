@@ -1,0 +1,70 @@
+// Dota2 Editor
+// Get latest version: https://github.com/zombieJ/nw-dota2editor
+
+"DOTAAbilities"
+{
+	"Version"		"1"
+
+	// Rewrite of Gyrocopter Call Down
+	// Author: YOLOSPAGHETTI
+	// Date: March 28, 2016
+	// Version: 6.86
+	// Type: Datadriven
+	//
+	// ----- FILE REQUIREMENTS -----
+	// Script files:
+	// scripts/vscripts/heroes/hero_gyrocopter/call_down.lua
+	//
+	// Notes: Missing some particles and for the marker particle, the targeting array moves out instead of in
+	"windrunner_powershot"
+	{
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0 0 0"
+		"AbilityManaCost"	"50"
+		"AbilityCastRange"	"9999"
+
+		"AbilityValues"
+		{
+				"powershot_damage"			
+				{
+					"value"					"300 350 400"
+					"CalculateSpellDamageTooltip"	"1"
+				}
+				"slow"	
+				{
+					"value"	"30 30 30"
+				}
+				"slow_duration"	
+				{
+					"value"															"4"
+				}
+				"arrow_width"			
+				{
+					"value"		"125 125 125 125"
+					"affected_by_aoe_increase"	"1"
+				}
+				"arrow_range"			
+				{
+					"value"		"3000"
+				}
+
+				"arrow_speed"			"3000"
+				"vision_radius"			
+				{
+					"value"			"400"
+					"affected_by_aoe_increase"	"1"
+				}
+
+				"vision_duration"		"3.34 3.34 3.34 3.34"
+
+				"min_execute_threshold"
+				{
+					"special_bonus_facet_windrunner_killshot"	"5"
+				}
+
+				"max_execute_threshold"
+				{
+					"special_bonus_facet_windrunner_killshot"	"9 10 11 12"
+				}
+	}	
+}
