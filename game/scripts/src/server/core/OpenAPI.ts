@@ -4,10 +4,10 @@ export type Headers = Record<string, string>;
 declare const ONLINE_TEST_MODE: boolean;
 
 const ServerAddress: string = IsInToolsMode()
-    ? `http://` // 本地测试（工具模式的服务器地址）
+    ? `http://localhost:3000` // 本地测试（工具模式的服务器地址）
     : ONLINE_TEST_MODE
-    ? `http://` // 在线测试（在线测试服的地址）
-    : 'http://'; // 正式服的服务器地址
+    ? `http://test-server.example.com` // 在线测试（在线测试服的地址）
+    : 'http://server.example.com'; // 正式服的服务器地址
 
 export const ServerAuthKey: string = IsInToolsMode()
     ? 'Invalid_NotDedicatedServer' // 本地测试的秘钥

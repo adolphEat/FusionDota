@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <styles>
+        <include src="file://{resources}/styles/custom_game/training-panel.css" />
+    </styles>
+    
+    <Panel id="TrainingPanelRoot" class="training-panel-root">
+        <Panel id="TrainingControls" class="training-controls">
+            <Label text="练功房控制面板" class="panel-title" />
+            
+            <!-- 模式状态 -->
+            <Panel class="status-section">
+                <Label text="模式状态" class="section-title" />
+                <Label id="GameModeStatus" text="正常模式" class="status-text" />
+                <Label id="TrainingModeStatus" text="未激活" class="status-text" />
+            </Panel>
+            
+            <!-- 基础控制 -->
+            <Panel class="control-section">
+                <Label text="基础控制" class="section-title" />
+                <Button id="ToggleTrainingMode" class="control-button">
+                    <Label text="激活训练模式" />
+                </Button>
+                <Button id="RefreshHero" class="control-button">
+                    <Label text="刷新英雄" />
+                </Button>
+                <Button id="ToggleGodMode" class="control-button">
+                    <Label text="无敌模式" />
+                </Button>
+                <Button id="ClearUnits" class="control-button">
+                    <Label text="清理单位" />
+                </Button>
+            </Panel>
+            
+            <!-- 怪物生成 -->
+            <Panel class="spawn-section">
+                <Label text="怪物生成" class="section-title" />
+                <Panel class="spawn-controls">
+                    <TextEntry id="UnitNameInput" placeholder="单位名称" class="text-input" />
+                    <TextEntry id="UnitCountInput" placeholder="数量" class="text-input small" />
+                    <TextEntry id="UnitLevelInput" placeholder="等级" class="text-input small" />
+                    <Button id="SpawnUnits" class="control-button">
+                        <Label text="生成" />
+                    </Button>
+                </Panel>
+                
+                <!-- 快速生成按钮 -->
+                <Panel class="quick-spawn">
+                    <Button id="SpawnKobolds" class="quick-button">
+                        <Label text="狗头人" />
+                    </Button>
+                    <Button id="SpawnTrolls" class="quick-button">
+                        <Label text="巨魔" />
+                    </Button>
+                    <Button id="SpawnCentaurs" class="quick-button">
+                        <Label text="半人马" />
+                    </Button>
+                    <Button id="SpawnDummy" class="quick-button">
+                        <Label text="训练假人" />
+                    </Button>
+                </Panel>
+            </Panel>
+            
+            <!-- 测试场景 -->
+            <Panel class="scenario-section">
+                <Label text="测试场景" class="section-title" />
+                <DropDown id="ScenarioSelector" class="scenario-dropdown">
+                    <Label text="选择场景" />
+                </DropDown>
+                <Panel class="scenario-controls">
+                    <Button id="StartScenario" class="control-button">
+                        <Label text="开始测试" />
+                    </Button>
+                    <Button id="StopScenario" class="control-button">
+                        <Label text="停止测试" />
+                    </Button>
+                </Panel>
+                <Label id="ScenarioStatus" text="无活动场景" class="status-text" />
+            </Panel>
+            
+            <!-- 英雄控制 -->
+            <Panel class="hero-section">
+                <Label text="英雄控制" class="section-title" />
+                <Panel class="hero-controls">
+                    <TextEntry id="LevelInput" placeholder="等级" class="text-input small" />
+                    <Button id="SetLevel" class="control-button small">
+                        <Label text="设置等级" />
+                    </Button>
+                    <TextEntry id="GoldInput" placeholder="金币" class="text-input small" />
+                    <Button id="AddGold" class="control-button small">
+                        <Label text="添加金币" />
+                    </Button>
+                </Panel>
+            </Panel>
+            
+            <!-- 设置 -->
+            <Panel class="settings-section">
+                <Label text="训练设置" class="section-title" />
+                <Panel class="settings-grid">
+                    <ToggleButton id="AutoRespawn" class="setting-toggle">
+                        <Label text="自动复活" />
+                    </ToggleButton>
+                    <ToggleButton id="InfiniteResources" class="setting-toggle">
+                        <Label text="无限资源" />
+                    </ToggleButton>
+                    <ToggleButton id="NoCooldowns" class="setting-toggle">
+                        <Label text="无冷却" />
+                    </ToggleButton>
+                    <ToggleButton id="ShowDamage" class="setting-toggle">
+                        <Label text="显示伤害" />
+                    </ToggleButton>
+                </Panel>
+            </Panel>
+        </Panel>
+        
+        <!-- 折叠按钮 -->
+        <Button id="TogglePanel" class="toggle-button">
+            <Label text="◀" />
+        </Button>
+    </Panel>
+</root>

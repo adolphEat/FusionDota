@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <Panel id="AutoChessPanelRoot" class="autochess-panel-root">
+        <!-- 主控制面板 -->
+        <Panel id="AutoChessControls" class="autochess-controls">
+            <Label text="自走棋控制面板" class="panel-title" />
+            
+            <!-- 游戏状态显示 -->
+            <Panel class="status-section">
+                <Label text="游戏状态" class="section-title" />
+                <Panel class="status-info">
+                    <Label id="GameModeStatus" text="模式: 未知" class="status-text" />
+                    <Label id="GameActiveStatus" text="游戏状态: 未开始" class="status-text" />
+                    <Label id="CurrentRound" text="回合: 0" class="status-text" />
+                    <Label id="CurrentPhase" text="阶段: 准备" class="status-text" />
+                    <Label id="PhaseTimer" text="剩余时间: 0s" class="status-text timer" />
+                </Panel>
+            </Panel>
+            
+            <!-- 玩家信息 -->
+            <Panel class="player-section">
+                <Label text="玩家信息" class="section-title" />
+                <Panel class="player-info">
+                    <Label id="PlayerHealth" text="生命值: 100/100" class="player-stat health" />
+                    <Label id="PlayerGold" text="金币: 0" class="player-stat gold" />
+                    <Label id="PlayerLevel" text="等级: 1" class="player-stat level" />
+                    <Label id="PlayerExperience" text="经验: 0/2" class="player-stat exp" />
+                    <Label id="PlayerStreak" text="连胜: 0" class="player-stat streak" />
+                </Panel>
+                
+                <!-- 玩家控制按钮 -->
+                <Panel class="player-controls">
+                    <Button id="LevelUpButton" class="control-button level-up">
+                        <Label text="升级 (4金币)" />
+                    </Button>
+                    <Button id="RefreshShopButton" class="control-button refresh">
+                        <Label text="刷新商店 (2金币)" />
+                    </Button>
+                </Panel>
+            </Panel>
+            
+            <!-- 商店区域 -->
+            <Panel class="shop-section">
+                <Label text="棋子商店" class="section-title" />
+                <Panel class="shop-pieces">
+                    <Panel id="ShopPiece0" class="shop-piece">
+                        <Image id="ShopPieceIcon0" class="piece-icon" />
+                        <Label id="ShopPieceName0" text="棋子名" class="piece-name" />
+                        <Label id="ShopPieceCost0" text="1" class="piece-cost" />
+                        <Button id="BuyButton0" class="buy-button">
+                            <Label text="购买" />
+                        </Button>
+                    </Panel>
+                    <Panel id="ShopPiece1" class="shop-piece">
+                        <Image id="ShopPieceIcon1" class="piece-icon" />
+                        <Label id="ShopPieceName1" text="棋子名" class="piece-name" />
+                        <Label id="ShopPieceCost1" text="1" class="piece-cost" />
+                        <Button id="BuyButton1" class="buy-button">
+                            <Label text="购买" />
+                        </Button>
+                    </Panel>
+                    <Panel id="ShopPiece2" class="shop-piece">
+                        <Image id="ShopPieceIcon2" class="piece-icon" />
+                        <Label id="ShopPieceName2" text="棋子名" class="piece-name" />
+                        <Label id="ShopPieceCost2" text="1" class="piece-cost" />
+                        <Button id="BuyButton2" class="buy-button">
+                            <Label text="购买" />
+                        </Button>
+                    </Panel>
+                    <Panel id="ShopPiece3" class="shop-piece">
+                        <Image id="ShopPieceIcon3" class="piece-icon" />
+                        <Label id="ShopPieceName3" text="棋子名" class="piece-name" />
+                        <Label id="ShopPieceCost3" text="1" class="piece-cost" />
+                        <Button id="BuyButton3" class="buy-button">
+                            <Label text="购买" />
+                        </Button>
+                    </Panel>
+                    <Panel id="ShopPiece4" class="shop-piece">
+                        <Image id="ShopPieceIcon4" class="piece-icon" />
+                        <Label id="ShopPieceName4" text="棋子名" class="piece-name" />
+                        <Label id="ShopPieceCost4" text="1" class="piece-cost" />
+                        <Button id="BuyButton4" class="buy-button">
+                            <Label text="购买" />
+                        </Button>
+                    </Panel>
+                </Panel>
+            </Panel>
+            
+            <!-- 备战席 -->
+            <Panel class="bench-section">
+                <Label text="备战席" class="section-title" />
+                <Panel class="bench-pieces">
+                    <Panel id="BenchSlot0" class="bench-slot empty">
+                        <Label text="空" class="empty-text" />
+                    </Panel>
+                    <Panel id="BenchSlot1" class="bench-slot empty">
+                        <Label text="空" class="empty-text" />
+                    </Panel>
+                    <Panel id="BenchSlot2" class="bench-slot empty">
+                        <Label text="空" class="empty-text" />
+                    </Panel>
+                    <Panel id="BenchSlot3" class="bench-slot empty">
+                        <Label text="空" class="empty-text" />
+                    </Panel>
+                    <Panel id="BenchSlot4" class="bench-slot empty">
+                        <Label text="空" class="empty-text" />
+                    </Panel>
+                    <Panel id="BenchSlot5" class="bench-slot empty">
+                        <Label text="空" class="empty-text" />
+                    </Panel>
+                    <Panel id="BenchSlot6" class="bench-slot empty">
+                        <Label text="空" class="empty-text" />
+                    </Panel>
+                    <Panel id="BenchSlot7" class="bench-slot empty">
+                        <Label text="空" class="empty-text" />
+                    </Panel>
+                </Panel>
+            </Panel>
+            
+            <!-- 游戏控制 -->
+            <Panel class="game-controls">
+                <Label text="游戏控制" class="section-title" />
+                <Panel class="control-buttons">
+                    <Button id="StartGameButton" class="control-button start-game">
+                        <Label text="开始游戏" />
+                    </Button>
+                    <Button id="EndGameButton" class="control-button end-game">
+                        <Label text="结束游戏" />
+                    </Button>
+                    <Button id="SurrenderButton" class="control-button surrender">
+                        <Label text="投降" />
+                    </Button>
+                </Panel>
+            </Panel>
+            
+            <!-- 调试控制 (仅开发模式) -->
+            <Panel class="debug-controls" id="DebugControls">
+                <Label text="调试控制" class="section-title" />
+                <Panel class="debug-buttons">
+                    <Button id="DebugActivateButton" class="control-button debug">
+                        <Label text="激活自走棋模式" />
+                    </Button>
+                    <Button id="DebugDeactivateButton" class="control-button debug">
+                        <Label text="停用自走棋模式" />
+                    </Button>
+                    <Button id="DebugAddGoldButton" class="control-button debug">
+                        <Label text="添加金币 (+100)" />
+                    </Button>
+                </Panel>
+            </Panel>
+        </Panel>
+        
+        <!-- 面板切换按钮 -->
+        <Button id="ToggleAutoChessPanel" class="toggle-button">
+            <Label text="自走棋" />
+        </Button>
+    </Panel>
+</root>

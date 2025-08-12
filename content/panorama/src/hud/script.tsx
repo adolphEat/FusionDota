@@ -18,6 +18,12 @@ import React from 'react';
 import { setKeyDownCallback, useKeyPressed } from '../hooks/useKeyboard';
 import { registerCustomKey } from '../utils/keybinding';
 
+// 初始化前端错误处理
+import { initializeFrontendErrorHandling, ErrorBoundary } from '../utils/error-handler';
+
+// 初始化前端错误处理系统
+initializeFrontendErrorHandling();
+
 // 注册自定义按键
 registerCustomKey('D');
 registerCustomKey('F');
@@ -66,4 +72,10 @@ const Root: FC = () => {
     );
 };
 
-render(<Root />, $.GetContextPanel());
+// 使用错误边界包装根组件，确保UI错误不会导致整个界面崩溃
+render(
+    <ErrorBoundary componentName="HUD">
+        <Root />
+    </ErrorBoundary>, 
+    $.GetContextPanel()
+);

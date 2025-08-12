@@ -1,0 +1,572 @@
+/**
+ * 自走棋面板样式 - 自走棋模式的UI样式
+ */
+
+/* 面板根容器 */
+.autochess-panel-root {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 400px;
+    min-height: 300px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #3d5afe;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    color: #ffffff;
+    z-index: 1000;
+    transition: all 0.3s ease-in-out;
+
+    &.hidden {
+        transform: translateX(calc(100% - 80px));
+        
+        .autochess-controls {
+            opacity: 0;
+            pointer-events: none;
+        }
+    }
+
+    &.visible {
+        transform: translateX(0);
+        
+        .autochess-controls {
+            opacity: 1;
+            pointer-events: all;
+        }
+    }
+}
+
+/* 主控制面板 */
+.autochess-controls {
+    padding: 20px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* 面板标题 */
+.panel-title {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    color: #3d5afe;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* 章节标题 */
+.section-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffd700;
+    border-bottom: 1px solid #3d5afe;
+    padding-bottom: 5px;
+}
+
+/* 通用按钮样式 */
+.control-button {
+    background: linear-gradient(45deg, #3d5afe 0%, #536dfe 100%);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 8px 12px;
+    margin: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &:hover {
+        background: linear-gradient(45deg, #536dfe 0%, #3d5afe 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(61, 90, 254, 0.4);
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(61, 90, 254, 0.3);
+    }
+
+    &:disabled {
+        background: #555;
+        color: #999;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+/* 游戏状态区域 */
+.status-section {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(61, 90, 254, 0.3);
+}
+
+.status-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.status-text {
+    font-size: 13px;
+    color: #e0e0e0;
+    
+    &.timer {
+        font-weight: bold;
+        color: #ff6b6b;
+        animation: pulse 1s infinite;
+    }
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* 玩家信息区域 */
+.player-section {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.player-stat {
+    font-size: 13px;
+    font-weight: bold;
+    
+    &.health {
+        color: #4caf50;
+    }
+    
+    &.gold {
+        color: #ffd700;
+    }
+    
+    &.level {
+        color: #2196f3;
+    }
+    
+    &.exp {
+        color: #9c27b0;
+    }
+    
+    &.streak {
+        color: #ff9800;
+    }
+}
+
+.player-controls {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+/* 商店区域 */
+.shop-section {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.shop-pieces {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+}
+
+.shop-piece {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 8px;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    &.rarity-common {
+        border-color: #9e9e9e;
+    }
+
+    &.rarity-uncommon {
+        border-color: #4caf50;
+    }
+
+    &.rarity-rare {
+        border-color: #2196f3;
+    }
+
+    &.rarity-epic {
+        border-color: #9c27b0;
+    }
+
+    &.rarity-legendary {
+        border-color: #ff9800;
+        box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+    }
+
+    &.empty {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: #555;
+        
+        .empty-slot {
+            color: #999;
+            font-style: italic;
+            padding: 20px 0;
+        }
+    }
+}
+
+.piece-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 5px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.piece-letter {
+    color: #ffffff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.piece-info {
+    margin-bottom: 8px;
+}
+
+.piece-name {
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 3px;
+    color: #ffffff;
+}
+
+.piece-cost {
+    font-size: 12px;
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.piece-stats {
+    display: flex;
+    justify-content: space-around;
+    font-size: 10px;
+    margin-top: 3px;
+    
+    span {
+        color: #e0e0e0;
+    }
+}
+
+.buy-button {
+    width: 100%;
+    padding: 4px 6px;
+    font-size: 10px;
+    background: linear-gradient(45deg, #4caf50 0%, #66bb6a 100%);
+    
+    &:hover {
+        background: linear-gradient(45deg, #66bb6a 0%, #4caf50 100%);
+    }
+    
+    &:disabled {
+        background: #555;
+        color: #999;
+    }
+}
+
+/* 备战席区域 */
+.bench-section {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+.bench-pieces {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 3px;
+}
+
+.bench-slot {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 6px;
+    text-align: center;
+    border: 2px solid transparent;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    &.empty {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: #555;
+        
+        .empty-slot {
+            color: #999;
+            font-style: italic;
+            font-size: 11px;
+        }
+    }
+
+    &.rarity-common {
+        border-color: #9e9e9e;
+    }
+
+    &.rarity-uncommon {
+        border-color: #4caf50;
+    }
+
+    &.rarity-rare {
+        border-color: #2196f3;
+    }
+
+    &.rarity-epic {
+        border-color: #9c27b0;
+    }
+
+    &.rarity-legendary {
+        border-color: #ff9800;
+        box-shadow: 0 0 8px rgba(255, 152, 0, 0.4);
+    }
+}
+
+.bench-piece {
+    .piece-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+        margin-bottom: 3px;
+    }
+    
+    .piece-name {
+        font-size: 9px;
+    }
+}
+
+/* 游戏控制区域 */
+.game-controls {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.control-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.start-game {
+    background: linear-gradient(45deg, #4caf50 0%, #66bb6a 100%);
+    
+    &:hover {
+        background: linear-gradient(45deg, #66bb6a 0%, #4caf50 100%);
+    }
+}
+
+.end-game {
+    background: linear-gradient(45deg, #f44336 0%, #ef5350 100%);
+    
+    &:hover {
+        background: linear-gradient(45deg, #ef5350 0%, #f44336 100%);
+    }
+}
+
+.surrender {
+    background: linear-gradient(45deg, #ff9800 0%, #ffb74d 100%);
+    
+    &:hover {
+        background: linear-gradient(45deg, #ffb74d 0%, #ff9800 100%);
+    }
+}
+
+/* 调试控制区域 */
+.debug-controls {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 0, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 235, 59, 0.5);
+}
+
+.debug-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.debug {
+    background: linear-gradient(45deg, #ffeb3b 0%, #fdd835 100%);
+    color: #000 !important;
+    
+    &:hover {
+        background: linear-gradient(45deg, #fdd835 0%, #ffeb3b 100%);
+    }
+}
+
+/* 面板切换按钮 */
+.toggle-button {
+    position: absolute;
+    top: 50%;
+    left: -30px;
+    transform: translateY(-50%);
+    background: linear-gradient(45deg, #3d5afe 0%, #536dfe 100%);
+    border: none;
+    border-radius: 6px 0 0 6px;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 20px 10px;
+    cursor: pointer;
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+    transition: all 0.3s ease;
+    z-index: 1001;
+
+    &:hover {
+        background: linear-gradient(45deg, #536dfe 0%, #3d5afe 100%);
+        left: -35px;
+        box-shadow: 0 4px 12px rgba(61, 90, 254, 0.4);
+    }
+}
+
+/* 响应式设计 */
+@media (max-height: 800px) {
+    .autochess-panel-root {
+        max-height: 70vh;
+        font-size: 12px;
+    }
+    
+    .panel-title {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    
+    .section-title {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .autochess-controls {
+        padding: 15px;
+    }
+    
+    .status-section,
+    .player-section,
+    .shop-section,
+    .bench-section,
+    .game-controls,
+    .debug-controls {
+        margin-bottom: 10px;
+        padding: 8px;
+    }
+}
+
+@media (max-height: 600px) {
+    .autochess-panel-root {
+        max-height: 60vh;
+        font-size: 11px;
+    }
+    
+    .shop-pieces {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .bench-pieces {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* 滚动条美化 */
+.autochess-panel-root::-webkit-scrollbar {
+    width: 8px;
+}
+
+.autochess-panel-root::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.autochess-panel-root::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #3d5afe 0%, #536dfe 100%);
+    border-radius: 4px;
+}
+
+.autochess-panel-root::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #536dfe 0%, #3d5afe 100%);
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.status-section,
+.player-section,
+.shop-section,
+.bench-section,
+.game-controls,
+.debug-controls {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* 悬浮效果 */
+.shop-piece,
+.bench-slot {
+    &:hover {
+        animation: subtle-bounce 0.3s ease;
+    }
+}
+
+@keyframes subtle-bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+    100% { transform: translateY(0); }
+}

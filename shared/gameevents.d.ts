@@ -8,4 +8,42 @@ declare interface CustomGameEventDeclarations {
         foo: number;
         bar: string;
     };
+    
+    // 训练模式事件
+    training_scenario_started: { scenario: any; startTime: number; };
+    training_scenario_stopped: { scenario: any; duration: number; completed: boolean; };
+    training_scenario_completed: { scenario: any; duration: number; success: boolean; };
+    training_unit_killed: { unitName: string; remainingUnits: number; };
+    game_mode_changed: { oldMode: string; newMode: string; };
+    
+    // 自走棋模式事件
+    autochess_game_started: { round: number; phase: string; };
+    autochess_game_ended: { winner: number; round: number; };
+    autochess_phase_started: { phase: string; timeLeft: number; round: number; };
+    autochess_time_update: { timeLeft: number; phase: string; };
+    autochess_battle_match: { player1: number; player2: number; round: number; };
+    
+    // 训练模式控制事件
+    show_custom_message: { message: string; duration: number; };
+    training_activate: {};
+    training_deactivate: {};
+    training_refresh_hero: {};
+    training_toggle_god_mode: {};
+    training_clear_units: {};
+    training_spawn_units: { unitName: string; count: number; level: number; };
+    training_start_scenario: { scenarioId: string; };
+    training_stop_scenario: {};
+    
+    // 自走棋模式控制事件
+    autochess_buy_piece: { pieceId: string; playerId: number; };
+    autochess_refresh_shop: { playerId: number; };
+    autochess_level_up: { playerId: number; };
+    autochess_start_game: {};
+    autochess_end_game: {};
+    autochess_surrender: { playerId: number; };
+    
+    // 调试事件
+    debug_autochess_activate: {};
+    debug_autochess_deactivate: {};
+    debug_add_gold: { playerId: number; amount: number; };
 }

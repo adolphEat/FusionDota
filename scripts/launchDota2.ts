@@ -15,6 +15,7 @@ export default async function launchDota2(addon_name?: string, map_name?: string
 
     const win64Path = path.join(dotaPath, 'game', 'bin', 'win64');
 
+    console.log('launchDota2 called with:', { addon_name, map_name });
     let args: string[] = ['-novid', '-tools'];
 
     if (['do', 'dota2', 'dop', 'doc'].includes(map_name || '')) {
@@ -26,13 +27,16 @@ export default async function launchDota2(addon_name?: string, map_name?: string
             addon_name = config.addon_name;
         }
 
+        console.log('Initial args with tools:', args);
         args = args.concat(['-addon', addon_name]);
+        console.log('Args after adding addon:', args);
 
         if (map_name) {
             args.push(`+dota_launch_custom_game ${addon_name} ${map_name}`);
             console.log(`begin to load addon=>${addon_name}, map name=>${map_name}`);
         }
 
+        console.log('Final launching DOTA2 with args:', args);
         spawn(path.join(win64Path, 'dota2.exe'), args, { detached: true, cwd: win64Path });
         spawn(path.join(win64Path, 'vconsole2.exe'));
     }

@@ -315,7 +315,7 @@ export const FlameGraph: React.FC = () => {
                         SetSearchTextDebounced(p);
                     }}
                 />
-                <RenderStatusBar></RenderStatusBar>
+                {React.createElement(RenderStatusBar as any)}
             </Panel>
         </DraggableWindow>
     );

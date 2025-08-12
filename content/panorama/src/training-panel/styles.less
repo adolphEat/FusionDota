@@ -1,0 +1,400 @@
+/**
+ * 训练面板样式 - Training Panel Styles
+ */
+
+.training-panel-root {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 320px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 20, 40, 0.9));
+    border: 2px solid #4a90e2;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    font-family: 'Radiance', Arial, sans-serif;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+
+    &.collapsed {
+        transform: translateX(280px);
+
+        .training-controls {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toggle-button {
+            right: -40px;
+        }
+    }
+}
+
+.training-controls {
+    padding: 16px;
+    max-height: 600px;
+    overflow-y: auto;
+    transition: opacity 0.3s ease;
+
+    /* 自定义滚动条 */
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #4a90e2;
+        border-radius: 3px;
+
+        &:hover {
+            background: #357abd;
+        }
+    }
+}
+
+.panel-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #4a90e2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #4a90e2;
+    margin-bottom: 8px;
+    margin-top: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    &:first-child {
+        margin-top: 0;
+    }
+}
+
+.status-section,
+.control-section,
+.spawn-section,
+.scenario-section,
+.hero-section,
+.settings-section {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(74, 144, 226, 0.3);
+}
+
+.status-text {
+    font-size: 12px;
+    color: #cccccc;
+    margin-bottom: 4px;
+    padding: 2px 0;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.control-button {
+    width: 100%;
+    height: 32px;
+    margin-bottom: 6px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #4a90e2, #357abd);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+
+    &:hover {
+        background: linear-gradient(135deg, #357abd, #2968a3);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(74, 144, 226, 0.4);
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 4px rgba(74, 144, 226, 0.3);
+    }
+
+    &.small {
+        width: 48%;
+        display: inline-block;
+        margin-right: 4%;
+
+        &:nth-child(even) {
+            margin-right: 0;
+        }
+    }
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.spawn-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+
+    .text-input {
+        flex: 1;
+        min-width: 80px;
+        height: 28px;
+        padding: 4px 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(74, 144, 226, 0.5);
+        border-radius: 4px;
+        color: white;
+        font-size: 11px;
+
+        &.small {
+            flex: 0 0 60px;
+        }
+
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 6px rgba(74, 144, 226, 0.5);
+        }
+    }
+
+    .control-button {
+        flex: 0 0 60px;
+        margin-bottom: 0;
+        height: 28px;
+        font-size: 11px;
+    }
+}
+
+.quick-spawn {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.quick-button {
+    height: 28px;
+    padding: 4px 8px;
+    background: linear-gradient(135deg, #5cb85c, #449d44);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: linear-gradient(135deg, #449d44, #398439);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(92, 184, 92, 0.4);
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 3px rgba(92, 184, 92, 0.3);
+    }
+}
+
+.scenario-dropdown {
+    width: 100%;
+    height: 28px;
+    margin-bottom: 8px;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(74, 144, 226, 0.5);
+    border-radius: 4px;
+    color: white;
+    font-size: 12px;
+
+    &:focus {
+        outline: none;
+        border-color: #4a90e2;
+        box-shadow: 0 0 6px rgba(74, 144, 226, 0.5);
+    }
+
+    option {
+        background: #1a1a2e;
+        color: white;
+    }
+}
+
+.scenario-controls {
+    display: flex;
+    gap: 6px;
+
+    .control-button {
+        flex: 1;
+        margin-bottom: 0;
+    }
+}
+
+.hero-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+
+    .text-input {
+        flex: 1;
+        min-width: 80px;
+        height: 28px;
+        padding: 4px 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(74, 144, 226, 0.5);
+        border-radius: 4px;
+        color: white;
+        font-size: 11px;
+
+        &.small {
+            flex: 0 0 80px;
+        }
+
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 6px rgba(74, 144, 226, 0.5);
+        }
+    }
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.setting-toggle {
+    height: 32px;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(74, 144, 226, 0.3);
+    border-radius: 4px;
+    color: #cccccc;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(74, 144, 226, 0.5);
+    }
+
+    &.active,
+    &[checked] {
+        background: linear-gradient(135deg, #5cb85c, #449d44);
+        border-color: #5cb85c;
+        color: white;
+    }
+}
+
+.toggle-button {
+    position: absolute;
+    top: 50%;
+    right: -20px;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #4a90e2, #357abd);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(74, 144, 226, 0.4);
+
+    &:hover {
+        background: linear-gradient(135deg, #357abd, #2968a3);
+        transform: translateY(-50%) scale(1.05);
+        box-shadow: 0 4px 15px rgba(74, 144, 226, 0.6);
+    }
+
+    &:active {
+        transform: translateY(-50%) scale(0.95);
+    }
+}
+
+/* 响应式设计 */
+@media (max-height: 800px) {
+    .training-controls {
+        max-height: 400px;
+    }
+
+    .section-title {
+        margin-top: 12px;
+        margin-bottom: 6px;
+    }
+
+    .status-section,
+    .control-section,
+    .spawn-section,
+    .scenario-section,
+    .hero-section,
+    .settings-section {
+        margin-bottom: 12px;
+        padding: 8px;
+    }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.training-panel-root {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* 滚动条美化 */
+.training-controls::-webkit-scrollbar {
+    width: 8px;
+}
+
+.training-controls::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.training-controls::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #4a90e2, #357abd);
+    border-radius: 4px;
+    
+    &:hover {
+        background: linear-gradient(135deg, #357abd, #2968a3);
+    }
+}
