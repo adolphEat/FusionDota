@@ -3,11 +3,6 @@ if GameMode == nil then
 end
 
 function Precache(context)
-    PrecacheUnitByNameSync("test_melee_no_armor", context)
-    PrecacheUnitByNameSync("test_ranged_fly_no_armor", context)
-    PrecacheUnitByNameSync("test_melee_hero", context)
-    PrecacheUnitByNameSync("test_magic_immune", context)
-    -- PrecacheUnitByNameSync("windrunner", context) -- 已删除，不再需要
     
     -- 预缓存模型文件
     PrecacheResource("model", "models/heroes/hero_models/wr/wr.vmdl", context)
@@ -38,20 +33,26 @@ function GameMode:OnNPCSpawned(event)
     if not unit or not IsValidEntity(unit) then return end
     if unit:IsNull() or not unit:IsAlive() then return end
 
-    -- 检查是否是你的单位（使用你现有的单位名称）
-    -- if unit:GetUnitName() == "your_unit_name" and not unit.__powershot_leveled then
-    --     local ability = unit:FindAbilityByName("windrunner_powershot")
-    --     if ability then
-    --         ability:SetLevel(1)
-    --         print(">>> Set windrunner_powershot level to 1 for", unit:GetUnitName())
-    --     else
-    --         print(">>> Ability windrunner_powershot not found on", unit:GetUnitName())
-    --     end
-    --     unit.__powershot_leveled = true -- 防止重复设等级
-    --     
-    --     -- 测试模型加载
-    --     TestModelLoading(unit)
-    -- end
+            -- 测试技能加载
+        if unit:GetUnitName() == "treant_protector1" then
+            print("=== Testing treant_protector1 abilities ===")
+            local ability = unit:FindAbilityByName("treant_protector_living_armor")
+            if ability then
+                print(">>> Found treant_protector_living_armor ability")
+                ability:SetLevel(1)
+                print(">>> Set treant_protector_living_armor level to 1")
+            else
+                print(">>> Ability treant_protector_living_armor NOT found!")
+            end
+            
+            -- 列出所有技能
+            for i = 0, unit:GetAbilityCount() - 1 do
+                local abil = unit:GetAbilityByIndex(i)
+                if abil then
+                    print(">>> Ability", i, ":", abil:GetAbilityName())
+                end
+            end
+        end
 end
 
 function TestModelLoading(unit)

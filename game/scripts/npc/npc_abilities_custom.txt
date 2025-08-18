@@ -21,7 +21,7 @@
 	"windrunner_powershot"
 	{
 		"BaseClass"	"ability_lua"
-		"ScriptFile"	"heros/hero_windrunner/windrunner_powershot.lua"
+		"ScriptFile"	"heroes/hero_windrunner/windrunner_powershot.lua"
 		"AbilityTextureName"	"windrunner_powershot"
 		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
@@ -45,9 +45,9 @@
 		
 		"Precache"
 		{
-			"particle"	"particles/heros/windrunner/windrunner_spell_powershot.vpcf"
-			"particle"	"particles/heros/windrunner/windrunner_spell_powershot_channel.vpcf"
-			"particle"	"particles/heros/windrunner/windrunner_spell_powershot_destruction.vpcf"
+			"particle"	"particles/heroes/windrunner/windrunner_spell_powershot.vpcf"
+			"particle"	"particles/heroes/windrunner/windrunner_spell_powershot_channel.vpcf"
+			"particle"	"particles/heroes/windrunner/windrunner_spell_powershot_destruction.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_windrunner.vsndevts"
 		}
 	}
@@ -55,10 +55,11 @@
 	"mars_spear"
 	{
 		"BaseClass"	"ability_lua"
-		"ScriptFile"	"heros/hero_mars/mars_spear.lua"
+		"ScriptFile"	"heroes/hero_mars/mars_spear.lua"
 		"AbilityTextureName"	"mars_spear"
 		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_POINT"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_PHYSICAL"
 		"AbilityCastPoint"	"0.0"
 		"AbilityCooldown"	"0.0"
 		"AbilityManaCost"	"100"
@@ -76,7 +77,7 @@
 		}
 		"Precache"
 		{
-			"particle"	"particles/heros/mars/mars_spear_impact.vpcf"
+			"particle"	"particles/heroes/mars/mars_spear_impact.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_mars.vsndevts"
 		}
 	}
@@ -84,7 +85,7 @@
 	"tidehunter_ravage"
 	{
 		"BaseClass"	"ability_lua"
-		"ScriptFile"	"heros/crystal maiden/tidehunter_ravage.lua"
+		"ScriptFile"	"heroes/crystal maiden/tidehunter_ravage.lua"
 		"AbilityTextureName"	"tidehunter_ravage"
 		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
@@ -105,8 +106,122 @@
 		
 		"Precache"
 		{
-			"particle"	"particles/heros/crystal_maiden/tide_2021_ravage.vpcf"
+			"particle"	"particles/heroes/crystal_maiden/tide_2021_ravage.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_tidehunter.vsndevts"
+		}
+	}
+	
+	"lina_light_strike_array" {
+		"BaseClass" "ability_lua"
+		"ScriptFile" "heroes/hero_lina/lina_light_strike_array.lua"
+		"AbilityTextureName" "lina_light_strike_array"
+		"MaxLevel" "3"
+		"AbilityCooldown" "0.0 0.0 0.0"
+		"AbilityManaCost" "70 70 70"
+		"AbilityType" "DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType" "DAMAGE_TYPE_MAGICAL"
+		"AbilityBehavior" "DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
+		"AbilityCastRange" "700"
+		"AbilityCastPoint" "0.45"
+		"AbilityUnitTargetTeam" "DOTA_UNIT_TARGET_TEAM_ENEMY"
+		"AbilityUnitTargetType" "DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_BASIC"
+		
+		"AbilityValues" {
+			"light_strike_array_aoe" "400"
+			"light_strike_array_delay_time" "0.5"
+			"light_strike_array_damage" "100 200 300"
+			"light_strike_array_burn_duration" "10.0"
+			"light_strike_array_burn_damage_percent" "1.0"
+			"light_strike_array_burn_interval" "1.0"
+			"light_strike_array_mana_restore" "5"
+		}
+
+		"Precache" {
+			"soundfile" "soundevents/game_sounds_heroes/game_sounds_lina.vsndevts"
+			"particle" "particles/heroes/lina/lina_spell_light_strike_array.vpcf"
+		}
+	}
+	
+	"ursa_earthshock" {
+		"BaseClass" "ability_lua"
+		"ScriptFile" "heroes/hero_ursa/ursa_earthshock.lua"
+		"AbilityTextureName" "ursa_earthshock"
+		"MaxLevel" "3"
+		"AbilityCooldown" "0"
+		"AbilityManaCost" "80"
+		"AbilityType" "DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType" "DAMAGE_TYPE_PHYSICAL"
+		"AbilityBehavior" "DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"AbilityCastPoint" "0.0"
+		"AbilityDuration" "4.0"
+		
+		"AbilityValues" {
+			"shock_radius" "800"
+			"attackspeed_slow" "-20 -30 -40"
+			"earthshock_damage" "250 300 350"
+		}
+		
+		"Precache" {
+			"soundfile" "soundevents/game_sounds_heroes/game_sounds_ursa.vsndevts"
+			"particle" "particles/heroes/ursa/ursa_earthshock.vpcf"
+		}
+	}
+	
+	"treant_protector_living_armor"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/treant_protector/treant_protector_living_armor.lua"
+		"AbilityTextureName"	"treant_living_armor"
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0.0 0.0 0.0"
+		"AbilityManaCost"	"100 100 100"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_PHYSICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"AbilityCastPoint"	"0.35"
+		
+		"AbilityValues"
+		{
+			"armor_bonus"	"10 20 30"
+			"magic_resistance"	"10 20 30"
+			"health_regen"	"20 30 40"
+			"duration"	"10.0 10.0 10.0"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/treant_protector/treant_livingarmor.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_treant.vsndevts"
+		}
+	}
+	
+	"viper_nethertoxin"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_viper/viper_nethertoxin.lua"
+		"AbilityTextureName"	"viper_nethertoxin"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0.0 0.0 0.0"
+		"AbilityManaCost"	"0 0 0"
+		
+		"AbilityValues"
+		{
+			"attacks_to_trigger"	"5"
+			"damage"	"100 150 200"
+			"poison_radius"	"400"
+			"poison_duration"	"10.0"
+			"poison_damage_per_second"	"10"
+			"poison_interval"	"1.0"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/viper/viper_nethertoxin.vpcf"
+			"particle"	"particles/heroes/viper/viper_poison_debuff.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_viper.vsndevts"
 		}
 	}
 }

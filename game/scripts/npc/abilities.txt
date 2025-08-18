@@ -39,9 +39,9 @@
 		"AbilityTextureName" "axe_counter_helix"
 		"AbilityUnitDamageType" "DAMAGE_TYPE_PURE"
 		"Precache" {
-	"soundfile"	"soundevents/game_sounds_heroes/game_sounds_axe.vsndevts"
-	"particle"	"particles/units/heroes/hero_axe/axe_counterhelix_ad.vpcf"
-}
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_axe.vsndevts"
+			"particle"	"particles/units/heroes/hero_axe/axe_counterhelix_ad.vpcf"
+		}
 	}
 	"tiny_toss_x" {
 		"BaseClass" "ability_lua"
