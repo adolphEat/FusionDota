@@ -14,7 +14,7 @@ function ursa_earthshock:OnSpellStart()
     -- 获取技能参数
     local damage = self:GetSpecialValueFor("earthshock_damage")
     local radius = self:GetSpecialValueFor("shock_radius")
-    local slow_duration = 4.0
+    local slow_duration = 5.0
     
     print("Ursa Earthshock parameters - Damage:", damage, "Radius:", radius)
     print("Skill level:", self:GetLevel(), "Caster:", caster:GetUnitName())
@@ -104,14 +104,16 @@ end
 function modifier_ursa_earthshock_slow:OnCreated()
     if not IsServer() then return end
     
-    self.attackspeed_slow = self:GetAbility():GetSpecialValueFor("attackspeed_slow")
+    -- 全等级都是30%的攻速减速
+    self.attackspeed_slow = -30
     self:SetDuration(4.0, true)
 end
 
 function modifier_ursa_earthshock_slow:OnRefresh()
     if not IsServer() then return end
     
-    self.attackspeed_slow = self:GetAbility():GetSpecialValueFor("attackspeed_slow")
+    -- 全等级都是30%的攻速减速
+    self.attackspeed_slow = -30
     self:SetDuration(4.0, true)
 end
 

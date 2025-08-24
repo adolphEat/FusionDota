@@ -169,7 +169,7 @@ function modifier_lina_light_strike_array_burn:OnCreated()
     self.ability = self:GetAbility()
     
     -- 创建灼烧标记特效
-            self.burn_mark_particle = ParticleManager:CreateParticle("particles/heroes/lina/lina_spell_light_strike_array_glow_burnmark.vpcf", PATTACH_ABSORIGIN_FOLLOW, self:GetParent())
+            self.burn_mark_particle = ParticleManager:CreateParticle("particles/generic_gameplay/huskar_burning_spear_debuff.vpcf", PATTACH_ABSORIGIN_FOLLOW, self:GetParent())
     if self.burn_mark_particle ~= -1 then
         ParticleManager:SetParticleControl(self.burn_mark_particle, 0, self:GetParent():GetAbsOrigin())
         ParticleManager:SetParticleControlEnt(self.burn_mark_particle, 1, self:GetParent(), PATTACH_ABSORIGIN_FOLLOW, "", self:GetParent():GetAbsOrigin(), true)
@@ -193,7 +193,7 @@ function modifier_lina_light_strike_array_burn:OnRefresh()
     
     -- 如果灼烧标记特效不存在，重新创建
     if not self.burn_mark_particle or self.burn_mark_particle == -1 then
-        self.burn_mark_particle = ParticleManager:CreateParticle("particles/heroes/lina/lina_spell_light_strike_array_glow_burnmark.vpcf", PATTACH_ABSORIGIN_FOLLOW, self:GetParent())
+        self.burn_mark_particle = ParticleManager:CreateParticle("particles/generic_gameplay/huskar_burning_spear_debuff.vpcf", PATTACH_ABSORIGIN_FOLLOW, self:GetParent())
         if self.burn_mark_particle ~= -1 then
             ParticleManager:SetParticleControl(self.burn_mark_particle, 0, self:GetParent():GetAbsOrigin())
             ParticleManager:SetParticleControlEnt(self.burn_mark_particle, 1, self:GetParent(), PATTACH_ABSORIGIN_FOLLOW, "", self:GetParent():GetAbsOrigin(), true)
@@ -242,7 +242,7 @@ function modifier_lina_light_strike_array_burn:OnIntervalThink()
 end
 
 function modifier_lina_light_strike_array_burn:GetEffectName()
-    return "particles/heroes/lina/lina_spell_light_strike_array_glow.vpcf"
+    return "particles/generic_gameplay/huskar_burning_spear_debuff.vpcf"
 end
 
 function modifier_lina_light_strike_array_burn:GetEffectAttachType()

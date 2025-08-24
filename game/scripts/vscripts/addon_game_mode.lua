@@ -53,6 +53,27 @@ function GameMode:OnNPCSpawned(event)
                 end
             end
         end
+        
+        -- 测试axe1技能加载
+        if unit:GetUnitName() == "axe1" then
+            print("=== Testing axe1 abilities ===")
+            local ability = unit:FindAbilityByName("axe_battle_hunger_custom")
+            if ability then
+                print(">>> Found axe_battle_hunger_custom ability")
+                ability:SetLevel(1)
+                print(">>> Set axe_battle_hunger_custom level to 1")
+            else
+                print(">>> Ability axe_battle_hunger_custom NOT found!")
+            end
+            
+            -- 列出所有技能
+            for i = 0, unit:GetAbilityCount() - 1 do
+                local abil = unit:GetAbilityByIndex(i)
+                if abil then
+                    print(">>> Ability", i, ":", abil:GetAbilityName())
+                end
+            end
+        end
 end
 
 function TestModelLoading(unit)

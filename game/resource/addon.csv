@@ -3,3 +3,6 @@ addon_game_name,YOUR ADDON NAME,你的游戏名
 phoenix1,Phoenix,凤凰
 phoenix_supernova,Supernova,超级新星
 phoenix_supernova_description,Phoenix transforms into an egg for 6 seconds then explodes dealing damage to enemies and healing allies in the area,凤凰变成蛋6秒后爆炸对敌人造成伤害并治疗友军
+ember_spirit1,Ember Spirit,灰烬之灵
+ember_spirit_inner_Fire,Inner Fire,心炎
+ember_spirit_inner_Fire_description,Consumes 100 mana to deal magical damage to enemies within 500 range. If the target has Lina's Light Strike Array burn effect instantly deals all remaining burn damage and removes the burn effect,消耗100点魔法值对周围500范围内的敌人造成魔法伤害。如果目标身上有莉娜光击阵的灼烧效果则立即结算剩余伤害并移除灼烧效果

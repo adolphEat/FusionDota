@@ -153,7 +153,7 @@
 		"AbilityUnitDamageType" "DAMAGE_TYPE_PHYSICAL"
 		"AbilityBehavior" "DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
 		"AbilityCastPoint" "0.0"
-		"AbilityDuration" "4.0"
+		"AbilityDuration" "6.0"
 		
 		"AbilityValues" {
 			"shock_radius" "800"
@@ -222,6 +222,88 @@
 			"particle"	"particles/heroes/viper/viper_nethertoxin.vpcf"
 			"particle"	"particles/heroes/viper/viper_poison_debuff.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_viper.vsndevts"
+		}
+	}
+
+	"axe_battle_hunger_custom"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_axe/axe_battle_hunger.lua"
+		"AbilityTextureName"	"axe_battle_hunger"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_PHYSICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0.0 0.0 0.0"
+		"AbilityManaCost"	"0 0 0"
+		
+		"AbilityValues"
+		{
+			"attackspeed_per_health_percent"	"0.5 1.0 2.0"
+			"lifesteal_per_health_percent"	"0.2 0.3 0.5"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/axe/troll_warlord_battletrance_buff.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_axe.vsndevts"
+		}
+	}
+
+	"enigma_black_hole"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_enigma/enigma_black_hole.lua"
+		"AbilityTextureName"	"enigma_black_hole"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_CHANNELLED"
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0 0 0"
+		"AbilityManaCost"	"150 150 150"
+		"AbilityCastRange"	"1000"
+		"AbilityCastPoint"	"0.35"
+		"AbilityChannelTime"	"8.0"
+		
+		"AbilityValues"
+		{
+			"radius"	"900"
+			"duration"	"8.0"
+			"total_damage"	"400 500 600"
+			"pull_speed"	"175"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/enigma/enigma_blackhole.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_enigma.vsndevts"
+		}
+	}
+
+	"ember_spirit_inner_Fire"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_ember_spirit/ember_spirit_inner_fire.lua"
+		"AbilityTextureName"	"huskar_inner_fire"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0 0 0"
+		"AbilityCastPoint"	"0.35"
+		"AbilityCastRange"	"500"
+		"AbilityManaCost"	"100"
+		
+		"AbilityValues"
+		{
+			"damage"	"200 250 300"
+			"radius"	"500"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/ember_spirit/huskar_inner_fire.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_huskar.vsndevts"
 		}
 	}
 }
