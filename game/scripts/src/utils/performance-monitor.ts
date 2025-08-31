@@ -52,11 +52,7 @@ export class PerformanceMonitor {
      * 开始计时
      */
     public startTimer(operation: string, context?: any): string {
-<<<<<<< Updated upstream
-        const timerId = `${operation}_${this.getCurrentTime()}_${Math.random().toString(36).substr(2, 9)}`;
-=======
         const timerId = `${operation}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
->>>>>>> Stashed changes
         
         this.activeTimers.set(timerId, {
             operation,
@@ -245,26 +241,6 @@ export class PerformanceMonitor {
     }
 
     private getTopSlowOperations(count: number): Array<{operation: string, avgTime: number, maxTime: number}> {
-<<<<<<< Updated upstream
-        // 简化实现，避免ES6特性
-        const result: Array<{operation: string, avgTime: number, maxTime: number}> = [];
-        let addedCount = 0;
-        
-        for (const operation in this.stats.keys()) {
-            if (addedCount >= count) break;
-            const stats = this.stats.get(operation);
-            if (stats) {
-                result.push({
-                    operation,
-                    avgTime: Math.round(stats.averageTime * 100) / 100,
-                    maxTime: Math.round(stats.maxTime * 100) / 100
-                });
-                addedCount++;
-            }
-        }
-        
-        return result;
-=======
         return Array.from(this.stats.entries())
             .map(([operation, stats]) => ({
                 operation,
@@ -273,7 +249,6 @@ export class PerformanceMonitor {
             }))
             .sort((a, b) => b.avgTime - a.avgTime)
             .slice(0, count);
->>>>>>> Stashed changes
     }
 
     private createEmptyStats(): PerformanceStats {
@@ -288,23 +263,11 @@ export class PerformanceMonitor {
     }
 
     private getCurrentTime(): number {
-<<<<<<< Updated upstream
-        // 使用游戏时间，如果不可用则返回0
-        try {
-            if (typeof GameRules !== 'undefined' && GameRules.GetGameTime) {
-                return GameRules.GetGameTime() * 1000; // 转换为毫秒
-            }
-            return 0; // 如果GameRules不可用，返回0
-        } catch (error) {
-            return 0;
-        }
-=======
         // 使用游戏时间，如果不可用则使用系统时间
         if (typeof GameRules !== 'undefined' && GameRules.GetGameTime) {
             return GameRules.GetGameTime() * 1000; // 转换为毫秒
         }
         return Date.now();
->>>>>>> Stashed changes
     }
 
     private startStatsUpdateTimer(): void {

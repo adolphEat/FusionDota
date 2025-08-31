@@ -273,12 +273,7 @@ export class GameModeManager {
      * 应用自定义规则
      */
     private applyCustomRules(rules: any): void {
-<<<<<<< Updated upstream
-        for (const key in rules) {
-            const value = rules[key];
-=======
         for (const [key, value] of Object.entries(rules)) {
->>>>>>> Stashed changes
             try {
                 // 根据规则类型应用设置
                 switch (key) {
@@ -329,10 +324,7 @@ export class GameModeManager {
                 config: this.getModeConfig(),
                 initialized: this.settings.initialized,
 <<<<<<< Updated upstream
-                timestamp: GameRules.GetGameTime() * 1000
-=======
                 timestamp: Date.now()
->>>>>>> Stashed changes
             });
         }
     }
@@ -394,27 +386,12 @@ export class GameModeManager {
     /**
      * 获取游戏模式状态
      */
-<<<<<<< Updated upstream
-    private getAvailableModesList(): string[] {
-        const modes: string[] = [];
-        for (const mode in this.settings.modeConfigs) {
-            modes.push(mode);
-        }
-        return modes;
-    }
-
-=======
->>>>>>> Stashed changes
     public getStatus(): any {
         return {
             currentMode: this.settings.currentMode,
             config: this.getModeConfig(),
             initialized: this.settings.initialized,
-<<<<<<< Updated upstream
-            availableModes: this.getAvailableModesList(),
-=======
             availableModes: Object.keys(this.settings.modeConfigs),
->>>>>>> Stashed changes
             isCheatsEnabled: this.isCheatsEnabled(),
             isTrainingMode: this.isTrainingMode()
         };

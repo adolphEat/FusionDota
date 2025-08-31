@@ -53,13 +53,8 @@ export interface GameState {
     currentRound: number;
     currentPhase: RoundPhase;
     phaseTimeLeft: number;
-<<<<<<< Updated upstream
-    playerStates: Record<string, PlayerState>;
-    chessPool: Record<string, number>; // 棋子池
-=======
     playerStates: Map<PlayerID, PlayerState>;
     chessPool: Map<string, number>; // 棋子池
->>>>>>> Stashed changes
     isGameActive: boolean;
     winnerPlayerId?: PlayerID;
 }
@@ -68,22 +63,12 @@ export class AutoChessMode {
     private static instance: AutoChessMode;
     private gameState: GameState;
     private phaseTimer?: string;
-<<<<<<< Updated upstream
-    private chessPieceDatabase: Record<string, ChessPiece>;
-    private isActive: boolean = false;
-
-    private constructor() {
-        // 先初始化数据库，再初始化游戏状态
-        this.chessPieceDatabase = this.initializeChessDatabase();
-        this.gameState = this.initializeGameState();
-=======
     private chessPieceDatabase: Map<string, ChessPiece>;
     private isActive: boolean = false;
 
     private constructor() {
         this.gameState = this.initializeGameState();
         this.chessPieceDatabase = this.initializeChessDatabase();
->>>>>>> Stashed changes
         this.initializeAutoChessMode();
         print('[AutoChessMode] Initialized');
     }
@@ -288,11 +273,7 @@ export class AutoChessMode {
             currentRound: 0,
             currentPhase: RoundPhase.PREPARATION,
             phaseTimeLeft: 0,
-<<<<<<< Updated upstream
-            playerStates: {},
-=======
             playerStates: new Map(),
->>>>>>> Stashed changes
             chessPool: this.initializeChessPool(),
             isGameActive: false
         };
@@ -301,19 +282,8 @@ export class AutoChessMode {
     /**
      * 初始化棋子池
      */
-<<<<<<< Updated upstream
-    private initializeChessPool(): Record<string, number> {
-        const pool: Record<string, number> = {};
-        
-        // 安全检查：确保数据库已初始化
-        if (!this.chessPieceDatabase) {
-            print('[AutoChessMode] Warning: chessPieceDatabase not initialized, returning empty pool');
-            return pool;
-        }
-=======
     private initializeChessPool(): Map<string, number> {
         const pool = new Map<string, number>();
->>>>>>> Stashed changes
         
         // 根据稀有度设置棋子数量
         // 1费棋子：45个
@@ -322,12 +292,7 @@ export class AutoChessMode {
         // 4费棋子：15个
         // 5费棋子：10个
         
-<<<<<<< Updated upstream
-        for (const pieceId in this.chessPieceDatabase) {
-            const piece = this.chessPieceDatabase[pieceId];
-=======
         for (const [pieceId, piece] of this.chessPieceDatabase) {
->>>>>>> Stashed changes
             let count = 0;
             switch (piece.rarity) {
                 case ChessRarity.COMMON:
@@ -346,11 +311,7 @@ export class AutoChessMode {
                     count = 10;
                     break;
             }
-<<<<<<< Updated upstream
-            pool[pieceId] = count;
-=======
             pool.set(pieceId, count);
->>>>>>> Stashed changes
         }
         
         return pool;
@@ -359,19 +320,11 @@ export class AutoChessMode {
     /**
      * 初始化棋子数据库
      */
-<<<<<<< Updated upstream
-    private initializeChessDatabase(): Record<string, ChessPiece> {
-        const database: Record<string, ChessPiece> = {};
-        
-        // 示例棋子 - 1费普通棋子
-        database['anti_mage'] = {
-=======
     private initializeChessDatabase(): Map<string, ChessPiece> {
         const database = new Map<string, ChessPiece>();
         
         // 示例棋子 - 1费普通棋子
         database.set('anti_mage', {
->>>>>>> Stashed changes
             id: 'anti_mage',
             unitName: 'npc_dota_hero_antimage',
             displayName: '敌法师',
@@ -384,15 +337,9 @@ export class AutoChessMode {
             armor: 2,
             attackRange: 150,
             abilities: ['antimage_mana_break']
-<<<<<<< Updated upstream
-        };
-        
-        database['crystal_maiden'] = {
-=======
         });
         
         database.set('crystal_maiden', {
->>>>>>> Stashed changes
             id: 'crystal_maiden',
             unitName: 'npc_dota_hero_crystal_maiden',
             displayName: '水晶室女',
@@ -405,11 +352,7 @@ export class AutoChessMode {
             armor: 0,
             attackRange: 600,
             abilities: ['crystal_maiden_crystal_nova']
-<<<<<<< Updated upstream
-        };
-=======
         });
->>>>>>> Stashed changes
         
         // TODO: 添加更多棋子...
         
@@ -438,11 +381,7 @@ export class AutoChessMode {
                     rank: 0
                 };
                 
-<<<<<<< Updated upstream
-                this.gameState.playerStates[playerId] = playerState;
-=======
                 this.gameState.playerStates.set(playerId, playerState);
->>>>>>> Stashed changes
             }
         }
     }
@@ -451,12 +390,7 @@ export class AutoChessMode {
      * 发放回合收入
      */
     private distributeRoundIncome(): void {
-<<<<<<< Updated upstream
-        for (const playerId in this.gameState.playerStates) {
-            const playerState = this.gameState.playerStates[playerId];
-=======
         for (const [playerId, playerState] of this.gameState.playerStates) {
->>>>>>> Stashed changes
             if (!playerState.isAlive) continue;
             
             // 基础收入
@@ -484,12 +418,7 @@ export class AutoChessMode {
      * 刷新所有玩家商店
      */
     private refreshAllPlayersShop(): void {
-<<<<<<< Updated upstream
-        for (const playerId in this.gameState.playerStates) {
-            const playerState = this.gameState.playerStates[playerId];
-=======
         for (const [playerId, playerState] of this.gameState.playerStates) {
->>>>>>> Stashed changes
             if (!playerState.isAlive) continue;
             
             const shopPieces = this.generateShopPieces(playerState.level);
@@ -499,11 +428,7 @@ export class AutoChessMode {
                 GameRules.XNetTable.SetTableValue('autochess_shop', `player_${playerId}`, {
                     pieces: shopPieces,
                     refreshCount: 0,
-<<<<<<< Updated upstream
-                    timestamp: GameRules.GetGameTime() * 1000
-=======
                     timestamp: Date.now()
->>>>>>> Stashed changes
                 });
             }
         }
@@ -533,37 +458,12 @@ export class AutoChessMode {
     /**
      * 计算稀有度概率
      */
-<<<<<<< Updated upstream
-    private calculateRarityChances(playerLevel: number): Record<ChessRarity, number> {
-        const chances: Record<ChessRarity, number> = {} as Record<ChessRarity, number>;
-=======
     private calculateRarityChances(playerLevel: number): Map<ChessRarity, number> {
         const chances = new Map<ChessRarity, number>();
->>>>>>> Stashed changes
         
         // 根据等级设置概率 (示例数据)
         switch (playerLevel) {
             case 1:
-<<<<<<< Updated upstream
-                chances[ChessRarity.COMMON] = 100;
-                break;
-            case 2:
-                chances[ChessRarity.COMMON] = 70;
-                chances[ChessRarity.UNCOMMON] = 30;
-                break;
-            case 3:
-                chances[ChessRarity.COMMON] = 60;
-                chances[ChessRarity.UNCOMMON] = 35;
-                chances[ChessRarity.RARE] = 5;
-                break;
-            // TODO: 添加更多等级...
-            default:
-                chances[ChessRarity.COMMON] = 50;
-                chances[ChessRarity.UNCOMMON] = 35;
-                chances[ChessRarity.RARE] = 10;
-                chances[ChessRarity.EPIC] = 4;
-                chances[ChessRarity.LEGENDARY] = 1;
-=======
                 chances.set(ChessRarity.COMMON, 100);
                 break;
             case 2:
@@ -582,7 +482,6 @@ export class AutoChessMode {
                 chances.set(ChessRarity.RARE, 10);
                 chances.set(ChessRarity.EPIC, 4);
                 chances.set(ChessRarity.LEGENDARY, 1);
->>>>>>> Stashed changes
         }
         
         return chances;
@@ -591,34 +490,19 @@ export class AutoChessMode {
     /**
      * 随机选择稀有度
      */
-<<<<<<< Updated upstream
-    private selectRandomRarity(chances: Record<ChessRarity, number>): ChessRarity {
-        let totalChance = 0;
-        for (const rarity in chances) {
-            totalChance += chances[Number(rarity) as ChessRarity];
-=======
     private selectRandomRarity(chances: Map<ChessRarity, number>): ChessRarity {
         let totalChance = 0;
         for (const chance of chances.values()) {
             totalChance += chance;
->>>>>>> Stashed changes
         }
         
         const random = RandomFloat(0, totalChance);
         let currentChance = 0;
         
-<<<<<<< Updated upstream
-        for (const rarity in chances) {
-            const chance = chances[Number(rarity) as ChessRarity];
-            currentChance += chance;
-            if (random <= currentChance) {
-                return Number(rarity) as ChessRarity;
-=======
         for (const [rarity, chance] of chances) {
             currentChance += chance;
             if (random <= currentChance) {
                 return rarity;
->>>>>>> Stashed changes
             }
         }
         
@@ -631,18 +515,10 @@ export class AutoChessMode {
     private selectRandomPieceByRarity(rarity: ChessRarity): ChessPiece | null {
         const pieces: ChessPiece[] = [];
         
-<<<<<<< Updated upstream
-        for (const pieceId in this.chessPieceDatabase) {
-            const piece = this.chessPieceDatabase[pieceId];
-            if (piece.rarity === rarity) {
-                // 检查棋子池是否还有库存
-                const remaining = this.gameState.chessPool[piece.id] || 0;
-=======
         for (const piece of this.chessPieceDatabase.values()) {
             if (piece.rarity === rarity) {
                 // 检查棋子池是否还有库存
                 const remaining = this.gameState.chessPool.get(piece.id) || 0;
->>>>>>> Stashed changes
                 if (remaining > 0) {
                     pieces.push(piece);
                 }
@@ -663,16 +539,9 @@ export class AutoChessMode {
     private setupBattleMatching(): void {
         const alivePlayers: PlayerID[] = [];
         
-<<<<<<< Updated upstream
-        for (const playerId in this.gameState.playerStates) {
-            const playerState = this.gameState.playerStates[playerId];
-            if (playerState.isAlive) {
-                alivePlayers.push(Number(playerId) as PlayerID);
-=======
         for (const [playerId, playerState] of this.gameState.playerStates) {
             if (playerState.isAlive) {
                 alivePlayers.push(playerId);
->>>>>>> Stashed changes
             }
         }
         
@@ -720,18 +589,8 @@ export class AutoChessMode {
      * 检查游戏是否结束
      */
     private checkGameEnd(): boolean {
-<<<<<<< Updated upstream
-        let aliveCount = 0;
-        for (const playerId in this.gameState.playerStates) {
-            const playerState = this.gameState.playerStates[playerId];
-            if (playerState.isAlive) {
-                aliveCount++;
-            }
-        }
-=======
         const aliveCount = Array.from(this.gameState.playerStates.values())
             .filter(state => state.isAlive).length;
->>>>>>> Stashed changes
         
         return aliveCount <= 1 || this.gameState.currentRound >= 50;
     }
@@ -743,16 +602,9 @@ export class AutoChessMode {
         this.gameState.isGameActive = false;
         
         // 确定获胜者
-<<<<<<< Updated upstream
-        for (const playerId in this.gameState.playerStates) {
-            const playerState = this.gameState.playerStates[playerId];
-            if (playerState.isAlive) {
-                this.gameState.winnerPlayerId = Number(playerId) as PlayerID;
-=======
         for (const [playerId, playerState] of this.gameState.playerStates) {
             if (playerState.isAlive) {
                 this.gameState.winnerPlayerId = playerId;
->>>>>>> Stashed changes
                 break;
             }
         }
@@ -828,11 +680,7 @@ export class AutoChessMode {
                     phaseTimeLeft: this.gameState.phaseTimeLeft,
                     isGameActive: this.gameState.isGameActive
                 },
-<<<<<<< Updated upstream
-                timestamp: GameRules.GetGameTime() * 1000
-=======
                 timestamp: Date.now()
->>>>>>> Stashed changes
             });
         }
     }
@@ -844,11 +692,7 @@ export class AutoChessMode {
         return {
             isActive: this.isActive,
             gameState: this.gameState,
-<<<<<<< Updated upstream
-            chessPieceCount: Object.keys(this.chessPieceDatabase).length
-=======
             chessPieceCount: this.chessPieceDatabase.size
->>>>>>> Stashed changes
         };
     }
 
@@ -856,13 +700,8 @@ export class AutoChessMode {
      * 购买棋子
      */
     public buyChessPiece(playerId: PlayerID, pieceId: string): boolean {
-<<<<<<< Updated upstream
-        const playerState = this.gameState.playerStates[playerId];
-        const piece = this.chessPieceDatabase[pieceId];
-=======
         const playerState = this.gameState.playerStates.get(playerId);
         const piece = this.chessPieceDatabase.get(pieceId);
->>>>>>> Stashed changes
         
         if (!playerState || !piece) {
             return false;
@@ -874,11 +713,7 @@ export class AutoChessMode {
         }
         
         // 检查棋子池是否有库存
-<<<<<<< Updated upstream
-        const remaining = this.gameState.chessPool[pieceId] || 0;
-=======
         const remaining = this.gameState.chessPool.get(pieceId) || 0;
->>>>>>> Stashed changes
         if (remaining <= 0) {
             return false;
         }
@@ -891,11 +726,7 @@ export class AutoChessMode {
         // 执行购买
         playerState.gold -= piece.cost;
         playerState.benchPieces.push(piece);
-<<<<<<< Updated upstream
-        this.gameState.chessPool[pieceId] = remaining - 1;
-=======
         this.gameState.chessPool.set(pieceId, remaining - 1);
->>>>>>> Stashed changes
         
         print(`[AutoChessMode] Player ${playerId} bought ${piece.displayName}`);
         
@@ -909,11 +740,7 @@ export class AutoChessMode {
      * 同步玩家状态到客户端
      */
     private syncPlayerState(playerId: PlayerID): void {
-<<<<<<< Updated upstream
-        const playerState = this.gameState.playerStates[playerId];
-=======
         const playerState = this.gameState.playerStates.get(playerId);
->>>>>>> Stashed changes
         if (!playerState || !GameRules.XNetTable) {
             return;
         }

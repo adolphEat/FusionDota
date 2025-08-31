@@ -6,17 +6,16 @@
 import { GameMode, GameModeManager } from './GameModeManager';
 
 export interface TrainingSettings {
-    autoRespawn: boolean;
     infiniteResources: boolean;
     noCooldowns: boolean;
     fastLevelUp: boolean;
     showDamageNumbers: boolean;
     pauseAfterKill: boolean;
     enableTargetDummies: boolean;
-<<<<<<< Updated upstream
     autoRegeneration: boolean;    // 自动回血回蓝
     customCooldowns: boolean;     // 自定义技能CD
     cooldownSeconds: number;      // CD秒数
+    autoRespawn: boolean;         // 自动重生
 }
 
 export interface AutoSpawnConfig {
@@ -39,8 +38,6 @@ export interface AutoDummyConfig {
     positions: Vector[];
     autoRespawn: boolean;
     respawnDelay: number; // 秒
-=======
->>>>>>> Stashed changes
 }
 
 export interface TestScenario {
@@ -73,7 +70,6 @@ export class TrainingMode {
     private spawnedUnits: CDOTA_BaseNPC[] = [];
     private testStartTime: number = 0;
     private isActive: boolean = false;
-<<<<<<< Updated upstream
     
     // 自动刷新系统
     private autoSpawnConfig: AutoSpawnConfig;
@@ -92,11 +88,6 @@ export class TrainingMode {
         this.settings = this.getDefaultSettings();
         this.autoSpawnConfig = this.getDefaultAutoSpawnConfig();
         this.autoDummyConfig = this.getDefaultAutoDummyConfig();
-=======
-
-    private constructor() {
-        this.settings = this.getDefaultSettings();
->>>>>>> Stashed changes
         this.initializeTrainingMode();
         print('[TrainingMode] Initialized');
     }
@@ -143,13 +134,10 @@ export class TrainingMode {
 
         this.isActive = false;
         this.cleanupSpawnedUnits();
-<<<<<<< Updated upstream
         this.stopAutoSpawn();
         this.stopAutoDummy();
         this.disableAutoRegeneration();
         this.disableCustomCooldowns();
-=======
->>>>>>> Stashed changes
         this.unregisterEvents();
         
         print('[TrainingMode] Deactivated');
@@ -388,7 +376,6 @@ export class TrainingMode {
             this.enableAutoRespawn();
         }
 
-<<<<<<< Updated upstream
         // 启用自动回血回蓝
         if (this.settings.autoRegeneration) {
             this.enableAutoRegeneration();
@@ -399,8 +386,6 @@ export class TrainingMode {
             this.enableCustomCooldowns();
         }
 
-=======
->>>>>>> Stashed changes
         // 生成目标假人
         if (this.settings.enableTargetDummies) {
             this.spawnTargetDummies();
@@ -585,7 +570,6 @@ export class TrainingMode {
      * 初始化训练模式
      */
     private initializeTrainingMode(): void {
-<<<<<<< Updated upstream
         print('[TrainingMode] Setting up delayed initialization...');
         
         // 等待游戏开始后激活
@@ -613,16 +597,6 @@ export class TrainingMode {
             print(`[TrainingMode] Settings: autoRespawn=${this.settings.autoRespawn}, infiniteResources=${this.settings.infiniteResources}`);
             return null;
         });
-=======
-        // 等待游戏开始后激活
-        Timers.CreateTimer(1.0, () => {
-            const gameModeManager = GameModeManager.getInstance();
-            if (gameModeManager.isTrainingMode()) {
-                this.activate();
-            }
-            return null;
-        });
->>>>>>> Stashed changes
     }
 
     /**
@@ -636,11 +610,7 @@ export class TrainingMode {
                 activeScenario: this.activeScenario,
                 spawnedUnitsCount: this.spawnedUnits.length,
                 testDuration: this.activeScenario ? GameRules.GetGameTime() - this.testStartTime : 0,
-<<<<<<< Updated upstream
-                timestamp: GameRules.GetGameTime() * 1000
-=======
                 timestamp: Date.now()
->>>>>>> Stashed changes
             });
         }
     }
@@ -656,14 +626,10 @@ export class TrainingMode {
             fastLevelUp: true,
             showDamageNumbers: true,
             pauseAfterKill: false,
-<<<<<<< Updated upstream
             enableTargetDummies: true,
             autoRegeneration: true,    // 默认启用自动回血回蓝
             customCooldowns: true,     // 默认启用自定义CD
             cooldownSeconds: 3         // 默认3秒CD
-=======
-            enableTargetDummies: true
->>>>>>> Stashed changes
         };
     }
 
@@ -735,7 +701,6 @@ export class TrainingMode {
             settings: this.settings,
             activeScenario: this.activeScenario,
             spawnedUnitsCount: this.spawnedUnits.length,
-<<<<<<< Updated upstream
             testDuration: this.activeScenario ? GameRules.GetGameTime() - this.testStartTime : 0,
             autoSpawn: {
                 enabled: this.autoSpawnConfig.enabled,
@@ -1508,9 +1473,3 @@ declare global {
     print('[Console] - Fast cooldowns: ON (3s)');
     print('[Console] Ready for training!');
 };
-=======
-            testDuration: this.activeScenario ? GameRules.GetGameTime() - this.testStartTime : 0
-        };
-    }
-}
->>>>>>> Stashed changes
