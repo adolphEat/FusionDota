@@ -31,7 +31,7 @@ export interface Path {
     isEmpty(): boolean;
     reverse(): void;
     getSubPath(startIndex: number, endIndex: number): Path;
-    calculateDistance(): number;
+    calculateDistance(a: PathNode, b: PathNode): number;
     toPositions(): Array<{x: number, y: number}>;
     toString(): string;
 }

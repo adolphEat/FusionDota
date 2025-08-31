@@ -99,7 +99,7 @@ export class Path implements IPath {
     /**
      * Get a sub-path from start to end index
      */
-    public getSubPath(startIndex: number, endIndex: number): Path {
+    public getSubPath(startIndex: number, endIndex: number): IPath {
         const subPath = new Path(this.grid);
         const start = Math.max(0, startIndex);
         const end = Math.min(this.nodes.length, endIndex);
@@ -114,7 +114,7 @@ export class Path implements IPath {
     /**
      * Calculate distance between two nodes
      */
-    private calculateDistance(a: PathNode, b: PathNode): number {
+    public calculateDistance(a: PathNode, b: PathNode): number {
         const dx = a.x - b.x;
         const dy = a.y - b.y;
         return Math.sqrt(dx * dx + dy * dy);

@@ -1,4 +1,4 @@
-  import { Pathfinder, Grid, Heuristics } from '../index';
+import { Pathfinder, Grid, Heuristics } from '../index';
 
 /**
  * Basic pathfinding usage examples
@@ -10,7 +10,7 @@ export class PathfindingExamples {
      * Example 1: Simple A* pathfinding
      */
     public static simpleAStar(): void {
-        console.log('=== Simple A* Pathfinding Example ===');
+        print('=== Simple A* Pathfinding Example ===');
         
         // Create a simple 5x4 map (0 = walkable, 1 = obstacle)
         const map = [
@@ -28,22 +28,22 @@ export class PathfindingExamples {
         const path = pathfinder.getPath(0, 0, 4, 0);
         
         if (path) {
-            console.log('✅ Path found!');
-            console.log('Path length:', path.getLength().toFixed(2));
-            console.log('Number of nodes:', path.getNodeCount());
-            console.log('Path positions:', path.toPositions());
+            print('✅ Path found!');
+            print('Path length:', path.getLength().toFixed(2));
+            print('Number of nodes:', path.getNodeCount());
+            print('Path positions:', path.toPositions());
         } else {
-            console.log('❌ No path found');
+            print('❌ No path found');
         }
         
-        console.log('');
+        print('');
     }
     
     /**
      * Example 2: Different algorithms comparison
      */
     public static algorithmComparison(): void {
-        console.log('=== Algorithm Comparison Example ===');
+        print('=== Algorithm Comparison Example ===');
         
         // Create a more complex map
         const map = [
@@ -67,20 +67,20 @@ export class PathfindingExamples {
             const endTime = Date.now();
             
             if (path) {
-                console.log(`${algorithm}: Path found in ${endTime - startTime}ms, Length: ${path.getLength().toFixed(2)}`);
+                print(`${algorithm}: Path found in ${endTime - startTime}ms, Length: ${path.getLength().toFixed(2)}`);
             } else {
-                console.log(`${algorithm}: No path found in ${endTime - startTime}ms`);
+                print(`${algorithm}: No path found in ${endTime - startTime}ms`);
             }
         }
         
-        console.log('');
+        print('');
     }
     
     /**
      * Example 3: Different heuristics comparison
      */
     public static heuristicComparison(): void {
-        console.log('=== Heuristic Comparison Example ===');
+        print('=== Heuristic Comparison Example ===');
         
         const map = [
             [0, 0, 0, 0, 0],
@@ -98,20 +98,20 @@ export class PathfindingExamples {
             const path = pathfinder.getPath(0, 0, 4, 2);
             
             if (path) {
-                console.log(`${heuristic}: Path length ${path.getLength().toFixed(2)}`);
+                print(`${heuristic}: Path length ${path.getLength().toFixed(2)}`);
             } else {
-                console.log(`${heuristic}: No path found`);
+                print(`${heuristic}: No path found`);
             }
         }
         
-        console.log('');
+        print('');
     }
     
     /**
      * Example 4: Diagonal vs Orthogonal movement
      */
     public static movementModes(): void {
-        console.log('=== Movement Modes Example ===');
+        print('=== Movement Modes Example ===');
         
         const map = [
             [0, 0, 0, 0, 0],
@@ -131,21 +131,21 @@ export class PathfindingExamples {
         const orthogonalPath = pathfinder.getPath(0, 0, 4, 2);
         
         if (diagonalPath) {
-            console.log('Diagonal movement: Path length', diagonalPath.getLength().toFixed(2));
+            print('Diagonal movement: Path length', diagonalPath.getLength().toFixed(2));
         }
         
         if (orthogonalPath) {
-            console.log('Orthogonal movement: Path length', orthogonalPath.getLength().toFixed(2));
+            print('Orthogonal movement: Path length', orthogonalPath.getLength().toFixed(2));
         }
         
-        console.log('');
+        print('');
     }
     
     /**
      * Example 5: Custom walkable function
      */
     public static customWalkableFunction(): void {
-        console.log('=== Custom Walkable Function Example ===');
+        print('=== Custom Walkable Function Example ===');
         
         // Create a map with different terrain types
         const map = [
@@ -166,20 +166,20 @@ export class PathfindingExamples {
         const path = pathfinder.getPath(0, 0, 4, 3);
         
         if (path) {
-            console.log('✅ Path found with custom walkable function!');
-            console.log('Path length:', path.getLength().toFixed(2));
+            print('✅ Path found with custom walkable function!');
+            print('Path length:', path.getLength().toFixed(2));
         } else {
-            console.log('❌ No path found with custom walkable function');
+            print('❌ No path found with custom walkable function');
         }
         
-        console.log('');
+        print('');
     }
     
     /**
      * Run all examples
      */
     public static runAllExamples(): void {
-        console.log('🚀 Running Pathfinding Module Examples\n');
+        print('🚀 Running Pathfinding Module Examples\n');
         
         this.simpleAStar();
         this.algorithmComparison();
@@ -187,7 +187,7 @@ export class PathfindingExamples {
         this.movementModes();
         this.customWalkableFunction();
         
-        console.log('✨ All examples completed!');
+        print('✨ All examples completed!');
     }
 }
 
