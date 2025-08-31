@@ -62,7 +62,7 @@ export function ActivateModules() {
                 errorTracking: true,
                 performanceMonitoring: true,
                 debugMode: IsInToolsMode(),
-                timestamp: Date.now()
+                timestamp: GameRules.GetGameTime() * 1000
             });
             
             // 如果某个模块不需要在其他地方使用，那么直接在这里使用即可
@@ -79,14 +79,8 @@ export function ActivateModules() {
             
         } catch (error) {
             // 如果错误追踪还未初始化，直接打印错误
-            if (GameRules.ErrorTracker) {
-                GameRules.ErrorTracker.trackError(error as Error, {
-                    module: 'ActivateModules',
-                    function: 'initialization'
-                });
-            } else {
-                print(`[FATAL] Failed to activate modules: ${error}`);
-            }
+            print(`[FATAL] Failed to activate modules: ${error}`);
+            // 不再调用ErrorTracker避免递归错误
             throw error;
         }
     } else {

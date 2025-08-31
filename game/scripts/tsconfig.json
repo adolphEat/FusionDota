@@ -18,7 +18,10 @@
     },
     "include": ["src", "../../shared"],
     "tstl": {
-        "luaTarget": "JIT",
+        "luaTarget": "5.1",
         "sourceMapTraceback": true,
+        "noImplicitSelf": false,
+        "luaLibImport": "require",
+        "lua51AllowTryCatchInAsyncAwait": true
     }
 }

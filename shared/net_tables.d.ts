@@ -17,6 +17,12 @@ declare interface CustomNetTableDeclarations {
         key_1: number;
         key_2: string;
     };
+    // 服务器选择界面控制
+    server_selection: {
+        [playerId: string]: {
+            show: boolean;
+        };
+    };
     // 游戏模式相关
     game_mode: {
         current: {

@@ -101,6 +101,9 @@ module.exports = {
 
                 // if filename is not set, it will use the name of the entry
                 { import: './hud/layout.xml', type: 'Hud' },
+                
+                // 主界面入口
+                { import: './main-menu/layout.xml', type: 'MainMenu', filename: 'main_menu.xml' },
             ],
         }),
         // use ignore plugin to ignore less files changes

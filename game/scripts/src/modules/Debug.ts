@@ -10,7 +10,8 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
         desc: '显示所有的测试指令',
         func: () => {
             print('所有的测试指令:');
-            for (const [cmd, { desc }] of Object.entries(DebugCallbacks)) {
+            for (const cmd in DebugCallbacks) {
+                const desc = DebugCallbacks[cmd].desc;
                 print(`${cmd}: ${desc}`);
             }
         },
@@ -137,11 +138,58 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
             }
         },
     },
+    ['-server']: {
+        desc: '显示/隐藏服务器选择界面 -server [show|hide]',
+        func: (hero: CDOTA_BaseNPC_Hero, ...args: string[]) => {
+            const debug = (GameRules as any).DebugInstance || null;
+            const action = args[0] || 'show';
+            
+            // 通过网络表通知客户端
+            const playerId = hero.GetPlayerID();
+            
+            if (action === 'show') {
+                CustomNetTables.SetTableValue('server_selection', playerId.toString(), { show: true });
+                debug?.debugOutput(hero, '简单服务器选择器已显示');
+                Say(hero, '假服务器选择界面已显示', false);
+            } else if (action === 'hide') {
+                CustomNetTables.SetTableValue('server_selection', playerId.toString(), { show: false });
+                debug?.debugOutput(hero, '简单服务器选择器已隐藏');
+                Say(hero, '假服务器选择界面已隐藏', false);
+            } else {
+                debug?.debugOutput(hero, '用法: -server [show|hide]');
+                Say(hero, '用法: -server show 或 -server hide', true);
+                return;
+            }
+        },
+    },
+    ['-fake_connect']: {
+        desc: '模拟假连接到指定服务器 -fake_connect [server_name]',
+        func: (hero: CDOTA_BaseNPC_Hero, ...args: string[]) => {
+            const debug = (GameRules as any).DebugInstance || null;
+            const serverName = args[0] || '默认服务器';
+            
+            debug?.debugOutput(hero, `模拟连接到: ${serverName}`);
+            Say(hero, `假装连接到服务器: ${serverName}`, false);
+            
+            // 模拟连接延迟
+            Timers.CreateTimer(1, () => {
+                Say(hero, `连接成功！欢迎来到 ${serverName}`, false);
+                return undefined;
+            });
+        },
+    },
     ['-test_error']: {
         desc: '测试错误追踪 test_error [message]',
         func: (hero, ...args: string[]) => {
             const debug = (GameRules as any).DebugInstance || null;
-            const message = args.join(' ') || 'Test error from debug command';
+            let message = 'Test error from debug command';
+            if (args.length > 0) {
+                message = '';
+                for (let i = 0; i < args.length; i++) {
+                    if (i > 0) message += ' ';
+                    message += args[i];
+                }
+            }
             if (GameRules.ErrorTracker) {
                 const errorHash = GameRules.ErrorTracker.reportCustomError(message, {
                     module: 'Debug',
@@ -232,8 +280,8 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
                 const timerId = GameRules.PerformanceMonitor.startTimer('debug_performance_test');
                 
                 // 模拟一些计算密集的操作
-                const startTime = Date.now();
-                while (Date.now() - startTime < duration) {
+                const startTime = GameRules.GetGameTime() * 1000;
+                while ((GameRules.GetGameTime() * 1000) - startTime < duration) {
                     // 忙等待
                     Math.random();
                 }
@@ -283,7 +331,12 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
             } else {
                 const status = GameRules.GameModeManager.getStatus();
                 Say(hero, `Current mode: ${status.currentMode}`, true);
-                Say(hero, `Available modes: ${status.availableModes.join(', ')}`, true);
+                let availableModes = '';
+                for (let i = 0; i < status.availableModes.length; i++) {
+                    if (i > 0) availableModes += ', ';
+                    availableModes += status.availableModes[i];
+                }
+                Say(hero, `Available modes: ${availableModes}`, true);
             }
         },
     },
@@ -439,6 +492,343 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
             }
 
             Say(hero, `Cleared ${cleared} units`, true);
+        },
+    },
+    ['-auto_spawn']: {
+        desc: '自动刷怪控制 auto_spawn <start|stop|status> [unit_type] [count] [level] [interval]',
+        func: (hero, ...args: string[]) => {
+            if (!GameRules.TrainingMode) {
+                Say(hero, 'Training mode not initialized', true);
+                return;
+            }
+
+            if (!GameRules.GameModeManager?.isTrainingMode()) {
+                Say(hero, 'This command only works in training mode', true);
+                return;
+            }
+
+            const action = args[0];
+            switch (action) {
+                case 'start':
+                    const unitType = args[1] || 'npc_dota_neutral_kobold';
+                    const count = parseInt(args[2]) || 2;
+                    const level = parseInt(args[3]) || 1;
+                    const interval = parseInt(args[4]) || 10;
+                    
+                    const success = GameRules.TrainingMode.startAutoSpawn({
+                        unitType,
+                        count,
+                        level,
+                        interval
+                    });
+                    
+                    if (success) {
+                        Say(hero, `Auto spawn started: ${unitType} x${count} level ${level} every ${interval}s`, true);
+                    } else {
+                        Say(hero, 'Failed to start auto spawn', true);
+                    }
+                    break;
+                    
+                case 'stop':
+                    GameRules.TrainingMode.stopAutoSpawn();
+                    Say(hero, 'Auto spawn stopped', true);
+                    break;
+                    
+                case 'status':
+                    const status = GameRules.TrainingMode.getStatus();
+                    Say(hero, `Auto spawn: ${status.autoSpawn.enabled ? 'Enabled' : 'Disabled'}`, true);
+                    if (status.autoSpawn.enabled) {
+                        Say(hero, `Active units: ${status.autoSpawn.unitsCount}`, true);
+                        Say(hero, `Unit type: ${status.autoSpawn.config.unitType}`, true);
+                        Say(hero, `Interval: ${status.autoSpawn.config.interval}s`, true);
+                    }
+                    break;
+                    
+                default:
+                    Say(hero, 'Usage: auto_spawn <start|stop|status> [unit_type] [count] [level] [interval]', true);
+                    Say(hero, 'Example: auto_spawn start npc_dota_neutral_kobold 3 5 15', true);
+            }
+        },
+    },
+    ['-auto_dummy']: {
+        desc: '自动木桩控制 auto_dummy <start|stop|status> [count] [health] [invulnerable]',
+        func: (hero, ...args: string[]) => {
+            if (!GameRules.TrainingMode) {
+                Say(hero, 'Training mode not initialized', true);
+                return;
+            }
+
+            if (!GameRules.GameModeManager?.isTrainingMode()) {
+                Say(hero, 'This command only works in training mode', true);
+                return;
+            }
+
+            const action = args[0];
+            switch (action) {
+                case 'start':
+                    const count = parseInt(args[1]) || 4;
+                    const health = parseInt(args[2]) || 5000;
+                    const invulnerable = args[3] === 'true' || args[3] === '1';
+                    
+                    const success = GameRules.TrainingMode.startAutoDummy({
+                        count,
+                        health,
+                        invulnerable
+                    });
+                    
+                    if (success) {
+                        Say(hero, `Auto dummy started: ${count} dummies with ${health} HP`, true);
+                        if (invulnerable) {
+                            Say(hero, 'Dummies are invulnerable', true);
+                        }
+                    } else {
+                        Say(hero, 'Failed to start auto dummy', true);
+                    }
+                    break;
+                    
+                case 'stop':
+                    GameRules.TrainingMode.stopAutoDummy();
+                    Say(hero, 'Auto dummy stopped', true);
+                    break;
+                    
+                case 'status':
+                    const status = GameRules.TrainingMode.getStatus();
+                    Say(hero, `Auto dummy: ${status.autoDummy.enabled ? 'Enabled' : 'Disabled'}`, true);
+                    if (status.autoDummy.enabled) {
+                        Say(hero, `Active dummies: ${status.autoDummy.dummiesCount}`, true);
+                        Say(hero, `Health: ${status.autoDummy.config.health}`, true);
+                        Say(hero, `Invulnerable: ${status.autoDummy.config.invulnerable}`, true);
+                    }
+                    break;
+                    
+                default:
+                    Say(hero, 'Usage: auto_dummy <start|stop|status> [count] [health] [invulnerable]', true);
+                    Say(hero, 'Example: auto_dummy start 6 10000 true', true);
+            }
+        },
+    },
+    ['-spawnneutrals']: {
+        desc: '刷新所有中性野怪营地',
+        func: (hero) => {
+            if (!GameRules.GameModeManager?.isTrainingMode()) {
+                Say(hero, 'This command only works in training mode', true);
+                return;
+            }
+
+            if (GameRules.TrainingMode) {
+                GameRules.TrainingMode.spawnNeutrals();
+                Say(hero, 'Neutral camps spawned', true);
+            } else {
+                Say(hero, 'Training mode not initialized', true);
+            }
+        },
+    },
+    ['-spawncreeps']: {
+        desc: '刷新三路小兵',
+        func: (hero) => {
+            if (!GameRules.GameModeManager?.isTrainingMode()) {
+                Say(hero, 'This command only works in training mode', true);
+                return;
+            }
+
+            if (GameRules.TrainingMode) {
+                GameRules.TrainingMode.spawnCreeps();
+                Say(hero, 'Lane creeps spawned', true);
+            } else {
+                Say(hero, 'Training mode not initialized', true);
+            }
+        },
+    },
+    ['-createhero']: {
+        desc: '创建英雄 createhero <hero_name>',
+        func: (hero, ...args: string[]) => {
+            if (!GameRules.GameModeManager?.isTrainingMode()) {
+                Say(hero, 'This command only works in training mode', true);
+                return;
+            }
+
+            const heroName = args[0];
+            if (!heroName) {
+                Say(hero, 'Usage: createhero <hero_name>', true);
+                Say(hero, 'Example: createhero npc_dota_hero_pudge', true);
+                return;
+            }
+
+            if (GameRules.TrainingMode) {
+                const createdHero = GameRules.TrainingMode.createHero(heroName);
+                if (createdHero) {
+                    Say(hero, `Created hero: ${heroName}`, true);
+                } else {
+                    Say(hero, `Failed to create hero: ${heroName}`, true);
+                }
+            } else {
+                Say(hero, 'Training mode not initialized', true);
+            }
+        },
+    },
+    ['-auto_regen']: {
+        desc: '自动回血回蓝控制 auto_regen <on|off|toggle|status>',
+        func: (hero, ...args: string[]) => {
+            if (!GameRules.TrainingMode) {
+                Say(hero, 'Training mode not initialized', true);
+                return;
+            }
+
+            if (!GameRules.GameModeManager?.isTrainingMode()) {
+                Say(hero, 'This command only works in training mode', true);
+                return;
+            }
+
+            const action = args[0];
+            switch (action) {
+                case 'on':
+                    GameRules.TrainingMode.enableAutoRegeneration();
+                    Say(hero, 'Auto regeneration enabled', true);
+                    break;
+                    
+                case 'off':
+                    GameRules.TrainingMode.disableAutoRegeneration();
+                    Say(hero, 'Auto regeneration disabled', true);
+                    break;
+                    
+                case 'toggle':
+                    GameRules.TrainingMode.toggleAutoRegeneration();
+                    const toggleStatus = GameRules.TrainingMode.getStatus();
+                    Say(hero, `Auto regeneration: ${toggleStatus.autoRegeneration.enabled ? 'ON' : 'OFF'}`, true);
+                    break;
+                    
+                case 'status':
+                    const status = GameRules.TrainingMode.getStatus();
+                    Say(hero, `Auto regeneration: ${status.autoRegeneration.enabled ? 'Enabled' : 'Disabled'}`, true);
+                    Say(hero, `Active: ${status.autoRegeneration.active ? 'YES' : 'NO'}`, true);
+                    break;
+                    
+                default:
+                    Say(hero, 'Usage: auto_regen <on|off|toggle|status>', true);
+                    Say(hero, 'Automatically restores hero HP and MP to full', true);
+            }
+        },
+    },
+    ['-fast_cd']: {
+        desc: '快速技能CD控制 fast_cd <on|off|toggle|status> [seconds]',
+        func: (hero, ...args: string[]) => {
+            if (!GameRules.TrainingMode) {
+                Say(hero, 'Training mode not initialized', true);
+                return;
+            }
+
+            if (!GameRules.GameModeManager?.isTrainingMode()) {
+                Say(hero, 'This command only works in training mode', true);
+                return;
+            }
+
+            const action = args[0];
+            const seconds = parseFloat(args[1]);
+            
+            switch (action) {
+                case 'on':
+                    if (seconds && seconds > 0) {
+                        GameRules.TrainingMode.setCooldownSeconds(seconds);
+                    }
+                    GameRules.TrainingMode.enableCustomCooldowns();
+                    const onStatus = GameRules.TrainingMode.getStatus();
+                    Say(hero, `Fast cooldowns enabled: ${onStatus.customCooldowns.seconds}s`, true);
+                    break;
+                    
+                case 'off':
+                    GameRules.TrainingMode.disableCustomCooldowns();
+                    Say(hero, 'Fast cooldowns disabled', true);
+                    break;
+                    
+                case 'toggle':
+                    GameRules.TrainingMode.toggleCustomCooldowns();
+                    const toggleStatus = GameRules.TrainingMode.getStatus();
+                    Say(hero, `Fast cooldowns: ${toggleStatus.customCooldowns.enabled ? 'ON' : 'OFF'}`, true);
+                    if (toggleStatus.customCooldowns.enabled) {
+                        Say(hero, `Cooldown time: ${toggleStatus.customCooldowns.seconds}s`, true);
+                    }
+                    break;
+                    
+                case 'status':
+                    const status = GameRules.TrainingMode.getStatus();
+                    Say(hero, `Fast cooldowns: ${status.customCooldowns.enabled ? 'Enabled' : 'Disabled'}`, true);
+                    Say(hero, `Active: ${status.customCooldowns.active ? 'YES' : 'NO'}`, true);
+                    Say(hero, `Cooldown time: ${status.customCooldowns.seconds}s`, true);
+                    break;
+                    
+                default:
+                    Say(hero, 'Usage: fast_cd <on|off|toggle|status> [seconds]', true);
+                    Say(hero, 'Example: fast_cd on 3  (sets all cooldowns to 3 seconds)', true);
+                    Say(hero, 'Example: fast_cd toggle  (toggles fast cooldowns)', true);
+            }
+        },
+    },
+    ['-cd']: {
+        desc: '快速设置CD时间 cd <seconds>',
+        func: (hero, ...args: string[]) => {
+            if (!GameRules.TrainingMode) {
+                Say(hero, 'Training mode not initialized', true);
+                return;
+            }
+
+            if (!GameRules.GameModeManager?.isTrainingMode()) {
+                Say(hero, 'This command only works in training mode', true);
+                return;
+            }
+
+            const seconds = parseFloat(args[0]);
+            if (!args[0] || isNaN(seconds) || seconds < 0.1) {
+                const status = GameRules.TrainingMode.getStatus();
+                Say(hero, `Current CD: ${status.customCooldowns.seconds}s (${status.customCooldowns.enabled ? 'ON' : 'OFF'})`, true);
+                Say(hero, 'Usage: cd <seconds>  Example: cd 3', true);
+                return;
+            }
+
+            GameRules.TrainingMode.setCooldownSeconds(seconds);
+            GameRules.TrainingMode.enableCustomCooldowns();
+            Say(hero, `Cooldown set to ${seconds}s`, true);
+        },
+    },
+    ['-regen']: {
+        desc: '切换自动回血回蓝',
+        func: (hero) => {
+            if (!GameRules.TrainingMode) {
+                Say(hero, 'Training mode not initialized', true);
+                return;
+            }
+
+            if (!GameRules.GameModeManager?.isTrainingMode()) {
+                Say(hero, 'This command only works in training mode', true);
+                return;
+            }
+
+            GameRules.TrainingMode.toggleAutoRegeneration();
+            const status = GameRules.TrainingMode.getStatus();
+            Say(hero, `Auto regeneration: ${status.autoRegeneration.enabled ? 'ON' : 'OFF'}`, true);
+        },
+    },
+    ['-练功']: {
+        desc: '一键开启练功模式',
+        func: (hero) => {
+            if (!GameRules.TrainingMode) {
+                Say(hero, 'Training mode not initialized', true);
+                return;
+            }
+
+            if (!GameRules.GameModeManager?.isTrainingMode()) {
+                Say(hero, 'This command only works in training mode', true);
+                return;
+            }
+
+            // 启用所有练功功能
+            GameRules.TrainingMode.enableAutoRegeneration();
+            GameRules.TrainingMode.setCooldownSeconds(3);
+            GameRules.TrainingMode.enableCustomCooldowns();
+            
+            Say(hero, 'Practice mode activated!', true);
+            Say(hero, '- Auto regeneration: ON', true);
+            Say(hero, '- Fast cooldowns: ON (3s)', true);
+            Say(hero, 'Ready for training!', true);
         },
     },
     ['-god']: {
@@ -654,7 +1044,7 @@ export class Debug {
         // 将实例保存到 GameRules 以便外部访问
         (GameRules as any).DebugInstance = this;
         
-        print('[Debug] ==============注册注册==========================');
+        print('[Debug] ==============初始化调试系统==========================');
         print('[Debug] Debug module constructor called');
         print(`[Debug] IsInToolsMode(): ${IsInToolsMode()}`);
         print(`[Debug] PlayerCount: ${PlayerResource.GetPlayerCount()}`);
@@ -682,104 +1072,156 @@ export class Debug {
         // 创建全局访问函数
         this.createGlobalDebugFunctions();
         
-        // 立即注册聊天监听器
-        try {
-            print('[Debug] Attempting to register chat listener immediately...');
-            this._chatListener = ListenToGameEvent(`player_chat`, (keys) => {
-                print(`[Debug] *** CHAT EVENT RECEIVED *** Text: "${keys.text}"`);
-                this.OnPlayerChat(keys);
-            }, undefined);
-            print('[Debug] Chat listener registered successfully with ID:', this._chatListener);
-        } catch (error) {
-            print('[Debug] FAILED to register chat listener immediately:', error);
-        }
-        
-        // 也尝试延迟注册作为备份
-        Timers.CreateTimer(3.0, () => {
-            print('[Debug] ===== 3-second checkpoint =====');
-            if (!this._chatListener) {
-                try {
-                    print('[Debug] Attempting DELAYED chat listener registration...');
-                    this._chatListener = ListenToGameEvent(`player_chat`, (keys) => {
-                        print(`[Debug] *** DELAYED CHAT EVENT *** Text: "${keys.text}"`);
-                        this.OnPlayerChat(keys);
-                    }, undefined);
-                    print('[Debug] Delayed chat listener registered successfully');
-                } catch (error) {
-                    print('[Debug] FAILED delayed chat listener registration:', error);
-                }
-            } else {
-                print('[Debug] Chat listener already exists, ID:', this._chatListener);
-            }
-            
-            // 验证Debug实例状态
-            print('[Debug] Debug instance status check:');
-            print(`[Debug] - DebugEnabled: ${this.DebugEnabled}`);
-            print(`[Debug] - OutputToConsole: ${this.outputToConsole}`);
-            print(`[Debug] - ChatListener: ${this._chatListener ? 'REGISTERED' : 'MISSING'}`);
-            print(`[Debug] - Available commands: ${Object.keys(DebugCallbacks).length}`);
-            print('[Debug] ===== End 3-second checkpoint =====');
-            
-            return undefined; // 一次性定时器
-        });
-        
-        // 每10秒输出一次状态检查 - 修复版本
-        print('[Debug] Creating 10-second timer...');
-        
-        // 启动循环定时器（正确的API使用方式）
-        const firstTimer = Timers.CreateTimer(10.0, () => {
-            print('[Debug] ===== 10-second status check =====');
-            print(`[Debug] Debug system active, commands available: ${Object.keys(DebugCallbacks).slice(0, 5).join(', ')}...`);
-            print('[Debug] Try typing -debug_status in chat or use script_reload');
-            print('[Debug] Available global functions: debug_simple_test(), debug_status(), debug_help(), debug_test()');
-            print('[Debug] ===== End status check =====');
-            
-            return 10.0; // 返回间隔时间继续执行
-        });
-        
-        print(`[Debug] Timer created with result: ${firstTimer}`);
-        
-        // 创建测试定时器来验证定时器系统（修复版本）
-        print('[Debug] Creating test timers to verify timer system...');
-        Timers.CreateTimer(2.0, () => {
-            print('[Debug] *** 2-second test timer fired! ***');
-            return undefined; // 一次性定时器
-        });
-        
-        Timers.CreateTimer(5.0, () => {
-            print('[Debug] *** 5-second test timer fired! ***');
-            return undefined; // 一次性定时器
-        });
-        
-        Timers.CreateTimer(15.0, () => {
-            print('[Debug] *** 15-second test timer fired! ***');
-            return undefined; // 一次性定时器
-        });
-        
-        // 发送启动消息
-        Timers.CreateTimer(5.0, () => {
-            print('[Debug] ===== Debug system startup complete =====');
-            const hero = HeroList.GetHero(0);
-            if (hero && !hero.IsNull()) {
-                this.debugOutput(hero, 'Debug system loaded! Try -debug_status or use console commands');
-                print('[Debug] Startup message sent to hero');
-            } else {
-                print('[Debug] No hero found for startup message');
-            }
-            
-            // 执行一次调试状态检查
-            print('[Debug] ===== MANUAL STATUS CHECK (startup) =====');
-            this.executeDebugStatus();
-            print('[Debug] ===== END MANUAL STATUS CHECK =====');
-            
-            print('[Debug] ===== End startup =====');
-            return undefined; // 一次性定时器
-        });
+        // 延迟注册事件监听器，确保游戏完全初始化
+        this.setupDelayedInitialization();
+
         
         // 监听前端错误报告
         CustomGameEventManager.RegisterListener('frontend_error_report', (_, event) => {
             this.OnFrontendErrorReport(event);
         });
+    }
+
+    /**
+     * 延迟初始化设置 - 修复版本
+     */
+    private setupDelayedInitialization(): void {
+        print('[Debug] Setting up delayed initialization...');
+        
+        // 等待游戏状态稳定后再注册事件监听器
+        Timers.CreateTimer(1.0, () => {
+                    print('[Debug] ===== 1-second initialization checkpoint =====');
+        this.registerChatListener();
+        
+        // 额外的验证步骤
+        print('[Debug] Verifying modules after 1 second...');
+        print(`[Debug] GameRules.DebugInstance exists: ${(GameRules as any).DebugInstance ? 'YES' : 'NO'}`);
+        print(`[Debug] GameRules.TrainingMode exists: ${GameRules.TrainingMode ? 'YES' : 'NO'}`);
+        print(`[Debug] GameRules.GameModeManager exists: ${GameRules.GameModeManager ? 'YES' : 'NO'}`);
+        
+        return undefined; // 一次性定时器
+        });
+        
+        // 3秒后再次验证和重试
+        Timers.CreateTimer(3.0, () => {
+            print('[Debug] ===== 3-second verification checkpoint =====');
+            if (!this._chatListener) {
+                print('[Debug] Chat listener missing, attempting to re-register...');
+                this.registerChatListener();
+            }
+            this.verifyDebugSystem();
+            return undefined; // 一次性定时器
+        });
+        
+        // 5秒后发送启动完成消息
+        Timers.CreateTimer(5.0, () => {
+            print('[Debug] ===== 5-second startup completion =====');
+            this.announceDebugSystemReady();
+            return undefined; // 一次性定时器
+        });
+        
+        // 定期状态检查（每30秒）
+        Timers.CreateTimer(30.0, () => {
+            print('[Debug] ===== Periodic status check =====');
+            print('[Debug] Debug system operational - type -help for commands');
+            this.executeDebugStatus();
+            return 30.0; // 循环定时器
+        });
+    }
+
+    /**
+     * 注册聊天监听器
+     */
+    private registerChatListener(): void {
+        try {
+            if (this._chatListener) {
+                print('[Debug] Chat listener already registered, skipping...');
+                return;
+            }
+            
+            print('[Debug] Attempting to register chat listener...');
+            this._chatListener = ListenToGameEvent('player_chat', (keys) => {
+                print(`[Debug] *** CHAT EVENT RECEIVED *** Text: "${keys.text}"`);
+                this.OnPlayerChat(keys);
+            }, undefined);
+            
+            if (this._chatListener) {
+                print(`[Debug] Chat listener registered successfully with ID: ${this._chatListener}`);
+            } else {
+                print('[Debug] Chat listener registration returned falsy value');
+            }
+        } catch (error) {
+            print(`[Debug] FAILED to register chat listener: ${error}`);
+        }
+    }
+
+    /**
+     * 验证调试系统状态
+     */
+    private verifyDebugSystem(): void {
+        print('[Debug] ===== Debug System Verification =====');
+        print(`[Debug] - Debug Enabled: ${this.DebugEnabled}`);
+        print(`[Debug] - Console Output: ${this.outputToConsole}`);
+        print(`[Debug] - Chat Listener: ${this._chatListener ? 'REGISTERED' : 'MISSING'}`);
+        print(`[Debug] - Tools Mode: ${IsInToolsMode()}`);
+        print(`[Debug] - Player Count: ${PlayerResource.GetPlayerCount()}`);
+        let commandCount = 0;
+        for (const _ in DebugCallbacks) {
+            commandCount++;
+        }
+        print(`[Debug] - Available Commands: ${commandCount}`);
+        print(`[Debug] - Game Time: ${GameRules.GetGameTime()}`);
+        print('[Debug] ===== End Verification =====');
+    }
+
+    /**
+     * 公告调试系统就绪
+     */
+    private announceDebugSystemReady(): void {
+        print('[Debug] ===== Debug System Ready =====');
+        
+        // 尝试获取英雄并发送消息
+        const hero = this.getFirstAvailableHero();
+        if (hero) {
+            this.debugOutput(hero, '调试系统已就绪！输入 -help 查看所有命令');
+            this.debugOutput(hero, '常用命令: -cd <秒数>, -regen, -练功, -auto_spawn, -training');
+        } else {
+            print('[Debug] No hero available for startup message');
+        }
+        
+        print('[Debug] Debug system fully operational');
+        print('[Debug] Available commands: -help, -training, -cd, -regen, -练功, -auto_spawn');
+        print('[Debug] Console commands: debug_test(), debug_status(), debug_help()');
+        print('[Debug] Training console commands: training_cd(3), training_regen(), training_practice()');
+        print('[Debug] ===== End Ready Announcement =====');
+    }
+
+    /**
+     * 获取第一个可用的英雄
+     */
+    private getFirstAvailableHero(): CDOTA_BaseNPC_Hero | null {
+        try {
+            // 尝试多种方法获取英雄
+            for (let playerId = 0; playerId < PlayerResource.GetPlayerCount(); playerId++) {
+                if (PlayerResource.IsValidPlayer(playerId)) {
+                    const hero = PlayerResource.GetSelectedHeroEntity(playerId);
+                    if (hero && !hero.IsNull()) {
+                        return hero;
+                    }
+                }
+            }
+            
+            // 备用方法：从HeroList获取
+            const hero = HeroList.GetHero(0);
+            if (hero && !hero.IsNull()) {
+                return hero;
+            }
+            
+            return null;
+        } catch (error) {
+            print(`[Debug] Error getting hero: ${error}`);
+            return null;
+        }
     }
 
     /**
@@ -793,7 +1235,15 @@ export class Debug {
             print(`[Debug] IsInToolsMode: ${IsInToolsMode()}`);
             print(`[Debug] PlayerCount: ${PlayerResource.GetPlayerCount()}`);
             print(`[Debug] Hero: ${hero ? hero.GetUnitName() : 'null'}`);
-            print(`[Debug] Available commands: ${Object.keys(DebugCallbacks).slice(0, 8).join(', ')}`);
+            let commandList = '';
+            let count = 0;
+            for (const cmd in DebugCallbacks) {
+                if (count >= 8) break;
+                if (count > 0) commandList += ', ';
+                commandList += cmd;
+                count++;
+            }
+            print(`[Debug] Available commands: ${commandList}`);
             print(`[Debug] Chat listener: ${this._chatListener ? 'registered' : 'missing'}`);
             
             // 如果有英雄，也在游戏中显示
@@ -806,17 +1256,21 @@ export class Debug {
     }
 
     /**
-     * 创建全局调试函数，供控制台直接调用
+     * 创建全局调试函数，供控制台直接调用 - 修复版本
      */
     createGlobalDebugFunctions(): void {
         try {
-            // 创建全局函数
+            print('[Debug] Creating global debug functions...');
+            
+            // 获取全局环境的引用
+            const globalEnv = getfenv();
+            
             // 创建简单的全局测试函数
-            (globalThis as any).debug_simple_test = () => {
+            globalEnv.debug_simple_test = () => {
                 print('[Debug] ===== SIMPLE TEST CALLED =====');
                 print('[Debug] If you see this, console commands work!');
-                const hero = HeroList.GetHero(0);
-                if (hero && !hero.IsNull()) {
+                const hero = this.getFirstAvailableHero();
+                if (hero) {
                     print(`[Debug] Hero found: ${hero.GetUnitName()}`);
                 } else {
                     print('[Debug] No hero found');
@@ -824,10 +1278,10 @@ export class Debug {
                 print('[Debug] ===== END SIMPLE TEST =====');
             };
             
-            // 使用_G来确保全局可访问
-            (_G as any).debug_status = () => {
+            // 创建状态检查函数
+            globalEnv.debug_status = () => {
                 print('[Debug] ===== Global debug_status() called =====');
-                const hero = HeroList.GetHero(0);
+                const hero = this.getFirstAvailableHero();
                 if (DebugCallbacks['-debug_status']) {
                     DebugCallbacks['-debug_status'].func(hero);
                     print('[Debug] debug_status command executed');
@@ -837,9 +1291,10 @@ export class Debug {
                 print('[Debug] ===== End global debug_status =====');
             };
             
-            (_G as any).debug_help = () => {
+            // 创建帮助函数
+            globalEnv.debug_help = () => {
                 print('[Debug] ===== Global debug_help() called =====');
-                const hero = HeroList.GetHero(0);
+                const hero = this.getFirstAvailableHero();
                 if (DebugCallbacks['-help']) {
                     DebugCallbacks['-help'].func(hero);
                     print('[Debug] help command executed');
@@ -849,23 +1304,35 @@ export class Debug {
                 print('[Debug] ===== End global debug_help =====');
             };
             
-            (_G as any).debug_test = () => {
+            // 创建测试函数
+            globalEnv.debug_test = () => {
                 print('[Debug] ===== Global debug_test() called =====');
-                const hero = HeroList.GetHero(0);
+                const hero = this.getFirstAvailableHero();
                 this.debugOutput(hero, 'Global debug test works! Debug system is functional.');
                 print('[Debug] debug test completed');
                 print('[Debug] ===== End global debug_test =====');
             };
             
-            print('[Debug] Global debug functions created: debug_status(), debug_help(), debug_test()');
+            // 创建重新加载函数
+            globalEnv.debug_reload = () => {
+                print('[Debug] ===== Debug Reload =====');
+                SendToConsole('script_reload');
+                print('[Debug] Script reload command sent');
+                print('[Debug] ===== End Debug Reload =====');
+            };
+            
+            print('[Debug] Global debug functions created successfully');
+            print('[Debug] Available functions: debug_test(), debug_status(), debug_help(), debug_reload()');
             print('[Debug] ===================================');
             print('[Debug] DOTA2 CONSOLE USAGE INSTRUCTIONS:');
-            print('[Debug] 1. Type "script_reload" to reload and see debug status');
-            print('[Debug] 2. Chat commands like -debug_status work if GC is connected');
-            print('[Debug] 3. Watch for 10-second periodic status updates');
+            print('[Debug] 1. Type "debug_test()" to test the debug system');
+            print('[Debug] 2. Type "debug_status()" to check system status');
+            print('[Debug] 3. Type "debug_help()" to see all available commands');
+            print('[Debug] 4. Chat commands like -debug_status work in-game');
             print('[Debug] ===================================');
+            
         } catch (error) {
-            print('[Debug] FAILED to create global debug functions:', error);
+            print(`[Debug] FAILED to create global debug functions: ${error}`);
         }
     }
 
@@ -885,37 +1352,61 @@ export class Debug {
     OnPlayerChat(keys: GameEventProvidedProperties & PlayerChatEvent): void {
         try {
             print(`[Debug] OnPlayerChat called with text: "${keys.text}"`);
-            print(`[Debug] Keys object:`, JSON.stringify(keys));
             
             if (!keys.text) {
                 print('[Debug] No text in chat message');
                 return;
             }
             
-            const strs = keys.text.split(' ');
+            const text = keys.text.trim();
+            if (!text.startsWith('-')) {
+                // 非命令消息，忽略
+                return;
+            }
+            
+            const strs = text.split(' ');
             const cmd = strs[0];
             const args = strs.slice(1);
             
-            print(`[Debug] Parsed - Command: "${cmd}", Args: [${args.join(', ')}]`);
+            let argsList = '';
+            for (let i = 0; i < args.length; i++) {
+                if (i > 0) argsList += ', ';
+                argsList += args[i];
+            }
+            print(`[Debug] Parsed - Command: "${cmd}", Args: [${argsList}]`);
             
-            // 获取英雄
-            const hero = HeroList.GetHero(0);
-            print(`[Debug] Hero found: ${hero ? hero.GetUnitName() : 'null'}`);
+            // 获取发送消息的玩家ID
+            const playerId = keys.playerid;
+            let hero: CDOTA_BaseNPC_Hero | null = null;
+            
+            // 尝试获取对应的英雄
+            if (PlayerResource.IsValidPlayer(playerId)) {
+                hero = PlayerResource.GetSelectedHeroEntity(playerId);
+            }
+            
+            // 如果没找到，使用备用方法
+            if (!hero || hero.IsNull()) {
+                hero = this.getFirstAvailableHero();
+            }
+            
+            print(`[Debug] Hero found: ${hero ? hero.GetUnitName() : 'null'} for player ${playerId}`);
             
             // 测试最简单的命令响应
             if (cmd === '-test') {
                 print('[Debug] Test command received!');
-                this.debugOutput(hero, 'Test command works!');
+                this.debugOutput(hero, 'Test command works! Debug system is operational.');
                 return;
             }
             
             // 特殊命令，无需调试模式即可使用
-            if (cmd === '-debug_status') {
-                print('[Debug] Executing -debug_status command');
+            const alwaysAvailableCommands = ['-debug_status', '-help', '-debug_enable'];
+            if (alwaysAvailableCommands.includes(cmd)) {
+                print(`[Debug] Executing always-available command: ${cmd}`);
                 if (DebugCallbacks[cmd]) {
                     DebugCallbacks[cmd].func(hero, ...args);
                 } else {
-                    print('[Debug] -debug_status callback not found');
+                    print(`[Debug] Callback not found for command: ${cmd}`);
+                    this.debugOutput(hero, `Command ${cmd} is not implemented`);
                 }
                 return;
             }
@@ -927,20 +1418,26 @@ export class Debug {
                 return;
             }
             
-            // 其他调试命令
+            // 其他调试命令需要调试模式启用
             if (!this.DebugEnabled) {
-                print('[Debug] Debug mode not enabled');
-                this.debugOutput(hero, `Debug disabled. Use -debug_enable or -test. Command was: ${cmd}`);
+                print('[Debug] Debug mode not enabled for command:', cmd);
+                this.debugOutput(hero, `调试模式未启用。使用 -debug_enable 启用或使用 -test 测试。命令: ${cmd}`);
                 return;
             }
             
             // 执行调试命令
             if (DebugCallbacks[cmd]) {
                 print(`[Debug] Executing command: ${cmd}`);
-                DebugCallbacks[cmd].func(hero, ...args);
+                try {
+                    DebugCallbacks[cmd].func(hero, ...args);
+                    print(`[Debug] Command ${cmd} executed successfully`);
+                } catch (cmdError) {
+                    print(`[Debug] Error executing command ${cmd}: ${cmdError}`);
+                    this.debugOutput(hero, `命令执行错误: ${cmdError}`);
+                }
             } else {
                 print(`[Debug] Unknown command: ${cmd}`);
-                this.debugOutput(hero, `Unknown command: ${cmd}`);
+                this.debugOutput(hero, `未知命令: ${cmd}。使用 -help 查看可用命令。`);
             }
             
         } catch (error) {
@@ -982,10 +1479,15 @@ export class Debug {
                 // 更新错误统计到网络表
                 if (GameRules.XNetTable) {
                     const currentStats = GameRules.ErrorTracker.getErrorStats();
-                    GameRules.XNetTable.SetTableValue('error_reports', 'stats', {
-                        ...currentStats,
-                        lastUpdate: Date.now()
-                    });
+                    const updatedStats = {
+                        totalErrors: currentStats.totalErrors,
+                        recentErrors: currentStats.recentErrors,
+                        cacheSize: currentStats.cacheSize,
+                        queueSize: currentStats.queueSize,
+                        isInitialized: currentStats.isInitialized,
+                        lastUpdate: GameRules.GetGameTime() * 1000
+                    };
+                    GameRules.XNetTable.SetTableValue('error_reports', 'stats', updatedStats);
                 }
             }
 

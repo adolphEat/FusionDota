@@ -2,9 +2,9 @@ export class GameConfig {
     constructor() {
         SendToServerConsole('dota_max_physical_items_purchase_limit 9999'); // 用来解决物品数量限制问题
 
-        GameRules.SetCustomGameSetupAutoLaunchDelay(3); // 游戏设置时间（默认的游戏设置是最开始的队伍分配）
-        GameRules.SetCustomGameSetupRemainingTime(3); // 游戏设置剩余时间
-        GameRules.SetCustomGameSetupTimeout(3); // 游戏设置阶段超时
+        GameRules.SetCustomGameSetupAutoLaunchDelay(3); // 游戏设置时间（恢复原始）
+        GameRules.SetCustomGameSetupRemainingTime(3); // 游戏设置剩余时间（恢复原始）
+        GameRules.SetCustomGameSetupTimeout(3); // 游戏设置阶段超时（恢复原始）
         GameRules.SetHeroSelectionTime(0); // 选择英雄阶段的持续时间
         GameRules.SetShowcaseTime(0); // 选完英雄的展示时间
         GameRules.SetPreGameTime(0); // 进入游戏后号角吹响前的准备时间
@@ -42,7 +42,11 @@ export class GameConfig {
         GameRules.SetCustomGameTeamMaxPlayers(DotaTeam.GOODGUYS, 3);
         GameRules.SetCustomGameTeamMaxPlayers(DotaTeam.BADGUYS, 3);
         // for (let team = DotaTeam.CUSTOM_1; team <= DotaTeam.CUSTOM_8; ++team) {
-        //     GameRules.SetCustomGameTeamMaxPlayers(team, 1);
-        // }
+        //       GameRules.SetCustomGameTeamMaxPlayers(team, 1);
+        // 
+        // 注释：如果要恢复英雄选择，可以调整下面的设置
+        // GameRules.SetHeroSelectionTime(30);  // 恢复英雄选择时间
+        // game.SetCustomGameForceHero(``);     // 清空强制英雄
+        
     }
 }

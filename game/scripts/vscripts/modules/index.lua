@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["6"] = 1,["7"] = 1,["8"] = 2,["9"] = 2,["10"] = 3,["11"] = 3,["12"] = 4,["13"] = 4,["14"] = 4,["15"] = 5,["16"] = 5,["17"] = 6,["18"] = 6,["19"] = 7,["20"] = 7,["21"] = 8,["22"] = 8,["25"] = 26,["26"] = 27,["27"] = 28,["28"] = 29,["29"] = 30,["30"] = 31,["31"] = 33,["32"] = 34,["35"] = 82,["36"] = 83,["38"] = 88,["40"] = 90,["43"] = 37,["44"] = 40,["45"] = 41,["46"] = 44,["47"] = 47,["48"] = 48,["49"] = 49,["50"] = 52,["51"] = 55,["52"] = 58,["53"] = 61,["54"] = 61,["55"] = 61,["56"] = 61,["57"] = 61,["58"] = 61,["59"] = 61,["60"] = 61,["61"] = 61,["62"] = 61,["63"] = 69,["64"] = 70,["65"] = 71,["66"] = 74,["67"] = 75,["68"] = 76,["69"] = 78,["76"] = 93,["77"] = 94,["79"] = 96,["80"] = 26});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["6"] = 1,["7"] = 1,["8"] = 2,["9"] = 2,["10"] = 3,["11"] = 3,["12"] = 4,["13"] = 4,["14"] = 4,["15"] = 5,["16"] = 5,["17"] = 6,["18"] = 6,["19"] = 7,["20"] = 7,["21"] = 8,["22"] = 8,["25"] = 26,["26"] = 27,["27"] = 28,["28"] = 29,["29"] = 30,["30"] = 31,["31"] = 33,["32"] = 34,["35"] = 82,["36"] = 84,["39"] = 37,["40"] = 40,["41"] = 41,["42"] = 44,["43"] = 47,["44"] = 48,["45"] = 49,["46"] = 52,["47"] = 55,["48"] = 58,["49"] = 61,["50"] = 61,["51"] = 61,["52"] = 61,["53"] = 61,["54"] = 61,["55"] = 61,["56"] = 61,["57"] = 61,["58"] = 61,["59"] = 69,["60"] = 70,["61"] = 71,["62"] = 74,["63"] = 75,["64"] = 76,["65"] = 78,["72"] = 87,["73"] = 88,["75"] = 90,["76"] = 26});
 local ____exports = {}
 local ____Debug = require("modules.Debug")
 local Debug = ____Debug.Debug
@@ -32,11 +32,7 @@ function ____exports.ActivateModules(self)
         print("[Modules] Starting module initialization...")
         do
             local function ____catch(____error)
-                if GameRules.ErrorTracker then
-                    GameRules.ErrorTracker:trackError(____error, {module = "ActivateModules", ["function"] = "initialization"})
-                else
-                    print("[FATAL] Failed to activate modules: " .. tostring(____error))
-                end
+                print("[FATAL] Failed to activate modules: " .. tostring(____error))
                 error(____error, 0)
             end
             local ____try, ____hasReturned = pcall(function()
@@ -57,7 +53,7 @@ function ____exports.ActivateModules(self)
                         errorTracking = true,
                         performanceMonitoring = true,
                         debugMode = IsInToolsMode(),
-                        timestamp = Date:now()
+                        timestamp = GameRules:GetGameTime() * 1000
                     }
                 )
                 print("[Modules] About to create GameConfig...")

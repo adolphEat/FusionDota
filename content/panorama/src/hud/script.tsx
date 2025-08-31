@@ -21,6 +21,9 @@ import { registerCustomKey } from '../utils/keybinding';
 // 初始化前端错误处理
 import { initializeFrontendErrorHandling, ErrorBoundary } from '../utils/error-handler';
 
+// 导入简单的服务器选择器
+import { ServerSelector } from './server-selector';
+
 // 初始化前端错误处理系统
 initializeFrontendErrorHandling();
 
@@ -68,6 +71,9 @@ const Root: FC = () => {
                     />
                 </PanoramaQRCode>
             }
+            
+            {/* 简单的服务器选择器 */}
+            <ServerSelector />
         </>
     );
 };

@@ -1,0 +1,9 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+**素材生成规则**
+- 使用pollinations mcp生成素材
+- 使用其generate image url获取url，然后添加nologo=true参数
+- 通过curl之类下载图片到指定目录

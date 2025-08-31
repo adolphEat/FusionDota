@@ -273,7 +273,8 @@ export class GameModeManager {
      * 应用自定义规则
      */
     private applyCustomRules(rules: any): void {
-        for (const [key, value] of Object.entries(rules)) {
+        for (const key in rules) {
+            const value = rules[key];
             try {
                 // 根据规则类型应用设置
                 switch (key) {
@@ -323,7 +324,7 @@ export class GameModeManager {
                 mode: this.settings.currentMode,
                 config: this.getModeConfig(),
                 initialized: this.settings.initialized,
-                timestamp: Date.now()
+                timestamp: GameRules.GetGameTime() * 1000
             });
         }
     }
@@ -385,12 +386,20 @@ export class GameModeManager {
     /**
      * 获取游戏模式状态
      */
+    private getAvailableModesList(): string[] {
+        const modes: string[] = [];
+        for (const mode in this.settings.modeConfigs) {
+            modes.push(mode);
+        }
+        return modes;
+    }
+
     public getStatus(): any {
         return {
             currentMode: this.settings.currentMode,
             config: this.getModeConfig(),
             initialized: this.settings.initialized,
-            availableModes: Object.keys(this.settings.modeConfigs),
+            availableModes: this.getAvailableModesList(),
             isCheatsEnabled: this.isCheatsEnabled(),
             isTrainingMode: this.isTrainingMode()
         };
