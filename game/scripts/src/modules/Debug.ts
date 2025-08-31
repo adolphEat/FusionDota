@@ -138,6 +138,7 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
             }
         },
     },
+<<<<<<< Updated upstream
     ['-server']: {
         desc: '显示/隐藏服务器选择界面 -server [show|hide]',
         func: (hero: CDOTA_BaseNPC_Hero, ...args: string[]) => {
@@ -178,10 +179,13 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
             });
         },
     },
+=======
+>>>>>>> Stashed changes
     ['-test_error']: {
         desc: '测试错误追踪 test_error [message]',
         func: (hero, ...args: string[]) => {
             const debug = (GameRules as any).DebugInstance || null;
+<<<<<<< Updated upstream
             let message = 'Test error from debug command';
             if (args.length > 0) {
                 message = '';
@@ -190,6 +194,9 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
                     message += args[i];
                 }
             }
+=======
+            const message = args.join(' ') || 'Test error from debug command';
+>>>>>>> Stashed changes
             if (GameRules.ErrorTracker) {
                 const errorHash = GameRules.ErrorTracker.reportCustomError(message, {
                     module: 'Debug',
@@ -280,8 +287,13 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
                 const timerId = GameRules.PerformanceMonitor.startTimer('debug_performance_test');
                 
                 // 模拟一些计算密集的操作
+<<<<<<< Updated upstream
                 const startTime = GameRules.GetGameTime() * 1000;
                 while ((GameRules.GetGameTime() * 1000) - startTime < duration) {
+=======
+                const startTime = Date.now();
+                while (Date.now() - startTime < duration) {
+>>>>>>> Stashed changes
                     // 忙等待
                     Math.random();
                 }
@@ -331,12 +343,16 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
             } else {
                 const status = GameRules.GameModeManager.getStatus();
                 Say(hero, `Current mode: ${status.currentMode}`, true);
+<<<<<<< Updated upstream
                 let availableModes = '';
                 for (let i = 0; i < status.availableModes.length; i++) {
                     if (i > 0) availableModes += ', ';
                     availableModes += status.availableModes[i];
                 }
                 Say(hero, `Available modes: ${availableModes}`, true);
+=======
+                Say(hero, `Available modes: ${status.availableModes.join(', ')}`, true);
+>>>>>>> Stashed changes
             }
         },
     },
@@ -494,6 +510,7 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
             Say(hero, `Cleared ${cleared} units`, true);
         },
     },
+<<<<<<< Updated upstream
     ['-auto_spawn']: {
         desc: '自动刷怪控制 auto_spawn <start|stop|status> [unit_type] [count] [level] [interval]',
         func: (hero, ...args: string[]) => {
@@ -831,6 +848,8 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
             Say(hero, 'Ready for training!', true);
         },
     },
+=======
+>>>>>>> Stashed changes
     ['-god']: {
         desc: '切换无敌模式',
         func: (hero) => {
@@ -1044,7 +1063,11 @@ export class Debug {
         // 将实例保存到 GameRules 以便外部访问
         (GameRules as any).DebugInstance = this;
         
+<<<<<<< Updated upstream
         print('[Debug] ==============初始化调试系统==========================');
+=======
+        print('[Debug] ==============注册注册==========================');
+>>>>>>> Stashed changes
         print('[Debug] Debug module constructor called');
         print(`[Debug] IsInToolsMode(): ${IsInToolsMode()}`);
         print(`[Debug] PlayerCount: ${PlayerResource.GetPlayerCount()}`);
@@ -1072,9 +1095,105 @@ export class Debug {
         // 创建全局访问函数
         this.createGlobalDebugFunctions();
         
+<<<<<<< Updated upstream
         // 延迟注册事件监听器，确保游戏完全初始化
         this.setupDelayedInitialization();
 
+=======
+        // 立即注册聊天监听器
+        try {
+            print('[Debug] Attempting to register chat listener immediately...');
+            this._chatListener = ListenToGameEvent(`player_chat`, (keys) => {
+                print(`[Debug] *** CHAT EVENT RECEIVED *** Text: "${keys.text}"`);
+                this.OnPlayerChat(keys);
+            }, undefined);
+            print('[Debug] Chat listener registered successfully with ID:', this._chatListener);
+        } catch (error) {
+            print('[Debug] FAILED to register chat listener immediately:', error);
+        }
+        
+        // 也尝试延迟注册作为备份
+        Timers.CreateTimer(3.0, () => {
+            print('[Debug] ===== 3-second checkpoint =====');
+            if (!this._chatListener) {
+                try {
+                    print('[Debug] Attempting DELAYED chat listener registration...');
+                    this._chatListener = ListenToGameEvent(`player_chat`, (keys) => {
+                        print(`[Debug] *** DELAYED CHAT EVENT *** Text: "${keys.text}"`);
+                        this.OnPlayerChat(keys);
+                    }, undefined);
+                    print('[Debug] Delayed chat listener registered successfully');
+                } catch (error) {
+                    print('[Debug] FAILED delayed chat listener registration:', error);
+                }
+            } else {
+                print('[Debug] Chat listener already exists, ID:', this._chatListener);
+            }
+            
+            // 验证Debug实例状态
+            print('[Debug] Debug instance status check:');
+            print(`[Debug] - DebugEnabled: ${this.DebugEnabled}`);
+            print(`[Debug] - OutputToConsole: ${this.outputToConsole}`);
+            print(`[Debug] - ChatListener: ${this._chatListener ? 'REGISTERED' : 'MISSING'}`);
+            print(`[Debug] - Available commands: ${Object.keys(DebugCallbacks).length}`);
+            print('[Debug] ===== End 3-second checkpoint =====');
+            
+            return undefined; // 一次性定时器
+        });
+        
+        // 每10秒输出一次状态检查 - 修复版本
+        print('[Debug] Creating 10-second timer...');
+        
+        // 启动循环定时器（正确的API使用方式）
+        const firstTimer = Timers.CreateTimer(10.0, () => {
+            print('[Debug] ===== 10-second status check =====');
+            print(`[Debug] Debug system active, commands available: ${Object.keys(DebugCallbacks).slice(0, 5).join(', ')}...`);
+            print('[Debug] Try typing -debug_status in chat or use script_reload');
+            print('[Debug] Available global functions: debug_simple_test(), debug_status(), debug_help(), debug_test()');
+            print('[Debug] ===== End status check =====');
+            
+            return 10.0; // 返回间隔时间继续执行
+        });
+        
+        print(`[Debug] Timer created with result: ${firstTimer}`);
+        
+        // 创建测试定时器来验证定时器系统（修复版本）
+        print('[Debug] Creating test timers to verify timer system...');
+        Timers.CreateTimer(2.0, () => {
+            print('[Debug] *** 2-second test timer fired! ***');
+            return undefined; // 一次性定时器
+        });
+        
+        Timers.CreateTimer(5.0, () => {
+            print('[Debug] *** 5-second test timer fired! ***');
+            return undefined; // 一次性定时器
+        });
+        
+        Timers.CreateTimer(15.0, () => {
+            print('[Debug] *** 15-second test timer fired! ***');
+            return undefined; // 一次性定时器
+        });
+        
+        // 发送启动消息
+        Timers.CreateTimer(5.0, () => {
+            print('[Debug] ===== Debug system startup complete =====');
+            const hero = HeroList.GetHero(0);
+            if (hero && !hero.IsNull()) {
+                this.debugOutput(hero, 'Debug system loaded! Try -debug_status or use console commands');
+                print('[Debug] Startup message sent to hero');
+            } else {
+                print('[Debug] No hero found for startup message');
+            }
+            
+            // 执行一次调试状态检查
+            print('[Debug] ===== MANUAL STATUS CHECK (startup) =====');
+            this.executeDebugStatus();
+            print('[Debug] ===== END MANUAL STATUS CHECK =====');
+            
+            print('[Debug] ===== End startup =====');
+            return undefined; // 一次性定时器
+        });
+>>>>>>> Stashed changes
         
         // 监听前端错误报告
         CustomGameEventManager.RegisterListener('frontend_error_report', (_, event) => {
@@ -1083,6 +1202,7 @@ export class Debug {
     }
 
     /**
+<<<<<<< Updated upstream
      * 延迟初始化设置 - 修复版本
      */
     private setupDelayedInitialization(): void {
@@ -1225,6 +1345,8 @@ export class Debug {
     }
 
     /**
+=======
+>>>>>>> Stashed changes
      * 执行调试状态检查（内部方法）
      */
     executeDebugStatus(): void {
@@ -1235,6 +1357,7 @@ export class Debug {
             print(`[Debug] IsInToolsMode: ${IsInToolsMode()}`);
             print(`[Debug] PlayerCount: ${PlayerResource.GetPlayerCount()}`);
             print(`[Debug] Hero: ${hero ? hero.GetUnitName() : 'null'}`);
+<<<<<<< Updated upstream
             let commandList = '';
             let count = 0;
             for (const cmd in DebugCallbacks) {
@@ -1244,6 +1367,9 @@ export class Debug {
                 count++;
             }
             print(`[Debug] Available commands: ${commandList}`);
+=======
+            print(`[Debug] Available commands: ${Object.keys(DebugCallbacks).slice(0, 8).join(', ')}`);
+>>>>>>> Stashed changes
             print(`[Debug] Chat listener: ${this._chatListener ? 'registered' : 'missing'}`);
             
             // 如果有英雄，也在游戏中显示
@@ -1256,6 +1382,7 @@ export class Debug {
     }
 
     /**
+<<<<<<< Updated upstream
      * 创建全局调试函数，供控制台直接调用 - 修复版本
      */
     createGlobalDebugFunctions(): void {
@@ -1271,6 +1398,19 @@ export class Debug {
                 print('[Debug] If you see this, console commands work!');
                 const hero = this.getFirstAvailableHero();
                 if (hero) {
+=======
+     * 创建全局调试函数，供控制台直接调用
+     */
+    createGlobalDebugFunctions(): void {
+        try {
+            // 创建全局函数
+            // 创建简单的全局测试函数
+            (globalThis as any).debug_simple_test = () => {
+                print('[Debug] ===== SIMPLE TEST CALLED =====');
+                print('[Debug] If you see this, console commands work!');
+                const hero = HeroList.GetHero(0);
+                if (hero && !hero.IsNull()) {
+>>>>>>> Stashed changes
                     print(`[Debug] Hero found: ${hero.GetUnitName()}`);
                 } else {
                     print('[Debug] No hero found');
@@ -1278,10 +1418,17 @@ export class Debug {
                 print('[Debug] ===== END SIMPLE TEST =====');
             };
             
+<<<<<<< Updated upstream
             // 创建状态检查函数
             globalEnv.debug_status = () => {
                 print('[Debug] ===== Global debug_status() called =====');
                 const hero = this.getFirstAvailableHero();
+=======
+            // 使用_G来确保全局可访问
+            (_G as any).debug_status = () => {
+                print('[Debug] ===== Global debug_status() called =====');
+                const hero = HeroList.GetHero(0);
+>>>>>>> Stashed changes
                 if (DebugCallbacks['-debug_status']) {
                     DebugCallbacks['-debug_status'].func(hero);
                     print('[Debug] debug_status command executed');
@@ -1291,10 +1438,16 @@ export class Debug {
                 print('[Debug] ===== End global debug_status =====');
             };
             
+<<<<<<< Updated upstream
             // 创建帮助函数
             globalEnv.debug_help = () => {
                 print('[Debug] ===== Global debug_help() called =====');
                 const hero = this.getFirstAvailableHero();
+=======
+            (_G as any).debug_help = () => {
+                print('[Debug] ===== Global debug_help() called =====');
+                const hero = HeroList.GetHero(0);
+>>>>>>> Stashed changes
                 if (DebugCallbacks['-help']) {
                     DebugCallbacks['-help'].func(hero);
                     print('[Debug] help command executed');
@@ -1304,15 +1457,22 @@ export class Debug {
                 print('[Debug] ===== End global debug_help =====');
             };
             
+<<<<<<< Updated upstream
             // 创建测试函数
             globalEnv.debug_test = () => {
                 print('[Debug] ===== Global debug_test() called =====');
                 const hero = this.getFirstAvailableHero();
+=======
+            (_G as any).debug_test = () => {
+                print('[Debug] ===== Global debug_test() called =====');
+                const hero = HeroList.GetHero(0);
+>>>>>>> Stashed changes
                 this.debugOutput(hero, 'Global debug test works! Debug system is functional.');
                 print('[Debug] debug test completed');
                 print('[Debug] ===== End global debug_test =====');
             };
             
+<<<<<<< Updated upstream
             // 创建重新加载函数
             globalEnv.debug_reload = () => {
                 print('[Debug] ===== Debug Reload =====');
@@ -1333,6 +1493,17 @@ export class Debug {
             
         } catch (error) {
             print(`[Debug] FAILED to create global debug functions: ${error}`);
+=======
+            print('[Debug] Global debug functions created: debug_status(), debug_help(), debug_test()');
+            print('[Debug] ===================================');
+            print('[Debug] DOTA2 CONSOLE USAGE INSTRUCTIONS:');
+            print('[Debug] 1. Type "script_reload" to reload and see debug status');
+            print('[Debug] 2. Chat commands like -debug_status work if GC is connected');
+            print('[Debug] 3. Watch for 10-second periodic status updates');
+            print('[Debug] ===================================');
+        } catch (error) {
+            print('[Debug] FAILED to create global debug functions:', error);
+>>>>>>> Stashed changes
         }
     }
 
@@ -1352,12 +1523,17 @@ export class Debug {
     OnPlayerChat(keys: GameEventProvidedProperties & PlayerChatEvent): void {
         try {
             print(`[Debug] OnPlayerChat called with text: "${keys.text}"`);
+<<<<<<< Updated upstream
+=======
+            print(`[Debug] Keys object:`, JSON.stringify(keys));
+>>>>>>> Stashed changes
             
             if (!keys.text) {
                 print('[Debug] No text in chat message');
                 return;
             }
             
+<<<<<<< Updated upstream
             const text = keys.text.trim();
             if (!text.startsWith('-')) {
                 // 非命令消息，忽略
@@ -1390,15 +1566,31 @@ export class Debug {
             }
             
             print(`[Debug] Hero found: ${hero ? hero.GetUnitName() : 'null'} for player ${playerId}`);
+=======
+            const strs = keys.text.split(' ');
+            const cmd = strs[0];
+            const args = strs.slice(1);
+            
+            print(`[Debug] Parsed - Command: "${cmd}", Args: [${args.join(', ')}]`);
+            
+            // 获取英雄
+            const hero = HeroList.GetHero(0);
+            print(`[Debug] Hero found: ${hero ? hero.GetUnitName() : 'null'}`);
+>>>>>>> Stashed changes
             
             // 测试最简单的命令响应
             if (cmd === '-test') {
                 print('[Debug] Test command received!');
+<<<<<<< Updated upstream
                 this.debugOutput(hero, 'Test command works! Debug system is operational.');
+=======
+                this.debugOutput(hero, 'Test command works!');
+>>>>>>> Stashed changes
                 return;
             }
             
             // 特殊命令，无需调试模式即可使用
+<<<<<<< Updated upstream
             const alwaysAvailableCommands = ['-debug_status', '-help', '-debug_enable'];
             if (alwaysAvailableCommands.includes(cmd)) {
                 print(`[Debug] Executing always-available command: ${cmd}`);
@@ -1407,6 +1599,14 @@ export class Debug {
                 } else {
                     print(`[Debug] Callback not found for command: ${cmd}`);
                     this.debugOutput(hero, `Command ${cmd} is not implemented`);
+=======
+            if (cmd === '-debug_status') {
+                print('[Debug] Executing -debug_status command');
+                if (DebugCallbacks[cmd]) {
+                    DebugCallbacks[cmd].func(hero, ...args);
+                } else {
+                    print('[Debug] -debug_status callback not found');
+>>>>>>> Stashed changes
                 }
                 return;
             }
@@ -1418,16 +1618,24 @@ export class Debug {
                 return;
             }
             
+<<<<<<< Updated upstream
             // 其他调试命令需要调试模式启用
             if (!this.DebugEnabled) {
                 print('[Debug] Debug mode not enabled for command:', cmd);
                 this.debugOutput(hero, `调试模式未启用。使用 -debug_enable 启用或使用 -test 测试。命令: ${cmd}`);
+=======
+            // 其他调试命令
+            if (!this.DebugEnabled) {
+                print('[Debug] Debug mode not enabled');
+                this.debugOutput(hero, `Debug disabled. Use -debug_enable or -test. Command was: ${cmd}`);
+>>>>>>> Stashed changes
                 return;
             }
             
             // 执行调试命令
             if (DebugCallbacks[cmd]) {
                 print(`[Debug] Executing command: ${cmd}`);
+<<<<<<< Updated upstream
                 try {
                     DebugCallbacks[cmd].func(hero, ...args);
                     print(`[Debug] Command ${cmd} executed successfully`);
@@ -1438,6 +1646,12 @@ export class Debug {
             } else {
                 print(`[Debug] Unknown command: ${cmd}`);
                 this.debugOutput(hero, `未知命令: ${cmd}。使用 -help 查看可用命令。`);
+=======
+                DebugCallbacks[cmd].func(hero, ...args);
+            } else {
+                print(`[Debug] Unknown command: ${cmd}`);
+                this.debugOutput(hero, `Unknown command: ${cmd}`);
+>>>>>>> Stashed changes
             }
             
         } catch (error) {
@@ -1479,6 +1693,7 @@ export class Debug {
                 // 更新错误统计到网络表
                 if (GameRules.XNetTable) {
                     const currentStats = GameRules.ErrorTracker.getErrorStats();
+<<<<<<< Updated upstream
                     const updatedStats = {
                         totalErrors: currentStats.totalErrors,
                         recentErrors: currentStats.recentErrors,
@@ -1488,6 +1703,12 @@ export class Debug {
                         lastUpdate: GameRules.GetGameTime() * 1000
                     };
                     GameRules.XNetTable.SetTableValue('error_reports', 'stats', updatedStats);
+=======
+                    GameRules.XNetTable.SetTableValue('error_reports', 'stats', {
+                        ...currentStats,
+                        lastUpdate: Date.now()
+                    });
+>>>>>>> Stashed changes
                 }
             }
 
