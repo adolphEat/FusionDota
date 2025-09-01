@@ -323,7 +323,6 @@ export class GameModeManager {
                 mode: this.settings.currentMode,
                 config: this.getModeConfig(),
                 initialized: this.settings.initialized,
-<<<<<<< Updated upstream
                 timestamp: Date.now()
             });
         }
