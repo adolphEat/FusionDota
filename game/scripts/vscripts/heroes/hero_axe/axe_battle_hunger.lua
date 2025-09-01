@@ -184,7 +184,7 @@ end
 
 -- 获取特效名称
 function modifier_axe_battle_hunger_custom:GetEffectName()
-    return "particles/heroes/axe/troll_warlord_buff.vpcf"
+    return "particles/heroes/axe/troll_warlord_battletrance_buff.vpcf"
 end
 
 -- 获取特效附加类型

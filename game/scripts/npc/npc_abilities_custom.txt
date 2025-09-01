@@ -306,4 +306,122 @@
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_huskar.vsndevts"
 		}
 	}
+
+	"lion_hex"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_lion/lion_hex.lua"
+		"AbilityTextureName"	"lion_voodoo"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
+		"AbilityUnitTargetTeam"	"DOTA_UNIT_TARGET_TEAM_ENEMY"
+		"AbilityUnitTargetType"	"DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_BASIC"
+		"SpellDispellableType"	"SPELL_DISPELLABLE_YES_STRONG"
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0 0 0"
+		"AbilityManaCost"	"75"
+		"AbilityCastRange"	"1000"
+		"AbilityCastPoint"	"0.3"
+		"AbilityCastAnimation"	"ACT_DOTA_CAST_ABILITY_2"
+		
+		"AbilityValues"
+		{
+			"duration"	"3 5 7"
+			"movespeed"	"100"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/lion/lion_spell_voodoo.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_lion.vsndevts"
+		}
+	}
+
+	"oracle1_fatesedict"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_oracle/oracle1_fatesedict.lua"
+		"AbilityTextureName"	"oracle_fates_edict"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0 0 0"
+		"AbilityManaCost"	"100"
+		"AbilityCastPoint"	"0.3"
+		
+		"AbilityValues"
+		{
+			"enemy_disarm_duration"	"3 5 7"
+			"ally_attack_speed_bonus"	"20 40 60"
+			"ally_lifesteal_percent"	"30"
+			"enemy_search_radius"	"3000"
+			"ally_search_radius"	"3000"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/oracle/oracle_fatesedict.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts"
+		}
+	}
+
+	"death_prophet1_silence"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_death_prophet/death_prophet1_silence.lua"
+		"AbilityTextureName"	"death_prophet_silence"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_POINT"
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0 0 0"
+		"AbilityManaCost"	"100"
+		"AbilityCastPoint"	"0.3"
+		"AbilityCastRange"	"900"
+		"AbilityCastAnimation"	"ACT_DOTA_CAST_ABILITY_2"
+		
+		"AbilityValues"
+		{
+			"silence_duration"	"3 5 7"
+			"silence_radius"	"400"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/deat_prophet/death_prophet_silence.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_death_prophet.vsndevts"
+		}
+	}
+
+	"enchantress1_natures_attendants_heal"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_enchantress/enchantress1_natures_attendants_heal.lua"
+		"AbilityTextureName"	"enchantress_natures_attendants"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0 0 0"
+		"AbilityManaCost"	"150"
+		"AbilityCastPoint"	"0.3"
+		"AbilityCastAnimation"	"ACT_DOTA_CAST_ABILITY_1"
+		
+		"AbilityValues"
+		{
+			"heal_interval"	"0.5"
+			"heal_per_interval"	"15 25 35"
+			"heal_radius"	"900"
+			"duration"	"8.0"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/enchantress/enchantress_natures_attendants_heal.vpcf"
+			"particle"	"particles/heroes/enchantress/enchantress_natures_attendants_count8.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_enchantress.vsndevts"
+		}
+	}
 }
