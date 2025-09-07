@@ -1,5 +1,6 @@
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
+local Map = ____lualib.Map
 local __TS__New = ____lualib.__TS__New
 local Error = ____lualib.Error
 local RangeError = ____lualib.RangeError
@@ -7,17 +8,21 @@ local ReferenceError = ____lualib.ReferenceError
 local SyntaxError = ____lualib.SyntaxError
 local TypeError = ____lualib.TypeError
 local URIError = ____lualib.URIError
+local __TS__ArrayFrom = ____lualib.__TS__ArrayFrom
+local __TS__ArrayFilter = ____lualib.__TS__ArrayFilter
 local __TS__StringCharCodeAt = ____lualib.__TS__StringCharCodeAt
-local __TS__Delete = ____lualib.__TS__Delete
+local __TS__Iterator = ____lualib.__TS__Iterator
 local __TS__ArraySplice = ____lualib.__TS__ArraySplice
+local __TS__ArraySlice = ____lualib.__TS__ArraySlice
+local __TS__ArrayMap = ____lualib.__TS__ArrayMap
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["16"] = 36,["17"] = 36,["18"] = 36,["20"] = 43,["21"] = 44,["22"] = 45,["23"] = 46,["24"] = 47,["25"] = 50,["26"] = 51,["27"] = 52,["28"] = 49,["29"] = 55,["30"] = 56,["31"] = 57,["33"] = 59,["34"] = 55,["35"] = 65,["36"] = 67,["37"] = 68,["38"] = 69,["42"] = 89,["43"] = 90,["46"] = 73,["47"] = 76,["48"] = 77,["49"] = 80,["50"] = 81,["51"] = 82,["52"] = 83,["55"] = 87,["61"] = 92,["64"] = 72,["67"] = 65,["68"] = 99,["69"] = 100,["70"] = 102,["71"] = 102,["72"] = 102,["73"] = 102,["74"] = 102,["75"] = 107,["77"] = 99,["78"] = 118,["79"] = 120,["80"] = 125,["81"] = 118,["82"] = 131,["83"] = 133,["84"] = 133,["85"] = 133,["86"] = 133,["87"] = 133,["88"] = 133,["89"] = 133,["90"] = 131,["91"] = 145,["92"] = 146,["93"] = 147,["94"] = 148,["95"] = 145,["96"] = 153,["97"] = 154,["98"] = 154,["99"] = 154,["101"] = 154,["103"] = 154,["104"] = 155,["105"] = 156,["106"] = 157,["107"] = 160,["109"] = 161,["110"] = 161,["111"] = 162,["112"] = 163,["113"] = 161,["116"] = 166,["117"] = 153,["118"] = 169,["119"] = 171,["120"] = 172,["121"] = 173,["123"] = 175,["124"] = 176,["126"] = 179,["127"] = 169,["128"] = 182,["129"] = 183,["130"] = 183,["131"] = 185,["132"] = 185,["133"] = 185,["134"] = 185,["135"] = 185,["136"] = 183,["137"] = 183,["138"] = 193,["139"] = 193,["140"] = 182,["141"] = 196,["142"] = 197,["143"] = 198,["144"] = 200,["145"] = 201,["146"] = 202,["147"] = 203,["150"] = 207,["151"] = 196,["152"] = 210,["153"] = 212,["154"] = 213,["155"] = 214,["156"] = 212,["157"] = 210,["158"] = 218,["159"] = 220,["160"] = 221,["161"] = 222,["162"] = 220,["163"] = 218,["164"] = 226,["165"] = 227,["170"] = 257,["173"] = 233,["174"] = 234,["175"] = 234,["176"] = 236,["177"] = 236,["178"] = 236,["179"] = 236,["180"] = 234,["181"] = 234,["182"] = 244,["183"] = 245,["184"] = 245,["185"] = 245,["186"] = 245,["187"] = 245,["188"] = 245,["189"] = 245,["190"] = 245,["191"] = 245,["193"] = 255,["199"] = 226,["200"] = 261,["201"] = 262,["202"] = 263,["203"] = 264,["205"] = 266,["206"] = 267,["208"] = 261,["209"] = 273,["210"] = 274,["211"] = 274,["212"] = 274,["214"] = 274,["216"] = 274,["217"] = 273,["218"] = 277,["219"] = 278,["220"] = 277,["221"] = 281,["222"] = 283,["223"] = 281,["224"] = 286,["225"] = 287,["226"] = 286,["227"] = 290,["230"] = 298,["233"] = 293,["234"] = 294,["236"] = 296,["242"] = 292,["245"] = 290,["246"] = 302,["249"] = 317,["252"] = 305,["253"] = 306,["255"] = 308,["256"] = 309,["258"] = 311,["259"] = 312,["261"] = 315,["267"] = 303,["270"] = 302,["271"] = 38,["272"] = 39,["273"] = 40,["274"] = 41,["275"] = 323,["276"] = 325,["277"] = 323,["278"] = 329,["279"] = 332});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["21"] = 36,["22"] = 36,["23"] = 36,["25"] = 43,["26"] = 44,["27"] = 45,["28"] = 46,["29"] = 47,["30"] = 50,["31"] = 51,["32"] = 52,["33"] = 49,["34"] = 55,["35"] = 56,["36"] = 57,["38"] = 59,["39"] = 55,["40"] = 65,["41"] = 67,["42"] = 68,["43"] = 69,["47"] = 120,["48"] = 121,["51"] = 73,["52"] = 75,["53"] = 76,["54"] = 77,["55"] = 80,["56"] = 81,["57"] = 82,["58"] = 83,["59"] = 86,["60"] = 87,["62"] = 90,["64"] = 94,["65"] = 94,["66"] = 94,["67"] = 94,["68"] = 94,["69"] = 94,["70"] = 94,["71"] = 94,["72"] = 94,["73"] = 94,["74"] = 94,["75"] = 107,["76"] = 110,["77"] = 113,["78"] = 114,["80"] = 117,["86"] = 123,["89"] = 72,["92"] = 65,["93"] = 130,["94"] = 131,["95"] = 133,["96"] = 133,["97"] = 133,["98"] = 133,["99"] = 133,["100"] = 139,["102"] = 130,["103"] = 150,["104"] = 151,["105"] = 156,["106"] = 150,["107"] = 162,["108"] = 163,["109"] = 164,["110"] = 164,["111"] = 164,["112"] = 164,["113"] = 167,["114"] = 167,["115"] = 167,["116"] = 167,["117"] = 167,["118"] = 167,["119"] = 167,["120"] = 162,["121"] = 179,["122"] = 180,["123"] = 181,["124"] = 182,["125"] = 179,["126"] = 187,["127"] = 188,["128"] = 188,["129"] = 188,["131"] = 188,["133"] = 188,["134"] = 189,["135"] = 190,["136"] = 191,["137"] = 194,["139"] = 195,["140"] = 195,["141"] = 196,["142"] = 197,["143"] = 195,["146"] = 200,["147"] = 187,["148"] = 203,["149"] = 205,["150"] = 206,["152"] = 209,["153"] = 203,["154"] = 212,["155"] = 213,["156"] = 213,["157"] = 215,["158"] = 215,["159"] = 215,["160"] = 215,["161"] = 215,["162"] = 213,["163"] = 213,["164"] = 223,["165"] = 223,["166"] = 212,["167"] = 226,["168"] = 227,["169"] = 228,["170"] = 230,["171"] = 230,["172"] = 230,["173"] = 231,["174"] = 232,["177"] = 236,["178"] = 226,["179"] = 239,["180"] = 241,["181"] = 242,["182"] = 243,["183"] = 241,["184"] = 239,["185"] = 247,["186"] = 249,["187"] = 250,["188"] = 251,["189"] = 249,["190"] = 247,["191"] = 255,["192"] = 256,["197"] = 290,["200"] = 262,["201"] = 263,["202"] = 263,["203"] = 265,["204"] = 265,["205"] = 265,["206"] = 265,["207"] = 263,["208"] = 263,["209"] = 273,["210"] = 274,["211"] = 274,["212"] = 274,["213"] = 274,["214"] = 274,["215"] = 274,["216"] = 277,["217"] = 277,["218"] = 277,["219"] = 274,["220"] = 274,["221"] = 274,["223"] = 288,["229"] = 255,["230"] = 294,["231"] = 295,["232"] = 296,["233"] = 297,["235"] = 299,["236"] = 300,["238"] = 294,["239"] = 306,["240"] = 307,["241"] = 307,["242"] = 307,["244"] = 307,["246"] = 307,["247"] = 306,["248"] = 310,["249"] = 311,["250"] = 310,["251"] = 314,["252"] = 316,["253"] = 314,["254"] = 319,["255"] = 320,["256"] = 319,["257"] = 323,["260"] = 331,["263"] = 326,["264"] = 327,["266"] = 329,["272"] = 325,["275"] = 323,["276"] = 335,["279"] = 350,["282"] = 338,["283"] = 339,["285"] = 341,["286"] = 342,["288"] = 344,["289"] = 345,["291"] = 348,["297"] = 336,["300"] = 335,["301"] = 38,["302"] = 39,["303"] = 40,["304"] = 41,["305"] = 356,["306"] = 358,["307"] = 356,["308"] = 362,["309"] = 365});
 local ____exports = {}
 ____exports.ErrorTracker = __TS__Class()
 local ErrorTracker = ____exports.ErrorTracker
 ErrorTracker.name = "ErrorTracker"
 function ErrorTracker.prototype.____constructor(self)
-    self.errorCache = {}
+    self.errorCache = __TS__New(Map)
     self.reportQueue = {}
     self.lastCleanup = 0
     self.isInitialized = false
@@ -44,15 +49,35 @@ function ErrorTracker.prototype.trackError(self, ____error, context)
         end
         local ____try, ____hasReturned, ____returnValue = pcall(function()
             self.isProcessingError = true
-            local message = ____error.message or "Unknown error"
-            local timestamp = self:getCurrentTime()
-            if self:isInDevelopmentMode() then
-                print("[ErrorTracker] Error: " .. message)
-                if context then
-                    print("[ErrorTracker] Context: " .. self:safeStringify(context))
+            local errorHash = self:generateErrorHash(____error, context)
+            local now = self:getCurrentTime()
+            local gameTime = self:getGameTime()
+            if self.errorCache:has(errorHash) then
+                local existingError = self.errorCache:get(errorHash)
+                existingError.reportCount = existingError.reportCount + 1
+                existingError.lastReported = now
+                if existingError.reportCount <= ____exports.ErrorTracker.MAX_REPORTS_PER_ERROR then
+                    self:addToReportQueue(existingError)
                 end
+                return true, errorHash
             end
-            return true, "error_logged"
+            local errorInfo = {
+                message = ____error.message or "Unknown error",
+                stack = ____error.stack,
+                context = context,
+                timestamp = now,
+                gameTime = gameTime,
+                gameVersion = self:getGameVersion(),
+                errorHash = errorHash,
+                reportCount = 1,
+                lastReported = now
+            }
+            self:addToCache(errorInfo)
+            self:addToReportQueue(errorInfo)
+            if self:isInDevelopmentMode() then
+                self:logErrorToConsole(errorInfo)
+            end
+            return true, errorHash
         end)
         if not ____try then
             ____hasReturned, ____returnValue = ____catch(____hasReturned)
@@ -80,16 +105,21 @@ function ErrorTracker.prototype.reportCustomError(self, message, context)
     return self:trackError(customError, context)
 end
 function ErrorTracker.prototype.getErrorStats(self)
+    local totalErrors = self.errorCache.size
+    local recentErrors = __TS__ArrayFilter(
+        __TS__ArrayFrom(self.errorCache:values()),
+        function(____, ____error) return self:getCurrentTime() - ____error.timestamp < 60 * 60 * 1000 end
+    )
     return {
-        totalErrors = 0,
-        recentErrors = 0,
-        cacheSize = 0,
-        queueSize = 0,
+        totalErrors = totalErrors,
+        recentErrors = #recentErrors,
+        cacheSize = self.errorCache.size,
+        queueSize = #self.reportQueue,
         isInitialized = self.isInitialized
     }
 end
 function ErrorTracker.prototype.clearErrorCache(self)
-    self.errorCache = {}
+    self.errorCache:clear()
     self.reportQueue = {}
     print("[ErrorTracker] Error cache cleared")
 end
@@ -116,14 +146,10 @@ function ErrorTracker.prototype.generateErrorHash(self, ____error, context)
     return "error_" .. tostring(math.abs(hash))
 end
 function ErrorTracker.prototype.addToCache(self, errorInfo)
-    local cacheSize = 0
-    for _ in pairs(self.errorCache) do
-        cacheSize = cacheSize + 1
-    end
-    if cacheSize >= ____exports.ErrorTracker.MAX_CACHE_SIZE then
+    if self.errorCache.size >= ____exports.ErrorTracker.MAX_CACHE_SIZE then
         self:cleanupCache()
     end
-    self.errorCache[errorInfo.errorHash] = errorInfo
+    self.errorCache:set(errorInfo.errorHash, errorInfo)
 end
 function ErrorTracker.prototype.addToReportQueue(self, errorInfo)
     local report = {
@@ -141,10 +167,11 @@ end
 function ErrorTracker.prototype.cleanupCache(self)
     local now = self:getCurrentTime()
     local cutoffTime = now - ____exports.ErrorTracker.CACHE_TTL
-    for hash in pairs(self.errorCache) do
-        local errorInfo = self.errorCache[hash]
+    for ____, ____value in __TS__Iterator(self.errorCache) do
+        local hash = ____value[1]
+        local errorInfo = ____value[2]
         if errorInfo.timestamp < cutoffTime then
-            __TS__Delete(self.errorCache, hash)
+            self.errorCache:delete(hash)
         end
     end
     self.lastCleanup = now
@@ -186,7 +213,10 @@ function ErrorTracker.prototype.sendReportsToServer(self)
                     {
                         count = #reports,
                         timestamp = self:getCurrentTime(),
-                        summary = {}
+                        summary = __TS__ArrayMap(
+                            __TS__ArraySlice(reports, 0, 5),
+                            function(____, r) return {message = r.error.message, hash = r.error.errorHash, count = r.error.reportCount} end
+                        )
                     }
                 )
             end

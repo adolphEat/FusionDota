@@ -1,10 +1,12 @@
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
 local __TS__New = ____lualib.__TS__New
-local __TS__Number = ____lualib.__TS__Number
-local __TS__ObjectKeys = ____lualib.__TS__ObjectKeys
+local Map = ____lualib.Map
+local __TS__Iterator = ____lualib.__TS__Iterator
+local __TS__ArrayFrom = ____lualib.__TS__ArrayFrom
+local __TS__ArrayFilter = ____lualib.__TS__ArrayFilter
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["9"] = 6,["10"] = 6,["11"] = 8,["12"] = 9,["13"] = 9,["14"] = 10,["15"] = 10,["16"] = 11,["17"] = 11,["18"] = 12,["19"] = 12,["20"] = 13,["21"] = 13,["22"] = 16,["23"] = 17,["24"] = 18,["25"] = 19,["26"] = 62,["27"] = 62,["28"] = 62,["30"] = 67,["31"] = 71,["32"] = 72,["33"] = 73,["34"] = 74,["35"] = 69,["36"] = 77,["37"] = 78,["38"] = 79,["40"] = 81,["41"] = 77,["42"] = 87,["43"] = 88,["44"] = 89,["47"] = 93,["48"] = 94,["49"] = 95,["52"] = 99,["53"] = 100,["54"] = 101,["55"] = 103,["56"] = 106,["57"] = 87,["58"] = 112,["59"] = 113,["62"] = 117,["63"] = 118,["64"] = 119,["65"] = 121,["66"] = 124,["67"] = 112,["68"] = 130,["69"] = 131,["70"] = 132,["73"] = 136,["74"] = 137,["75"] = 138,["76"] = 141,["77"] = 144,["78"] = 146,["79"] = 149,["80"] = 130,["81"] = 158,["82"] = 159,["83"] = 160,["84"] = 163,["85"] = 166,["86"] = 169,["87"] = 171,["88"] = 174,["89"] = 158,["90"] = 184,["91"] = 185,["92"] = 186,["93"] = 189,["94"] = 192,["95"] = 195,["96"] = 197,["97"] = 200,["98"] = 184,["99"] = 210,["100"] = 211,["101"] = 212,["103"] = 215,["104"] = 215,["105"] = 215,["106"] = 216,["107"] = 216,["108"] = 219,["109"] = 225,["110"] = 226,["111"] = 227,["113"] = 230,["114"] = 215,["115"] = 215,["116"] = 210,["117"] = 237,["119"] = 238,["120"] = 239,["122"] = 240,["125"] = 242,["127"] = 243,["131"] = 237,["132"] = 251,["133"] = 253,["134"] = 256,["135"] = 259,["136"] = 260,["139"] = 265,["140"] = 265,["141"] = 266,["142"] = 251,["143"] = 272,["144"] = 273,["145"] = 273,["146"] = 273,["147"] = 273,["148"] = 273,["149"] = 273,["150"] = 273,["151"] = 273,["152"] = 272,["153"] = 286,["154"] = 287,["155"] = 290,["156"] = 291,["157"] = 292,["159"] = 302,["160"] = 303,["161"] = 304,["163"] = 305,["164"] = 306,["166"] = 307,["169"] = 309,["171"] = 310,["174"] = 312,["176"] = 313,["179"] = 315,["181"] = 316,["184"] = 318,["186"] = 319,["190"] = 322,["192"] = 325,["193"] = 286,["194"] = 331,["195"] = 332,["196"] = 335,["197"] = 335,["198"] = 335,["199"] = 335,["200"] = 335,["201"] = 335,["202"] = 335,["203"] = 335,["204"] = 335,["205"] = 335,["206"] = 335,["207"] = 335,["208"] = 335,["209"] = 335,["210"] = 350,["211"] = 350,["212"] = 350,["213"] = 350,["214"] = 350,["215"] = 350,["216"] = 350,["217"] = 350,["218"] = 350,["219"] = 350,["220"] = 350,["221"] = 350,["222"] = 350,["223"] = 350,["224"] = 367,["225"] = 331,["226"] = 373,["227"] = 374,["229"] = 375,["230"] = 375,["231"] = 376,["232"] = 377,["233"] = 377,["234"] = 377,["235"] = 377,["236"] = 377,["237"] = 377,["238"] = 377,["239"] = 377,["240"] = 377,["241"] = 377,["242"] = 377,["243"] = 377,["244"] = 377,["245"] = 377,["246"] = 392,["248"] = 375,["251"] = 373,["252"] = 400,["253"] = 401,["257"] = 402,["258"] = 403,["259"] = 403,["262"] = 406,["263"] = 409,["264"] = 409,["265"] = 409,["266"] = 409,["267"] = 410,["268"] = 413,["269"] = 414,["271"] = 416,["272"] = 417,["274"] = 420,["275"] = 422,["283"] = 400,["284"] = 429,["285"] = 430,["289"] = 431,["290"] = 432,["291"] = 432,["294"] = 434,["295"] = 437,["296"] = 438,["297"] = 438,["298"] = 438,["299"] = 438,["300"] = 438,["301"] = 438,["302"] = 438,["303"] = 438,["304"] = 438,["313"] = 429,["314"] = 450,["315"] = 451,["316"] = 452,["317"] = 455,["319"] = 457,["320"] = 457,["321"] = 458,["322"] = 459,["323"] = 460,["324"] = 461,["326"] = 457,["329"] = 465,["330"] = 450,["331"] = 471,["332"] = 472,["334"] = 475,["335"] = 476,["337"] = 477,["340"] = 479,["342"] = 480,["343"] = 481,["346"] = 483,["348"] = 484,["349"] = 485,["350"] = 486,["354"] = 490,["355"] = 491,["356"] = 492,["357"] = 493,["358"] = 494,["361"] = 497,["362"] = 471,["363"] = 503,["364"] = 504,["365"] = 505,["366"] = 506,["368"] = 509,["369"] = 510,["370"] = 512,["371"] = 513,["372"] = 514,["373"] = 515,["374"] = 516,["377"] = 520,["378"] = 503,["379"] = 526,["380"] = 527,["381"] = 529,["382"] = 530,["383"] = 531,["384"] = 533,["385"] = 534,["386"] = 535,["390"] = 540,["391"] = 541,["393"] = 544,["394"] = 545,["395"] = 526,["396"] = 551,["397"] = 552,["398"] = 554,["399"] = 555,["400"] = 556,["401"] = 557,["405"] = 562,["406"] = 562,["407"] = 563,["408"] = 564,["409"] = 565,["410"] = 568,["412"] = 562,["415"] = 551,["416"] = 580,["417"] = 582,["418"] = 580,["419"] = 588,["420"] = 590,["421"] = 588,["422"] = 596,["423"] = 598,["424"] = 596,["425"] = 604,["426"] = 605,["427"] = 606,["428"] = 607,["429"] = 608,["430"] = 609,["433"] = 613,["434"] = 604,["435"] = 619,["436"] = 620,["437"] = 623,["438"] = 624,["439"] = 625,["440"] = 626,["444"] = 631,["445"] = 634,["446"] = 619,["447"] = 643,["448"] = 643,["449"] = 651,["450"] = 652,["451"] = 653,["452"] = 654,["454"] = 651,["455"] = 664,["456"] = 664,["457"] = 671,["458"] = 671,["459"] = 678,["460"] = 680,["461"] = 680,["462"] = 680,["463"] = 681,["464"] = 682,["465"] = 683,["467"] = 685,["468"] = 680,["469"] = 680,["470"] = 678,["471"] = 692,["472"] = 693,["473"] = 694,["474"] = 694,["475"] = 694,["476"] = 694,["477"] = 694,["478"] = 694,["479"] = 694,["480"] = 694,["481"] = 694,["483"] = 692,["484"] = 710,["485"] = 711,["486"] = 711,["487"] = 711,["488"] = 711,["489"] = 711,["490"] = 710,["491"] = 721,["492"] = 722,["493"] = 723,["494"] = 725,["495"] = 726,["497"] = 730,["498"] = 731,["500"] = 735,["501"] = 736,["502"] = 737,["504"] = 741,["505"] = 742,["507"] = 746,["508"] = 747,["509"] = 747,["510"] = 748,["511"] = 750,["512"] = 753,["513"] = 755,["514"] = 721,["515"] = 761,["516"] = 762,["517"] = 763,["520"] = 767,["521"] = 767,["522"] = 767,["523"] = 767,["524"] = 767,["525"] = 767,["526"] = 767,["527"] = 767,["528"] = 767,["529"] = 767,["530"] = 767,["531"] = 767,["532"] = 767,["533"] = 767,["534"] = 767,["535"] = 767,["536"] = 767,["537"] = 767,["538"] = 761});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["11"] = 6,["12"] = 6,["13"] = 8,["14"] = 9,["15"] = 9,["16"] = 10,["17"] = 10,["18"] = 11,["19"] = 11,["20"] = 12,["21"] = 12,["22"] = 13,["23"] = 13,["24"] = 16,["25"] = 17,["26"] = 18,["27"] = 19,["28"] = 62,["29"] = 62,["30"] = 62,["32"] = 67,["33"] = 70,["34"] = 71,["35"] = 72,["36"] = 73,["37"] = 69,["38"] = 76,["39"] = 77,["40"] = 78,["42"] = 80,["43"] = 76,["44"] = 86,["45"] = 87,["46"] = 88,["49"] = 92,["50"] = 93,["51"] = 94,["54"] = 98,["55"] = 99,["56"] = 100,["57"] = 102,["58"] = 105,["59"] = 86,["60"] = 111,["61"] = 112,["64"] = 116,["65"] = 117,["66"] = 118,["67"] = 120,["68"] = 123,["69"] = 111,["70"] = 129,["71"] = 130,["72"] = 131,["75"] = 135,["76"] = 136,["77"] = 137,["78"] = 140,["79"] = 143,["80"] = 145,["81"] = 148,["82"] = 129,["83"] = 157,["84"] = 158,["85"] = 159,["86"] = 162,["87"] = 165,["88"] = 168,["89"] = 170,["90"] = 173,["91"] = 157,["92"] = 183,["93"] = 184,["94"] = 185,["95"] = 188,["96"] = 191,["97"] = 194,["98"] = 196,["99"] = 199,["100"] = 183,["101"] = 209,["102"] = 210,["103"] = 211,["105"] = 214,["106"] = 214,["107"] = 214,["108"] = 215,["109"] = 215,["110"] = 218,["111"] = 224,["112"] = 225,["113"] = 226,["115"] = 229,["116"] = 214,["117"] = 214,["118"] = 209,["119"] = 236,["121"] = 237,["122"] = 238,["124"] = 239,["127"] = 241,["129"] = 242,["133"] = 236,["134"] = 250,["135"] = 252,["136"] = 255,["137"] = 258,["138"] = 259,["141"] = 264,["142"] = 264,["143"] = 265,["144"] = 250,["145"] = 271,["146"] = 272,["147"] = 272,["148"] = 272,["149"] = 272,["150"] = 272,["151"] = 272,["152"] = 272,["153"] = 272,["154"] = 271,["155"] = 285,["156"] = 286,["157"] = 295,["158"] = 295,["159"] = 295,["160"] = 296,["162"] = 297,["163"] = 298,["165"] = 299,["168"] = 301,["170"] = 302,["173"] = 304,["175"] = 305,["178"] = 307,["180"] = 308,["183"] = 310,["185"] = 311,["189"] = 314,["191"] = 317,["192"] = 285,["193"] = 323,["194"] = 324,["195"] = 327,["196"] = 327,["197"] = 327,["198"] = 327,["199"] = 327,["200"] = 327,["201"] = 327,["202"] = 327,["203"] = 327,["204"] = 327,["205"] = 327,["206"] = 327,["207"] = 327,["208"] = 327,["209"] = 342,["210"] = 342,["211"] = 342,["212"] = 342,["213"] = 342,["214"] = 342,["215"] = 342,["216"] = 342,["217"] = 342,["218"] = 342,["219"] = 342,["220"] = 342,["221"] = 342,["222"] = 342,["223"] = 359,["224"] = 323,["225"] = 365,["226"] = 366,["228"] = 367,["229"] = 367,["230"] = 368,["231"] = 369,["232"] = 369,["233"] = 369,["234"] = 369,["235"] = 369,["236"] = 369,["237"] = 369,["238"] = 369,["239"] = 369,["240"] = 369,["241"] = 369,["242"] = 369,["243"] = 369,["244"] = 369,["245"] = 384,["247"] = 367,["250"] = 365,["251"] = 392,["252"] = 393,["253"] = 393,["254"] = 393,["258"] = 394,["259"] = 394,["262"] = 397,["263"] = 400,["264"] = 400,["265"] = 400,["266"] = 400,["267"] = 401,["268"] = 404,["269"] = 405,["271"] = 407,["272"] = 408,["274"] = 411,["275"] = 413,["283"] = 392,["284"] = 420,["285"] = 421,["286"] = 421,["287"] = 421,["291"] = 422,["292"] = 422,["295"] = 424,["296"] = 427,["297"] = 428,["298"] = 428,["299"] = 428,["300"] = 428,["301"] = 428,["302"] = 428,["303"] = 428,["304"] = 428,["305"] = 428,["314"] = 420,["315"] = 440,["316"] = 441,["317"] = 442,["318"] = 445,["320"] = 447,["321"] = 447,["322"] = 448,["323"] = 449,["324"] = 450,["325"] = 451,["327"] = 447,["330"] = 455,["331"] = 440,["332"] = 461,["333"] = 462,["335"] = 465,["336"] = 466,["338"] = 467,["341"] = 469,["343"] = 470,["344"] = 471,["347"] = 473,["349"] = 474,["350"] = 475,["351"] = 476,["355"] = 480,["356"] = 481,["357"] = 482,["358"] = 483,["359"] = 484,["362"] = 487,["363"] = 461,["364"] = 493,["365"] = 494,["366"] = 495,["367"] = 496,["369"] = 499,["370"] = 500,["371"] = 502,["372"] = 502,["373"] = 502,["374"] = 503,["375"] = 504,["376"] = 505,["379"] = 509,["380"] = 493,["381"] = 515,["382"] = 516,["383"] = 518,["384"] = 519,["385"] = 521,["386"] = 522,["387"] = 523,["391"] = 528,["392"] = 529,["394"] = 532,["395"] = 533,["396"] = 515,["397"] = 539,["398"] = 540,["399"] = 542,["400"] = 542,["401"] = 542,["402"] = 543,["403"] = 544,["407"] = 549,["408"] = 549,["409"] = 550,["410"] = 551,["411"] = 552,["412"] = 555,["414"] = 549,["417"] = 539,["418"] = 567,["419"] = 569,["420"] = 567,["421"] = 575,["422"] = 577,["423"] = 575,["424"] = 583,["425"] = 585,["426"] = 583,["427"] = 591,["428"] = 592,["429"] = 592,["430"] = 592,["431"] = 592,["432"] = 595,["433"] = 591,["434"] = 601,["435"] = 602,["436"] = 605,["437"] = 605,["438"] = 605,["439"] = 606,["440"] = 607,["444"] = 612,["445"] = 615,["446"] = 601,["447"] = 624,["448"] = 624,["449"] = 632,["450"] = 633,["451"] = 634,["452"] = 635,["454"] = 632,["455"] = 645,["456"] = 645,["457"] = 652,["458"] = 652,["459"] = 659,["460"] = 661,["461"] = 661,["462"] = 661,["463"] = 662,["464"] = 663,["465"] = 664,["467"] = 666,["468"] = 661,["469"] = 661,["470"] = 659,["471"] = 673,["472"] = 674,["473"] = 675,["474"] = 675,["475"] = 675,["476"] = 675,["477"] = 675,["478"] = 675,["479"] = 675,["480"] = 675,["481"] = 675,["483"] = 673,["484"] = 691,["485"] = 692,["486"] = 691,["487"] = 702,["488"] = 703,["489"] = 704,["490"] = 706,["491"] = 707,["493"] = 711,["494"] = 712,["496"] = 716,["497"] = 717,["498"] = 718,["500"] = 722,["501"] = 723,["503"] = 727,["504"] = 728,["505"] = 728,["506"] = 729,["507"] = 731,["508"] = 734,["509"] = 736,["510"] = 702,["511"] = 742,["512"] = 743,["513"] = 744,["516"] = 748,["517"] = 748,["518"] = 748,["519"] = 748,["520"] = 748,["521"] = 748,["522"] = 748,["523"] = 748,["524"] = 748,["525"] = 748,["526"] = 748,["527"] = 748,["528"] = 748,["529"] = 748,["530"] = 748,["531"] = 748,["532"] = 748,["533"] = 748,["534"] = 742});
 local ____exports = {}
 local ____GameModeManager = require("modules.GameModeManager")
 local GameModeManager = ____GameModeManager.GameModeManager
@@ -28,8 +30,8 @@ local AutoChessMode = ____exports.AutoChessMode
 AutoChessMode.name = "AutoChessMode"
 function AutoChessMode.prototype.____constructor(self)
     self.isActive = false
-    self.chessPieceDatabase = self:initializeChessDatabase()
     self.gameState = self:initializeGameState()
+    self.chessPieceDatabase = self:initializeChessDatabase()
     self:initializeAutoChessMode()
     print("[AutoChessMode] Initialized")
 end
@@ -145,55 +147,52 @@ function AutoChessMode.prototype.initializeGameState(self)
         currentRound = 0,
         currentPhase = ____exports.RoundPhase.PREPARATION,
         phaseTimeLeft = 0,
-        playerStates = {},
+        playerStates = __TS__New(Map),
         chessPool = self:initializeChessPool(),
         isGameActive = false
     }
 end
 function AutoChessMode.prototype.initializeChessPool(self)
-    local pool = {}
-    if not self.chessPieceDatabase then
-        print("[AutoChessMode] Warning: chessPieceDatabase not initialized, returning empty pool")
-        return pool
-    end
-    for pieceId in pairs(self.chessPieceDatabase) do
-        local piece = self.chessPieceDatabase[pieceId]
+    local pool = __TS__New(Map)
+    for ____, ____value in __TS__Iterator(self.chessPieceDatabase) do
+        local pieceId = ____value[1]
+        local piece = ____value[2]
         local count = 0
         repeat
-            local ____switch26 = piece.rarity
-            local ____cond26 = ____switch26 == ____exports.ChessRarity.COMMON
-            if ____cond26 then
+            local ____switch25 = piece.rarity
+            local ____cond25 = ____switch25 == ____exports.ChessRarity.COMMON
+            if ____cond25 then
                 count = 45
                 break
             end
-            ____cond26 = ____cond26 or ____switch26 == ____exports.ChessRarity.UNCOMMON
-            if ____cond26 then
+            ____cond25 = ____cond25 or ____switch25 == ____exports.ChessRarity.UNCOMMON
+            if ____cond25 then
                 count = 30
                 break
             end
-            ____cond26 = ____cond26 or ____switch26 == ____exports.ChessRarity.RARE
-            if ____cond26 then
+            ____cond25 = ____cond25 or ____switch25 == ____exports.ChessRarity.RARE
+            if ____cond25 then
                 count = 25
                 break
             end
-            ____cond26 = ____cond26 or ____switch26 == ____exports.ChessRarity.EPIC
-            if ____cond26 then
+            ____cond25 = ____cond25 or ____switch25 == ____exports.ChessRarity.EPIC
+            if ____cond25 then
                 count = 15
                 break
             end
-            ____cond26 = ____cond26 or ____switch26 == ____exports.ChessRarity.LEGENDARY
-            if ____cond26 then
+            ____cond25 = ____cond25 or ____switch25 == ____exports.ChessRarity.LEGENDARY
+            if ____cond25 then
                 count = 10
                 break
             end
         until true
-        pool[pieceId] = count
+        pool:set(pieceId, count)
     end
     return pool
 end
 function AutoChessMode.prototype.initializeChessDatabase(self)
-    local database = {}
-    database.anti_mage = {
+    local database = __TS__New(Map)
+    database:set("anti_mage", {
         id = "anti_mage",
         unitName = "npc_dota_hero_antimage",
         displayName = "敌法师",
@@ -206,8 +205,8 @@ function AutoChessMode.prototype.initializeChessDatabase(self)
         armor = 2,
         attackRange = 150,
         abilities = {"antimage_mana_break"}
-    }
-    database.crystal_maiden = {
+    })
+    database:set("crystal_maiden", {
         id = "crystal_maiden",
         unitName = "npc_dota_hero_crystal_maiden",
         displayName = "水晶室女",
@@ -220,7 +219,7 @@ function AutoChessMode.prototype.initializeChessDatabase(self)
         armor = 0,
         attackRange = 600,
         abilities = {"crystal_maiden_crystal_nova"}
-    }
+    })
     return database
 end
 function AutoChessMode.prototype.initializePlayerStates(self)
@@ -243,20 +242,21 @@ function AutoChessMode.prototype.initializePlayerStates(self)
                     isAlive = true,
                     rank = 0
                 }
-                self.gameState.playerStates[playerId] = playerState
+                self.gameState.playerStates:set(playerId, playerState)
             end
             playerId = playerId + 1
         end
     end
 end
 function AutoChessMode.prototype.distributeRoundIncome(self)
-    for playerId in pairs(self.gameState.playerStates) do
+    for ____, ____value in __TS__Iterator(self.gameState.playerStates) do
+        local playerId = ____value[1]
+        local playerState = ____value[2]
         do
-            local __continue34
+            local __continue33
             repeat
-                local playerState = self.gameState.playerStates[playerId]
                 if not playerState.isAlive then
-                    __continue34 = true
+                    __continue33 = true
                     break
                 end
                 local income = 5
@@ -272,40 +272,41 @@ function AutoChessMode.prototype.distributeRoundIncome(self)
                     income = income + math.min(playerState.lossStreak, 3)
                 end
                 playerState.gold = playerState.gold + income
-                print(((((("[AutoChessMode] Player " .. playerId) .. " received ") .. tostring(income)) .. " gold (total: ") .. tostring(playerState.gold)) .. ")")
-                __continue34 = true
+                print(((((("[AutoChessMode] Player " .. tostring(playerId)) .. " received ") .. tostring(income)) .. " gold (total: ") .. tostring(playerState.gold)) .. ")")
+                __continue33 = true
             until true
-            if not __continue34 then
+            if not __continue33 then
                 break
             end
         end
     end
 end
 function AutoChessMode.prototype.refreshAllPlayersShop(self)
-    for playerId in pairs(self.gameState.playerStates) do
+    for ____, ____value in __TS__Iterator(self.gameState.playerStates) do
+        local playerId = ____value[1]
+        local playerState = ____value[2]
         do
-            local __continue40
+            local __continue39
             repeat
-                local playerState = self.gameState.playerStates[playerId]
                 if not playerState.isAlive then
-                    __continue40 = true
+                    __continue39 = true
                     break
                 end
                 local shopPieces = self:generateShopPieces(playerState.level)
                 if GameRules.XNetTable then
                     GameRules.XNetTable:SetTableValue(
                         "autochess_shop",
-                        "player_" .. playerId,
+                        "player_" .. tostring(playerId),
                         {
                             pieces = shopPieces,
                             refreshCount = 0,
-                            timestamp = GameRules:GetGameTime() * 1000
+                            timestamp = Date:now()
                         }
                     )
                 end
-                __continue40 = true
+                __continue39 = true
             until true
-            if not __continue40 then
+            if not __continue39 then
                 break
             end
         end
@@ -329,59 +330,59 @@ function AutoChessMode.prototype.generateShopPieces(self, playerLevel)
     return shopPieces
 end
 function AutoChessMode.prototype.calculateRarityChances(self, playerLevel)
-    local chances = {}
+    local chances = __TS__New(Map)
     repeat
-        local ____switch49 = playerLevel
-        local ____cond49 = ____switch49 == 1
-        if ____cond49 then
-            chances[____exports.ChessRarity.COMMON] = 100
+        local ____switch48 = playerLevel
+        local ____cond48 = ____switch48 == 1
+        if ____cond48 then
+            chances:set(____exports.ChessRarity.COMMON, 100)
             break
         end
-        ____cond49 = ____cond49 or ____switch49 == 2
-        if ____cond49 then
-            chances[____exports.ChessRarity.COMMON] = 70
-            chances[____exports.ChessRarity.UNCOMMON] = 30
+        ____cond48 = ____cond48 or ____switch48 == 2
+        if ____cond48 then
+            chances:set(____exports.ChessRarity.COMMON, 70)
+            chances:set(____exports.ChessRarity.UNCOMMON, 30)
             break
         end
-        ____cond49 = ____cond49 or ____switch49 == 3
-        if ____cond49 then
-            chances[____exports.ChessRarity.COMMON] = 60
-            chances[____exports.ChessRarity.UNCOMMON] = 35
-            chances[____exports.ChessRarity.RARE] = 5
+        ____cond48 = ____cond48 or ____switch48 == 3
+        if ____cond48 then
+            chances:set(____exports.ChessRarity.COMMON, 60)
+            chances:set(____exports.ChessRarity.UNCOMMON, 35)
+            chances:set(____exports.ChessRarity.RARE, 5)
             break
         end
         do
-            chances[____exports.ChessRarity.COMMON] = 50
-            chances[____exports.ChessRarity.UNCOMMON] = 35
-            chances[____exports.ChessRarity.RARE] = 10
-            chances[____exports.ChessRarity.EPIC] = 4
-            chances[____exports.ChessRarity.LEGENDARY] = 1
+            chances:set(____exports.ChessRarity.COMMON, 50)
+            chances:set(____exports.ChessRarity.UNCOMMON, 35)
+            chances:set(____exports.ChessRarity.RARE, 10)
+            chances:set(____exports.ChessRarity.EPIC, 4)
+            chances:set(____exports.ChessRarity.LEGENDARY, 1)
         end
     until true
     return chances
 end
 function AutoChessMode.prototype.selectRandomRarity(self, chances)
     local totalChance = 0
-    for rarity in pairs(chances) do
-        totalChance = totalChance + chances[__TS__Number(rarity)]
+    for ____, chance in __TS__Iterator(chances:values()) do
+        totalChance = totalChance + chance
     end
     local random = RandomFloat(0, totalChance)
     local currentChance = 0
-    for rarity in pairs(chances) do
-        local chance = chances[__TS__Number(rarity)]
+    for ____, ____value in __TS__Iterator(chances) do
+        local rarity = ____value[1]
+        local chance = ____value[2]
         currentChance = currentChance + chance
         if random <= currentChance then
-            return __TS__Number(rarity)
+            return rarity
         end
     end
     return ____exports.ChessRarity.COMMON
 end
 function AutoChessMode.prototype.selectRandomPieceByRarity(self, rarity)
     local pieces = {}
-    for pieceId in pairs(self.chessPieceDatabase) do
-        local piece = self.chessPieceDatabase[pieceId]
+    for ____, piece in __TS__Iterator(self.chessPieceDatabase:values()) do
         if piece.rarity == rarity then
-            local remaining = self.gameState.chessPool[piece.id] or 0
+            local remaining = self.gameState.chessPool:get(piece.id) or 0
             if remaining > 0 then
                 pieces[#pieces + 1] = piece
             end
@@ -395,10 +396,11 @@ function AutoChessMode.prototype.selectRandomPieceByRarity(self, rarity)
 end
 function AutoChessMode.prototype.setupBattleMatching(self)
     local alivePlayers = {}
-    for playerId in pairs(self.gameState.playerStates) do
-        local playerState = self.gameState.playerStates[playerId]
+    for ____, ____value in __TS__Iterator(self.gameState.playerStates) do
+        local playerId = ____value[1]
+        local playerState = ____value[2]
         if playerState.isAlive then
-            alivePlayers[#alivePlayers + 1] = __TS__Number(playerId)
+            alivePlayers[#alivePlayers + 1] = playerId
         end
     end
     do
@@ -423,21 +425,19 @@ function AutoChessMode.prototype.calculateBattleResults(self)
     print("[AutoChessMode] Calculated battle results")
 end
 function AutoChessMode.prototype.checkGameEnd(self)
-    local aliveCount = 0
-    for playerId in pairs(self.gameState.playerStates) do
-        local playerState = self.gameState.playerStates[playerId]
-        if playerState.isAlive then
-            aliveCount = aliveCount + 1
-        end
-    end
+    local aliveCount = #__TS__ArrayFilter(
+        __TS__ArrayFrom(self.gameState.playerStates:values()),
+        function(____, state) return state.isAlive end
+    )
     return aliveCount <= 1 or self.gameState.currentRound >= 50
 end
 function AutoChessMode.prototype.endGame(self)
     self.gameState.isGameActive = false
-    for playerId in pairs(self.gameState.playerStates) do
-        local playerState = self.gameState.playerStates[playerId]
+    for ____, ____value in __TS__Iterator(self.gameState.playerStates) do
+        local playerId = ____value[1]
+        local playerState = ____value[2]
         if playerState.isAlive then
-            self.gameState.winnerPlayerId = __TS__Number(playerId)
+            self.gameState.winnerPlayerId = playerId
             break
         end
     end
@@ -476,28 +476,24 @@ function AutoChessMode.prototype.syncStateToNetTable(self)
             {
                 isActive = self.isActive,
                 gameState = {currentRound = self.gameState.currentRound, currentPhase = self.gameState.currentPhase, phaseTimeLeft = self.gameState.phaseTimeLeft, isGameActive = self.gameState.isGameActive},
-                timestamp = GameRules:GetGameTime() * 1000
+                timestamp = Date:now()
             }
         )
     end
 end
 function AutoChessMode.prototype.getStatus(self)
-    return {
-        isActive = self.isActive,
-        gameState = self.gameState,
-        chessPieceCount = #__TS__ObjectKeys(self.chessPieceDatabase)
-    }
+    return {isActive = self.isActive, gameState = self.gameState, chessPieceCount = self.chessPieceDatabase.size}
 end
 function AutoChessMode.prototype.buyChessPiece(self, playerId, pieceId)
-    local playerState = self.gameState.playerStates[playerId]
-    local piece = self.chessPieceDatabase[pieceId]
+    local playerState = self.gameState.playerStates:get(playerId)
+    local piece = self.chessPieceDatabase:get(pieceId)
     if not playerState or not piece then
         return false
     end
     if playerState.gold < piece.cost then
         return false
     end
-    local remaining = self.gameState.chessPool[pieceId] or 0
+    local remaining = self.gameState.chessPool:get(pieceId) or 0
     if remaining <= 0 then
         return false
     end
@@ -507,13 +503,13 @@ function AutoChessMode.prototype.buyChessPiece(self, playerId, pieceId)
     playerState.gold = playerState.gold - piece.cost
     local ____playerState_benchPieces_4 = playerState.benchPieces
     ____playerState_benchPieces_4[#____playerState_benchPieces_4 + 1] = piece
-    self.gameState.chessPool[pieceId] = remaining - 1
+    self.gameState.chessPool:set(pieceId, remaining - 1)
     print((("[AutoChessMode] Player " .. tostring(playerId)) .. " bought ") .. piece.displayName)
     self:syncPlayerState(playerId)
     return true
 end
 function AutoChessMode.prototype.syncPlayerState(self, playerId)
-    local playerState = self.gameState.playerStates[playerId]
+    local playerState = self.gameState.playerStates:get(playerId)
     if not playerState or not GameRules.XNetTable then
         return
     end

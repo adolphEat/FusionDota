@@ -39,7 +39,7 @@ export const createPathfinder = (
 
 // Example usage function
 export const exampleUsage = () => {
-    console.log(`
+        print(`
 // Pathfinding Module Usage Example
 
 // 1. Create a collision map

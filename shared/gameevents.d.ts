@@ -46,4 +46,11 @@ declare interface CustomGameEventDeclarations {
     debug_autochess_activate: {};
     debug_autochess_deactivate: {};
     debug_add_gold: { playerId: number; amount: number; };
+    
+    // 主界面事件
+    start_autochess_mode: {};
+    start_training_mode: {};
+    open_settings: {};
+    open_friends: {};
+    open_mail: {};
 }

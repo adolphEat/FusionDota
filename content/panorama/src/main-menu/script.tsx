@@ -97,12 +97,27 @@ const MainMenu: React.FC = () => {
     const updatePlayerData = () => {
         // 从网络表获取玩家数据
         const playerInfo = CustomNetTables.GetTableValue('player_info', 'local_player');
-        if (playerInfo) {
+        if (playerInfo && typeof playerInfo === 'object') {
+            // 只提取匹配 PlayerData 接口的字段
+            const updatedData: Partial<PlayerData> = {};
+            if ('level' in playerInfo && typeof playerInfo.level === 'number') {
+                updatedData.level = playerInfo.level;
+            }
+            if ('experience' in playerInfo && typeof playerInfo.experience === 'number') {
+                updatedData.experience = playerInfo.experience;
+            }
+            if ('name' in playerInfo && typeof playerInfo.name === 'string') {
+                updatedData.playerName = playerInfo.name;
+            }
+            if ('avatar' in playerInfo && typeof playerInfo.avatar === 'string') {
+                updatedData.avatar = playerInfo.avatar;
+            }
+            
             setState(prev => ({
                 ...prev,
                 playerData: {
                     ...prev.playerData,
-                    ...playerInfo
+                    ...updatedData
                 }
             }));
         }

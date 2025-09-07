@@ -17,15 +17,12 @@ declare interface CustomNetTableDeclarations {
         key_1: number;
         key_2: string;
     };
-<<<<<<< Updated upstream
     // 服务器选择界面控制
     server_selection: {
         [playerId: string]: {
             show: boolean;
         };
     };
-=======
->>>>>>> Stashed changes
     // 游戏模式相关
     game_mode: {
         current: {
@@ -99,6 +96,24 @@ declare interface CustomNetTableDeclarations {
             errorTracking: boolean;
             performanceMonitoring: boolean;
             debugMode: boolean;
+            timestamp: number;
+        };
+    };
+    // 玩家信息
+    player_info: {
+        local_player: {
+            playerId: number;
+            name: string;
+            level: number;
+            experience: number;
+            rank: string;
+            avatar: string;
+            stats: {
+                wins: number;
+                losses: number;
+                totalGames: number;
+                winRate: number;
+            };
             timestamp: number;
         };
     };

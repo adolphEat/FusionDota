@@ -430,7 +430,7 @@ function TrainingMode.prototype.syncStatusToNetTable(self)
                 activeScenario = ____self_activeScenario_7,
                 spawnedUnitsCount = ____temp_8,
                 testDuration = ____table_activeScenario_4,
-                timestamp = GameRules:GetGameTime() * 1000
+                timestamp = Date:now()
             }
         )
     end
