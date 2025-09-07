@@ -1,12 +1,110 @@
+-- Mars Spear技能 - 支持自走棋式自动释放：当Mana回满时自动寻找1000距离内最近的敌方单位
+-- 以1000距离内最近的一名敌方单位为目标，以自身为起点投掷一把累计行进1000距离的长矛
+-- 长矛对命中的首个敌人造成200点伤害，并造成击退，当被击退目标撞到第二名敌人时，对第二名单位造成100点伤害，并使两名单位眩晕1.5s
+
 mars_spear = class({})
 
-LinkLuaModifier("modifier_mars_spear_stun", "heroes/hero_mars/mars_spear.lua", LUA_MODIFIER_MOTION_NONE)
+function mars_spear:GetManaCost(level)
+    return 100 -- 固定100点Mana消耗
+end
+
+function mars_spear:OnUpgrade()
+    if not IsServer() then return end
+    
+    local caster = self:GetCaster()
+    
+    -- 启动自走棋式自动释放检查定时器
+    if not self.auto_cast_timer then
+        self.auto_cast_timer = true
+        self.last_cast_time = 0 -- 添加冷却时间记录
+        
+        -- 使用Dota 2内置的定时器系统
+        local function CheckAutoCast()
+            if not IsValidEntity(caster) or not caster:IsAlive() then
+                return -- 停止定时器
+            end
+            
+            -- 检查冷却时间（防止频繁尝试）
+            local current_time = GameRules:GetGameTime()
+            if current_time - self.last_cast_time < 1.0 then
+                return 0.1 -- 继续定时器，但跳过这次检查
+            end
+            
+            -- 检查Mana是否回满（达到最大Mana值）
+            local current_mana = caster:GetMana()
+            local max_mana = caster:GetMaxMana()
+            
+            -- 调试信息（减少输出频率）
+            if current_mana >= max_mana then
+                print("Mars Spear Auto Cast Check - Mana Full! Current:", current_mana, "Max:", max_mana, "IsFullyCastable:", self:IsFullyCastable())
+            end
+            
+            if current_mana >= max_mana and self:IsFullyCastable() then
+                local nearest_enemy = self:FindNearestEnemy()
+                if nearest_enemy then
+                    print("Mars Spear Auto Cast: Found enemy, casting skill!")
+                    -- 检查是否已经在施法
+                    if not caster:IsChanneling() and not caster:IsSilenced() and not caster:IsStunned() then
+                        print("Mars Spear Auto Cast: Attempting to cast skill...")
+                        -- 检查目标是否有效
+                        if nearest_enemy and IsValidEntity(nearest_enemy) then
+                            -- 设置自动释放目标
+                            self.auto_cast_target = nearest_enemy
+                            -- 直接释放技能，让Dota 2自动处理Mana消耗
+                            caster:CastAbilityOnPosition(nearest_enemy:GetAbsOrigin(), self, caster:GetPlayerOwnerID())
+                            self.last_cast_time = current_time -- 记录释放时间
+                        else
+                            print("Mars Spear Auto Cast: Target is invalid or nil")
+                        end
+                    else
+                        print("Mars Spear Auto Cast: Caster is channeling/silenced/stunned")
+                    end
+                else
+                    print("Mars Spear Auto Cast: No enemy found")
+                end
+            end
+            
+            -- 继续定时器
+            return 0.1 -- 每0.1秒检查一次
+        end
+        
+        -- 启动定时器
+        GameRules:GetGameModeEntity():SetThink(CheckAutoCast, "CheckAutoCast_" .. caster:GetEntityIndex(), 0.1)
+    end
+end
+
+function mars_spear:FindNearestEnemy()
+    local caster = self:GetCaster()
+    local auto_cast_range = self:GetSpecialValueFor("auto_cast_range")
+    
+    local enemies = FindUnitsInRadius(
+        caster:GetTeamNumber(),
+        caster:GetAbsOrigin(),
+        nil,
+        auto_cast_range,
+        DOTA_UNIT_TARGET_TEAM_ENEMY,
+        DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
+        DOTA_UNIT_TARGET_FLAG_NONE,
+        FIND_CLOSEST,
+        false
+    )
+    
+    return enemies[1] -- 返回最近的敌人
+end
 
 function mars_spear:OnSpellStart()
     if not IsServer() then return end
     
     local caster = self:GetCaster()
     local point = self:GetCursorPosition()
+    
+    -- 如果是自动释放，使用最近的目标位置
+    if self.auto_cast_target then
+        point = self.auto_cast_target:GetAbsOrigin()
+        self.auto_cast_target = nil -- 清除目标
+    end
+    
+    -- Dota 2会自动处理Mana消耗，不需要手动检查
     
     -- 获取技能参数
     local spear_range = self:GetSpecialValueFor("spear_range")
@@ -17,15 +115,12 @@ function mars_spear:OnSpellStart()
     local chain_stun_duration = self:GetSpecialValueFor("chain_stun_duration")
     
     print("Mars Spear parameters - Damage:", damage, "Chain damage:", chain_damage, "Chain stun duration:", chain_stun_duration)
-    print("Skill level:", self:GetLevel(), "Caster:", caster:GetUnitName())
-    print("Ability name:", self:GetAbilityName())
-    print("Max level:", self:GetMaxLevel())
     
     -- 创建投射物
     local direction = (point - caster:GetAbsOrigin()):Normalized()
     local start_pos = caster:GetAbsOrigin() + direction * 100
     
-    -- 使用Windrunner的投射物格式
+    -- 使用投射物系统
     local projectile_info = {
         Ability = self,
         EffectName = "particles/heroes/mars/mars_spear.vpcf",
@@ -66,6 +161,10 @@ function mars_spear:OnSpellStart()
     
     -- 播放施法音效
     EmitSoundOn("Hero_Mars.Spear.Cast", caster)
+    
+    -- 强制恢复角色状态，确保能继续攻击
+    caster:Stop()
+    caster:MoveToPosition(caster:GetAbsOrigin())
 end
 
 function mars_spear:OnProjectileHit(target, location)
@@ -92,7 +191,7 @@ function mars_spear:OnProjectileHit(target, location)
     
     -- 检查是否是第一次击中
     if not self.first_hit then
-        print("First hit on target:", target:GetUnitName(), "Damage:", damage)
+        print("Mars Spear First hit on target:", target:GetUnitName(), "Damage:", damage)
         -- 造成初始伤害
         local damage_table = {
             victim = target,
@@ -113,7 +212,7 @@ function mars_spear:OnProjectileHit(target, location)
         return false -- 继续投射物移动
     else
         -- 这是连锁碰撞，造成额外伤害和眩晕
-        print("Chain hit on target:", target:GetUnitName(), "Chain damage:", chain_damage)
+        print("Mars Spear Chain hit on target:", target:GetUnitName(), "Chain damage:", chain_damage)
         local chain_damage_table = {
             victim = target,
             attacker = caster,
@@ -170,13 +269,13 @@ function mars_spear:OnProjectileThink(location)
         -- 找到最近的敌人（不是被携带的目标）
         for _, enemy in pairs(enemies) do
             if enemy ~= self.carried_target and enemy:IsAlive() then
-                print("Chain collision detected - Carried target:", self.carried_target:GetUnitName(), "Hit target:", enemy:GetUnitName())
+                print("Mars Spear Chain collision detected - Carried target:", self.carried_target:GetUnitName(), "Hit target:", enemy:GetUnitName())
                 -- 标记已发生碰撞，避免重复处理
                 self.has_collided = true
                 
-                        -- 对第二个目标造成连锁伤害
-        local chain_damage = self:GetSpecialValueFor("chain_damage")
-        local chain_stun_duration = self:GetSpecialValueFor("chain_stun_duration")
+                -- 对第二个目标造成连锁伤害
+                local chain_damage = self:GetSpecialValueFor("chain_damage")
+                local chain_stun_duration = self:GetSpecialValueFor("chain_stun_duration")
                 
                 local chain_damage_table = {
                     victim = enemy,
@@ -209,6 +308,8 @@ function mars_spear:OnProjectileThink(location)
     end
 end
 
+LinkLuaModifier("modifier_mars_spear_stun", "heroes/hero_mars/mars_spear.lua", LUA_MODIFIER_MOTION_NONE)
+
 -- Stun modifier
 modifier_mars_spear_stun = class({})
 
@@ -228,4 +329,4 @@ end
 
 function modifier_mars_spear_stun:GetEffectAttachType()
     return PATTACH_OVERHEAD_FOLLOW
-end 
+end

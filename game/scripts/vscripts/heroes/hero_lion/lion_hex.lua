@@ -5,6 +5,114 @@ lion_hex = class({})
 
 LinkLuaModifier("modifier_lion_hex", "heroes/hero_lion/lion_hex.lua", LUA_MODIFIER_MOTION_NONE)
 
+-- 自走棋式自动施法功能
+function lion_hex:OnCreated()
+    if not IsServer() then return end
+    print("Lion Hex: OnCreated called")
+end
+
+function lion_hex:OnUpgrade()
+    if not IsServer() then return end
+    
+    local caster = self:GetCaster()
+    
+    print("Lion Hex: OnUpgrade called for", caster:GetUnitName())
+    
+    if not self.auto_cast_timer then
+        self.auto_cast_timer = true
+        self.last_cast_time = 0
+        
+        print("Lion Hex: Starting auto cast timer")
+        
+        local function CheckAutoCast()
+            if not IsValidEntity(caster) or not caster:IsAlive() then
+                return
+            end
+            
+            local current_time = GameRules:GetGameTime()
+            if current_time - self.last_cast_time < 1.0 then
+                return 0.1
+            end
+            
+            local current_mana = caster:GetMana()
+            local max_mana = caster:GetMaxMana()
+            
+            print("Lion Hex Auto Cast Check - Mana:", current_mana, "Max:", max_mana, "IsFullyCastable:", self:IsFullyCastable())
+            
+            if current_mana >= max_mana and self:IsFullyCastable() then
+                local target = self:FindNearestEnemy()
+                if target then
+                    if not caster:IsChanneling() and not caster:IsSilenced() and not caster:IsStunned() then
+                        print("Lion Hex: Auto casting skill!")
+                        
+                        local success = pcall(function()
+                            caster:CastAbilityNoTarget(self, caster:GetPlayerOwnerID())
+                        end)
+                        
+                        if success then
+                            print("Lion Hex: CastAbilityNoTarget succeeded")
+                        else
+                            print("Lion Hex: CastAbilityNoTarget failed")
+                        end
+                        
+                        self.last_cast_time = current_time
+                    end
+                end
+            end
+            return 0.1
+        end
+        
+        GameRules:GetGameModeEntity():SetThink(CheckAutoCast, "CheckAutoCast_" .. caster:GetEntityIndex(), 0.1)
+    end
+end
+
+function lion_hex:FindNearestEnemy()
+    local caster = self:GetCaster()
+    local auto_cast_range = self:GetSpecialValueFor("auto_cast_range")
+    
+    print("Lion Hex: Checking for enemies in range", auto_cast_range)
+    
+    local enemies = FindUnitsInRadius(
+        caster:GetTeamNumber(),
+        caster:GetAbsOrigin(),
+        nil,
+        auto_cast_range,
+        DOTA_UNIT_TARGET_TEAM_ENEMY,
+        DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
+        DOTA_UNIT_TARGET_FLAG_NONE,
+        FIND_ANY_ORDER,
+        false
+    )
+    
+    print("Lion Hex: Found", #enemies, "enemies in range")
+    
+    if #enemies == 0 then
+        return nil
+    end
+    
+    -- 找到距离最近的敌方单位
+    local nearest_enemy = nil
+    local min_distance = math.huge
+    
+    for _, enemy in pairs(enemies) do
+        if enemy:IsAlive() and not enemy:IsNull() then
+            local distance = (enemy:GetAbsOrigin() - caster:GetAbsOrigin()):Length()
+            if distance < min_distance then
+                min_distance = distance
+                nearest_enemy = enemy
+            end
+        end
+    end
+    
+    if nearest_enemy then
+        print("Lion Hex: Nearest enemy found:", nearest_enemy:GetUnitName(), "at distance:", min_distance)
+    else
+        print("Lion Hex: No valid enemy found")
+    end
+    
+    return nearest_enemy
+end
+
 function lion_hex:Precache(context)
     -- 使用Dota2原生的青蛙模型，不需要预加载自定义模型
     PrecacheResource("particle", "particles/heroes/lion/lion_spell_voodoo.vpcf", context)
@@ -12,10 +120,17 @@ function lion_hex:Precache(context)
 end
 
 function lion_hex:OnSpellStart()
-    local caster = self:GetCaster()
-    local target = self:GetCursorTarget()
+    print("=== LION HEX OnSpellStart CALLED ===")
     
-    if not target then return end
+    local caster = self:GetCaster()
+    local target = self:FindNearestEnemy()
+    
+    print("Lion Hex: Target found:", target and target:GetUnitName() or "nil")
+    
+    if not target or target:IsNull() or not target:IsAlive() then
+        print("Lion Hex: No valid target found")
+        return
+    end
     
     -- 应用hex效果
     local duration = self:GetSpecialValueFor("duration")
@@ -28,6 +143,10 @@ function lion_hex:OnSpellStart()
     local particle = ParticleManager:CreateParticle("particles/heroes/lion/lion_spell_voodoo.vpcf", PATTACH_ABSORIGIN_FOLLOW, target)
     ParticleManager:SetParticleControl(particle, 0, target:GetAbsOrigin())
     ParticleManager:ReleaseParticleIndex(particle)
+    
+    -- 重置单位状态，确保继续普通攻击
+    caster:Stop()
+    caster:MoveToPosition(caster:GetAbsOrigin())
 end
 
 -- Hex效果modifier

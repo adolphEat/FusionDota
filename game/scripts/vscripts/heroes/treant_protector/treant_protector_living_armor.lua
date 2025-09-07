@@ -3,6 +3,73 @@ treant_protector_living_armor = class({})
 LinkLuaModifier("modifier_treant_protector_living_armor", "heroes/treant_protector/treant_protector_living_armor.lua", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_treant_protector_living_armor_timer", "heroes/treant_protector/treant_protector_living_armor.lua", LUA_MODIFIER_MOTION_NONE)
 
+-- 自走棋式自动施法功能
+function treant_protector_living_armor:OnUpgrade()
+    if not IsServer() then return end
+    
+    local caster = self:GetCaster()
+    if not caster or caster:IsNull() then return end
+    
+    -- 启动自动施法检查
+    self:StartAutoCastCheck()
+end
+
+function treant_protector_living_armor:StartAutoCastCheck()
+    if not IsServer() then return end
+    
+    local caster = self:GetCaster()
+    if not caster or caster:IsNull() then return end
+    
+    -- 使用GameRules的SetThink来创建定时检查
+    GameRules:GetGameModeEntity():SetThink(function()
+        if not caster or caster:IsNull() or not caster:IsAlive() then
+            return nil -- 停止检查
+        end
+        
+        -- 检查是否满足自动施法条件
+        self:CheckAutoCast()
+        
+        return 0.1 -- 每0.1秒检查一次
+    end, "treant_living_armor_auto_cast_" .. caster:GetEntityIndex())
+end
+
+function treant_protector_living_armor:CheckAutoCast()
+    if not IsServer() then return end
+    
+    local caster = self:GetCaster()
+    if not caster or caster:IsNull() or not caster:IsAlive() then return end
+    
+    -- 检查蓝量是否足够
+    local mana_cost = self:GetManaCost(self:GetLevel())
+    local current_mana = caster:GetMana()
+    local max_mana = caster:GetMaxMana()
+    
+    if current_mana >= mana_cost and self:IsFullyCastable() then
+        -- 检查是否已经在冷却中或正在施法
+        if not caster:IsChanneling() and not caster:IsSilenced() and not caster:IsStunned() then
+            -- 检查是否已经有Living Armor效果
+            local existing_modifier = caster:FindModifierByName("modifier_treant_protector_living_armor")
+            if not existing_modifier then
+                self:AutoCastOnSelf()
+            end
+        end
+    end
+end
+
+function treant_protector_living_armor:AutoCastOnSelf()
+    if not IsServer() then return end
+    
+    local caster = self:GetCaster()
+    if not caster or caster:IsNull() or not caster:IsAlive() then return end
+    
+    -- 使用CastAbilityNoTarget来释放技能
+    caster:CastAbilityNoTarget(self, caster:GetPlayerOwnerID())
+    
+    -- 重置单位状态，确保能继续正常攻击
+    caster:Stop()
+    caster:MoveToPosition(caster:GetAbsOrigin())
+end
+
 function treant_protector_living_armor:OnSpellStart()
     if not IsServer() then return end
     
@@ -42,9 +109,26 @@ end
 function modifier_treant_protector_living_armor:OnCreated()
     if not IsServer() then return end
     
-    self.armor_bonus = self:GetAbility():GetSpecialValueFor("armor_bonus")
-    self.magic_resistance = self:GetAbility():GetSpecialValueFor("magic_resistance")
-    self.health_regen = self:GetAbility():GetSpecialValueFor("health_regen")
+    -- 确保技能存在且有效
+    local ability = self:GetAbility()
+    if not ability or ability:IsNull() then
+        return
+    end
+    
+    self.armor_bonus = ability:GetSpecialValueFor("armor_bonus")
+    self.magic_resistance = ability:GetSpecialValueFor("magic_resistance")
+    self.health_regen = ability:GetSpecialValueFor("health_regen")
+    
+    -- 如果获取失败，使用默认值
+    if not self.armor_bonus then
+        self.armor_bonus = 5
+    end
+    if not self.magic_resistance then
+        self.magic_resistance = 10
+    end
+    if not self.health_regen then
+        self.health_regen = 30
+    end
     
     -- 启动生命恢复定时器
     self:StartHealTimer()
@@ -98,11 +182,11 @@ function modifier_treant_protector_living_armor:DeclareFunctions()
 end
 
 function modifier_treant_protector_living_armor:GetModifierPhysicalArmorBonus()
-    return self.armor_bonus
+    return self.armor_bonus or 5
 end
 
 function modifier_treant_protector_living_armor:GetModifierMagicalResistanceBonus()
-    return self.magic_resistance
+    return self.magic_resistance or 10
 end
 
 function modifier_treant_protector_living_armor:GetModifierHealthRegenConstant()

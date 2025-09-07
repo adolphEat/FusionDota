@@ -5,6 +5,67 @@
 
 ember_spirit_inner_Fire = class({})
 
+print("=== EMBER SPIRIT INNER FIRE SCRIPT LOADED ===")
+
+-- 自走棋式自动施法功能 (复制Ursa的成功实现)
+function ember_spirit_inner_Fire:OnUpgrade()
+    if not IsServer() then return end
+    
+    local caster = self:GetCaster()
+    
+    if not self.auto_cast_timer then
+        self.auto_cast_timer = true
+        self.last_cast_time = 0
+        
+        local function CheckAutoCast()
+            if not IsValidEntity(caster) or not caster:IsAlive() then
+                return
+            end
+            
+            local current_time = GameRules:GetGameTime()
+            if current_time - self.last_cast_time < 1.0 then
+                return 0.1
+            end
+            
+            local current_mana = caster:GetMana()
+            local max_mana = caster:GetMaxMana()
+            
+            if current_mana >= max_mana and self:IsFullyCastable() then
+                local has_enemies = self:HasEnemiesInRange()
+                if has_enemies then
+                    if not caster:IsChanneling() and not caster:IsSilenced() and not caster:IsStunned() then
+                        print("Ember Inner Fire Auto Cast: Found enemies, casting skill!")
+                        caster:CastAbilityNoTarget(self, caster:GetPlayerOwnerID())
+                        self.last_cast_time = current_time
+                    end
+                end
+            end
+            return 0.1
+        end
+        
+        GameRules:GetGameModeEntity():SetThink(CheckAutoCast, "CheckAutoCast_" .. caster:GetEntityIndex(), 0.1)
+    end
+end
+
+function ember_spirit_inner_Fire:HasEnemiesInRange()
+    local caster = self:GetCaster()
+    local radius = self:GetSpecialValueFor("radius")
+    
+    local enemies = FindUnitsInRadius(
+        caster:GetTeamNumber(),
+        caster:GetAbsOrigin(),
+        nil,
+        radius,
+        DOTA_UNIT_TARGET_TEAM_ENEMY,
+        DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
+        DOTA_UNIT_TARGET_FLAG_NONE,
+        FIND_ANY_ORDER,
+        false
+    )
+    
+    return #enemies > 0
+end
+
 function ember_spirit_inner_Fire:OnSpellStart()
     local caster = self:GetCaster()
     local ability = self
@@ -12,6 +73,8 @@ function ember_spirit_inner_Fire:OnSpellStart()
     if not caster or not ability then
         return
     end
+    
+    print("=== EMBER SPIRIT INNER FIRE SPELL STARTED ===")
     
     -- 获取技能参数
     local damage = ability:GetSpecialValueFor("damage")
@@ -46,17 +109,10 @@ function ember_spirit_inner_Fire:OnSpellStart()
         false
     )
     
-    print("=== ember_spirit_inner_Fire executed ===")
-    print("Caster:", caster:GetUnitName())
-    print("Damage:", damage)
-    print("Radius:", radius)
-    print("Enemies found:", #enemies)
     
     -- 对每个敌人造成伤害和效果
     for _, enemy in pairs(enemies) do
         if IsValidEntity(enemy) and not enemy:IsNull() and enemy:IsAlive() then
-            print("Processing enemy:", enemy:GetUnitName())
-            
             -- 检查目标是否有lina_light_strike_array_burn debuff
             local burn_modifier = enemy:FindModifierByName("modifier_lina_light_strike_array_burn")
             
@@ -71,12 +127,6 @@ function ember_spirit_inner_Fire:OnSpellStart()
                 local remaining_ticks = math.ceil(remaining_time / burn_interval)
                 local total_burn_damage = remaining_ticks * (max_health * burn_damage_percent / 100.0)
                 
-                print("=== Burn debuff synergy triggered ===")
-                print("Target:", enemy:GetUnitName())
-                print("Remaining burn time:", remaining_time)
-                print("Remaining ticks:", remaining_ticks)
-                print("Total burn damage to trigger:", total_burn_damage)
-                
                 -- 移除burn debuff
                 burn_modifier:Destroy()
                 
@@ -89,8 +139,6 @@ function ember_spirit_inner_Fire:OnSpellStart()
                     ability = ability
                 }
                 ApplyDamage(burn_damage_table)
-                
-                print("Applied instant burn damage to", enemy:GetUnitName(), "- Damage:", total_burn_damage)
                 
                 -- 播放特殊的连携特效音效
                 EmitSoundOn("Hero_Lina.LightStrikeArray.Target", enemy)
@@ -105,8 +153,6 @@ function ember_spirit_inner_Fire:OnSpellStart()
                 ability = ability
             }
             ApplyDamage(damage_table)
-            
-            print("Applied skill damage to", enemy:GetUnitName(), "- Damage:", damage)
         end
     end
 end

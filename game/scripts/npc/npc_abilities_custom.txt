@@ -17,6 +17,37 @@
 	//
 	// Notes: Missing some particles and for the marker particle, the targeting array moves out instead of in
 	
+	"universal_mana_restore_on_attack"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/universal/universal_mana_restore_on_attack.lua"
+		"AbilityTextureName"	"item_energy_booster"
+		"AbilityType"	"DOTA_ABILITY_TYPE_PASSIVE"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"	"1"
+		"AbilityCooldown"	"0"
+		"AbilityManaCost"	"0"
+		"AbilityCastPoint"	"0.0"
+		"AbilityCastAnimation"	"ACT_DOTA_CAST_ABILITY_1"
+		"IsHidden"	"1"
+	}
+
+	"universal_mana_restore_on_damage"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/universal/universal_mana_restore_on_damage.lua"
+		"AbilityTextureName"	"item_energy_booster"
+		"AbilityType"	"DOTA_ABILITY_TYPE_PASSIVE"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"	"1"
+		"AbilityCooldown"	"0"
+		"AbilityManaCost"	"0"
+		"AbilityCastPoint"	"0.0"
+		"AbilityCastAnimation"	"ACT_DOTA_CAST_ABILITY_1"
+		"IsHidden"	"1"
+	}
 	
 	"windrunner_powershot"
 	{
@@ -24,23 +55,24 @@
 		"ScriptFile"	"heroes/hero_windrunner/windrunner_powershot.lua"
 		"AbilityTextureName"	"windrunner_powershot"
 		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
-		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
-		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_DIRECTIONAL"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_PHYSICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_POINT"
 		"MaxLevel"	"3"
 		"AbilityCooldown"	"0.0 0.0 0.0"
-		"AbilityManaCost"	"50 50 50"
-		"AbilityCastRange"	"9999"
-		"AbilityCastPoint"	"0.3"
+		"AbilityManaCost"	"80 80 80"
+		"AbilityCastRange"	"3000"
+		"AbilityCastPoint"	"0.0"
 		
 		"AbilityValues"
 		{
-			"arrow_damage"	"400 500 600"
+			"arrow_damage"	"250 300 350"
 			"arrow_speed"	"3000"
 			"arrow_width"	"125"
-			"arrow_range"	"2600"
+			"arrow_range"	"3000"
 			"charge_time"	"1.0"
 			"max_charge_time"	"4.0"
-			"damage_reduction_per_target"	"100"
+			"damage_reduction_per_target"	"50"
+			"auto_cast_range"	"3000"
 		}
 		
 		"Precache"
@@ -63,17 +95,19 @@
 		"AbilityCastPoint"	"0.0"
 		"AbilityCooldown"	"0.0"
 		"AbilityManaCost"	"100"
+		"AbilityCastRange"	"1000"
 		"MaxLevel"	"3"
 		"AbilityValues"
 		{
-			"damage"	"300 400 500"
+			"damage"	"200 200 200"
 			"spear_speed"	"1400"
 			"spear_width"	"125"
 			"spear_vision"	"300"
 			"max_impale_targets"	"1"
-			"spear_range"	"900 900 900"
-			"chain_damage"	"200 250 300"
+			"spear_range"	"1000 1000 1000"
+			"chain_damage"	"100 100 100"
 			"chain_stun_duration"	"1.5"
+			"auto_cast_range"	"1000"
 		}
 		"Precache"
 		{
@@ -93,15 +127,16 @@
 		"MaxLevel"	"3"
 		"AbilityCooldown"	"0 0 0"
 		"AbilityManaCost"	"150 150 150"
-		"AbilityCastPoint"	"0.3"
-		"AbilityCastAnimation"	"ACT_DOTA_CAST_ABILITY_4"
+		"AbilityCastPoint"	"0.0"
 		"AbilitySound"	"Ability.Ravage"
-		"AbilityDamage"	"500 700 1000"
+		"AbilityDamage"	"400 400 400"
 		
 		"AbilityValues"
 		{
-			"radius"	"1250"
-			"heal_amount"	"300 350 400"
+			"damage"	"400 400 400"
+			"radius"	"3000"
+			"heal_amount"	"200 200 200"
+			"auto_cast_range"	"3000"
 		}
 		
 		"Precache"
@@ -117,23 +152,22 @@
 		"AbilityTextureName" "lina_light_strike_array"
 		"MaxLevel" "3"
 		"AbilityCooldown" "0.0 0.0 0.0"
-		"AbilityManaCost" "70 70 70"
+		"AbilityManaCost" "100 100 100"
 		"AbilityType" "DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType" "DAMAGE_TYPE_MAGICAL"
-		"AbilityBehavior" "DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
-		"AbilityCastRange" "700"
-		"AbilityCastPoint" "0.45"
-		"AbilityUnitTargetTeam" "DOTA_UNIT_TARGET_TEAM_ENEMY"
-		"AbilityUnitTargetType" "DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_BASIC"
+		"AbilityBehavior" "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"AbilityCastRange" "9999"
+		"AbilityCastPoint" "0.0"
 		
 		"AbilityValues" {
 			"light_strike_array_aoe" "400"
 			"light_strike_array_delay_time" "0.5"
-			"light_strike_array_damage" "100 200 300"
+			"light_strike_array_damage" "250 250 250"
 			"light_strike_array_burn_duration" "10.0"
 			"light_strike_array_burn_damage_percent" "1.0"
 			"light_strike_array_burn_interval" "1.0"
 			"light_strike_array_mana_restore" "5"
+			"auto_cast_range" "9999"
 		}
 
 		"Precache" {
@@ -147,18 +181,18 @@
 		"ScriptFile" "heroes/hero_ursa/ursa_earthshock.lua"
 		"AbilityTextureName" "ursa_earthshock"
 		"MaxLevel" "3"
-		"AbilityCooldown" "0"
-		"AbilityManaCost" "80"
+		"AbilityCooldown" "0.0 0.0 0.0"
+		"AbilityManaCost" "100 100 100"
 		"AbilityType" "DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType" "DAMAGE_TYPE_PHYSICAL"
-		"AbilityBehavior" "DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"AbilityBehavior" "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
 		"AbilityCastPoint" "0.0"
-		"AbilityDuration" "6.0"
 		
 		"AbilityValues" {
-			"shock_radius" "800"
-			"attackspeed_slow" "-20 -30 -40"
-			"earthshock_damage" "250 300 350"
+			"shock_radius" "400"
+			"attackspeed_slow" "15 15 15"
+			"earthshock_damage" "200 200 200"
+			"slow_duration" "5.0"
 		}
 		
 		"Precache" {
@@ -182,10 +216,10 @@
 		
 		"AbilityValues"
 		{
-			"armor_bonus"	"10 20 30"
-			"magic_resistance"	"10 20 30"
-			"health_regen"	"20 30 40"
-			"duration"	"10.0 10.0 10.0"
+			"armor_bonus"	"5 5 5"
+			"magic_resistance"	"10 10 10"
+			"health_regen"	"30 30 30"
+			"duration"	"5.0 5.0 5.0"
 		}
 		
 		"Precache"
@@ -239,8 +273,8 @@
 		
 		"AbilityValues"
 		{
-			"attackspeed_per_health_percent"	"0.5 1.0 2.0"
-			"lifesteal_per_health_percent"	"0.2 0.3 0.5"
+			"attackspeed_per_health_percent"	"2.0 3.0 4.0"
+			"lifesteal_per_health_percent"	"1.0 1.5 2.0"
 		}
 		
 		"Precache"
@@ -261,16 +295,16 @@
 		"MaxLevel"	"3"
 		"AbilityCooldown"	"0 0 0"
 		"AbilityManaCost"	"150 150 150"
-		"AbilityCastRange"	"1000"
+		"AbilityCastRange"	"9999"
 		"AbilityCastPoint"	"0.35"
 		"AbilityChannelTime"	"8.0"
 		
 		"AbilityValues"
 		{
-			"radius"	"900"
+			"radius"	"1200"
 			"duration"	"8.0"
-			"total_damage"	"400 500 600"
-			"pull_speed"	"175"
+			"total_damage"	"500 500 500"
+			"auto_cast_range"	"9999"
 		}
 		
 		"Precache"
@@ -290,14 +324,16 @@
 		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
 		"MaxLevel"	"3"
 		"AbilityCooldown"	"0 0 0"
-		"AbilityCastPoint"	"0.35"
-		"AbilityCastRange"	"500"
+		"AbilityCastPoint"	"0.0"
+		"AbilityCastAnimation"	"ACT_DOTA_IDLE"
+		"AbilityCastRange"	"600"
 		"AbilityManaCost"	"100"
 		
 		"AbilityValues"
 		{
-			"damage"	"200 250 300"
-			"radius"	"500"
+			"damage"	"350 350 350"
+			"radius"	"600"
+			"auto_cast_range"	"600"
 		}
 		
 		"Precache"
@@ -314,21 +350,21 @@
 		"AbilityTextureName"	"lion_voodoo"
 		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
-		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
-		"AbilityUnitTargetTeam"	"DOTA_UNIT_TARGET_TEAM_ENEMY"
-		"AbilityUnitTargetType"	"DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_BASIC"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
 		"SpellDispellableType"	"SPELL_DISPELLABLE_YES_STRONG"
 		"MaxLevel"	"3"
 		"AbilityCooldown"	"0 0 0"
-		"AbilityManaCost"	"75"
-		"AbilityCastRange"	"1000"
-		"AbilityCastPoint"	"0.3"
-		"AbilityCastAnimation"	"ACT_DOTA_CAST_ABILITY_2"
+		"AbilityManaCost"	"70"
+		"AbilityCastPoint"	"0.0"
+		"AbilityCastAnimation"	"ACT_DOTA_IDLE"
+		"AbilityCastRange"	"9999"
+		"AbilityChannelTime"	"0"
 		
 		"AbilityValues"
 		{
-			"duration"	"3 5 7"
+			"duration"	"3 3 3"
 			"movespeed"	"100"
+			"auto_cast_range"	"9999"
 		}
 		
 		"Precache"
@@ -356,8 +392,8 @@
 			"enemy_disarm_duration"	"3 5 7"
 			"ally_attack_speed_bonus"	"20 40 60"
 			"ally_lifesteal_percent"	"30"
-			"enemy_search_radius"	"3000"
-			"ally_search_radius"	"3000"
+			"enemy_search_radius"	"5000"
+			"ally_search_radius"	"5000"
 		}
 		
 		"Precache"
@@ -385,7 +421,7 @@
 		"AbilityValues"
 		{
 			"silence_duration"	"3 5 7"
-			"silence_radius"	"400"
+			"silence_radius"	"600"
 		}
 		
 		"Precache"
@@ -411,9 +447,9 @@
 		
 		"AbilityValues"
 		{
-			"heal_interval"	"0.5"
+			"heal_interval"	"1.0"
 			"heal_per_interval"	"15 25 35"
-			"heal_radius"	"900"
+			"heal_radius"	"800"
 			"duration"	"8.0"
 		}
 		
@@ -424,4 +460,6 @@
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_enchantress.vsndevts"
 		}
 	}
+
+
 }
