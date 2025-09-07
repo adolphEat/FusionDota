@@ -10,18 +10,10 @@ function GiveVision(keys)
 	
 	AddFOWViewer(caster:GetTeam(), point, sight_radius, sight_duration, false)
 
-	print("_____________________________GiveVisionTest________________________________________")
 	-- 添加伤害效果
     local damage = ability:GetLevelSpecialValueFor("damage", (ability:GetLevel() -1))
     local damage_radius = ability:GetLevelSpecialValueFor("damage_radius", (ability:GetLevel() -1))
-    damage = 1000
-    damage_radius = 1000
 	
-	print("Damage:", damage)
-	print("Damage Radius:", damage_radius)
-	print("Caster Team:", caster:GetTeamNumber())
-	print("Target Point:", point.x, point.y, point.z)
-
     -- 寻找范围内的敌方单位
     local units = FindUnitsInRadius(
         caster:GetTeamNumber(),

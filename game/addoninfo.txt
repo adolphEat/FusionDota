@@ -16,7 +16,9 @@
 	DisableIK = false
 	EnablePickRules = false
 	EventGame = false
-	hero_picker = null
+	hero_picker = 
+	{
+	}
 	HeroGuidesSupported = false
 	ForceDefaultGuide = false
 	MinimalPrecache = false

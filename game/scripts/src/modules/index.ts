@@ -33,6 +33,9 @@ export function ActivateModules() {
     if (GameRules.XNetTable == null) {
         print('[Modules] Starting module initialization...');
         try {
+            print('[Modules] About to create GameConfig...');
+            new GameConfig();
+
             // 初始化所有的GameRules模块
             GameRules.XNetTable = new XNetTable();
             
@@ -57,6 +60,7 @@ export function ActivateModules() {
             // 初始化自走棋模式
             GameRules.AutoChessMode = AutoChessMode.getInstance();
             
+            
             // 更新系统状态到网络表
             GameRules.XNetTable.SetTableValue('debug_info', 'system_status', {
                 errorTracking: true,
@@ -65,9 +69,7 @@ export function ActivateModules() {
                 timestamp: Date.now()
             });
             
-            // 如果某个模块不需要在其他地方使用，那么直接在这里使用即可
-            print('[Modules] About to create GameConfig...');
-            new GameConfig();
+           // 如果某个模块不需要在其他地方使用，那么直接在这里使用即可
             print('[Modules] GameConfig created successfully');
             
             // 初始化调试模块（已增强错误追踪功能）

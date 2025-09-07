@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "target": "ES2018",
+        "lib": ["ES2018", "DOM"],
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "jsx": "react",
+        "jsxFactory": "React.createElement",
+        "declaration": false,
+        "outDir": "../../game/scripts/vscripts/panorama",
+        "baseUrl": "./src",
+        "paths": {
+            "@/*": ["./*"]
+        },
+        "strict": false,
+        "skipLibCheck": true,
+        "noImplicitAny": false
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts",
+        "**/*.test.ts"
+    ]
+}

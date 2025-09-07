@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["6"] = 1,["7"] = 1,["8"] = 2,["9"] = 2,["10"] = 3,["11"] = 3,["12"] = 4,["13"] = 4,["14"] = 4,["15"] = 5,["16"] = 5,["17"] = 6,["18"] = 6,["19"] = 7,["20"] = 7,["21"] = 8,["22"] = 8,["25"] = 26,["26"] = 27,["27"] = 28,["28"] = 29,["29"] = 30,["30"] = 31,["31"] = 33,["32"] = 34,["35"] = 82,["36"] = 83,["38"] = 88,["40"] = 90,["43"] = 37,["44"] = 40,["45"] = 41,["46"] = 44,["47"] = 47,["48"] = 48,["49"] = 49,["50"] = 52,["51"] = 55,["52"] = 58,["53"] = 61,["54"] = 61,["55"] = 61,["56"] = 61,["57"] = 61,["58"] = 61,["59"] = 61,["60"] = 61,["61"] = 61,["62"] = 61,["63"] = 69,["64"] = 70,["65"] = 71,["66"] = 74,["67"] = 75,["68"] = 76,["69"] = 78,["76"] = 93,["77"] = 94,["79"] = 96,["80"] = 26});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["6"] = 1,["7"] = 1,["8"] = 2,["9"] = 2,["10"] = 3,["11"] = 3,["12"] = 4,["13"] = 4,["14"] = 4,["15"] = 5,["16"] = 5,["17"] = 6,["18"] = 6,["19"] = 7,["20"] = 7,["21"] = 8,["22"] = 8,["25"] = 26,["26"] = 27,["27"] = 28,["28"] = 29,["29"] = 30,["30"] = 31,["31"] = 33,["32"] = 34,["35"] = 84,["36"] = 85,["38"] = 90,["40"] = 92,["43"] = 36,["44"] = 37,["45"] = 40,["46"] = 43,["47"] = 44,["48"] = 47,["49"] = 50,["50"] = 51,["51"] = 52,["52"] = 55,["53"] = 58,["54"] = 61,["55"] = 65,["56"] = 65,["57"] = 65,["58"] = 65,["59"] = 65,["60"] = 65,["61"] = 65,["62"] = 65,["63"] = 65,["64"] = 65,["65"] = 73,["66"] = 76,["67"] = 77,["68"] = 78,["69"] = 80,["76"] = 95,["77"] = 96,["79"] = 98,["80"] = 26});
 local ____exports = {}
 local ____Debug = require("modules.Debug")
 local Debug = ____Debug.Debug
@@ -40,6 +40,8 @@ function ____exports.ActivateModules(self)
                 error(____error, 0)
             end
             local ____try, ____hasReturned = pcall(function()
+                print("[Modules] About to create GameConfig...")
+                __TS__New(GameConfig)
                 GameRules.XNetTable = __TS__New(XNetTable)
                 GameRules.ErrorTracker = ErrorTracker:getInstance()
                 initializeGlobalErrorHandling(nil)
@@ -60,8 +62,6 @@ function ____exports.ActivateModules(self)
                         timestamp = Date:now()
                     }
                 )
-                print("[Modules] About to create GameConfig...")
-                __TS__New(GameConfig)
                 print("[Modules] GameConfig created successfully")
                 print("[Modules] About to create Debug module...")
                 __TS__New(Debug)

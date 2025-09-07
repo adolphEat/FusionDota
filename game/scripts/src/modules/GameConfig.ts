@@ -5,7 +5,7 @@ export class GameConfig {
         GameRules.SetCustomGameSetupAutoLaunchDelay(3); // 游戏设置时间（恢复原始）
         GameRules.SetCustomGameSetupRemainingTime(3); // 游戏设置剩余时间（恢复原始）
         GameRules.SetCustomGameSetupTimeout(3); // 游戏设置阶段超时（恢复原始）
-        GameRules.SetHeroSelectionTime(0); // 选择英雄阶段的持续时间
+  
         GameRules.SetShowcaseTime(0); // 选完英雄的展示时间
         GameRules.SetPreGameTime(0); // 进入游戏后号角吹响前的准备时间
         GameRules.SetPostGameTime(30); // 游戏结束后时长
@@ -28,7 +28,7 @@ export class GameConfig {
         game.SetDaynightCycleDisabled(true); // 是否禁用白天黑夜循环
         game.SetForceRightClickAttackDisabled(true); // 是否禁用右键攻击
         game.SetHudCombatEventsDisabled(true); // 是否禁用战斗事件（左下角的战斗消息）
-        game.SetCustomGameForceHero(`npc_dota_hero_phoenix`); // 设置强制英雄（会直接跳过英雄选择阶段并直接为所有玩家选择这个英雄）
+
         // game.SetUseCustomHeroLevels(true); // 是否启用自定义英雄等级
         // game.SetCustomHeroMaxLevel(1); // 设置自定义英雄最大等级
         // game.SetCustomXPRequiredToReachNextLevel({
@@ -45,8 +45,7 @@ export class GameConfig {
         //       GameRules.SetCustomGameTeamMaxPlayers(team, 1);
         // 
         // 注释：如果要恢复英雄选择，可以调整下面的设置
-        // GameRules.SetHeroSelectionTime(30);  // 恢复英雄选择时间
-        // game.SetCustomGameForceHero(``);     // 清空强制英雄
-        
+        GameRules.SetHeroSelectionTime(0);  // 恢复英雄选择时间
+        game.SetCustomGameForceHero(`npc_dota_hero_gyrocopter`); // 设置强制英雄（会直接跳过英雄选择阶段并直接为所有玩家选择这个英雄）
     }
 }

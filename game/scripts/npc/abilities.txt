@@ -51,9 +51,9 @@ ALL（quan_bu）（xu_yao_e_wai_que_ren_xia）"
 		"AbilityTextureName" "axe_counter_helix"
 		"AbilityType" "DOTA_ABILITY_TYPE_BASIC"
 		"Precache" {
-			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_axe.vsndevts"
-			"particle"	"particles/units/heroes/hero_axe/axe_counterhelix_ad.vpcf"
-		}
+	"soundfile"	"soundevents/game_sounds_heroes/game_sounds_axe.vsndevts"
+	"particle"	"particles/units/heroes/hero_axe/axe_counterhelix_ad.vpcf"
+}
 	}
 	"shi_li_3" {
 		"BaseClass" "ability_lua"
@@ -75,15 +75,5 @@ ALL（quan_bu）（xu_yao_e_wai_que_ren_xia）"
 		"Precache" {
             "particle"  "particles/units/heroes/hero_tiny/tiny_toss_blur.vpcf"
 		}
-	}
-	"call_down_rewrite" {
-		"BaseClass" "ability_datadriven（ji_yu_yuan_ji_neng_xi_tiao）"
-		"AbilityValues" {
-		}
-		"MaxLevel" "3"
-		"AbilityCooldown" "0 0 0"
-		"AbilityManaCost" "50 50 50"
-		"AbilityTextureName" "black_dragon_splash_attack"
-		"AbilityType" "DOTA_ABILITY_TYPE_BASIC"
 	}
 }

@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["6"] = 1,["7"] = 1,["8"] = 1,["10"] = 3,["11"] = 5,["12"] = 6,["13"] = 7,["14"] = 8,["15"] = 9,["16"] = 10,["17"] = 11,["18"] = 12,["19"] = 13,["20"] = 14,["21"] = 15,["22"] = 16,["23"] = 17,["24"] = 18,["25"] = 19,["26"] = 20,["27"] = 21,["28"] = 23,["29"] = 24,["30"] = 25,["31"] = 26,["32"] = 27,["33"] = 28,["34"] = 29,["35"] = 30,["36"] = 31,["37"] = 38,["38"] = 39,["39"] = 42,["40"] = 43,["41"] = 2});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["6"] = 1,["7"] = 1,["8"] = 1,["10"] = 3,["11"] = 5,["12"] = 6,["13"] = 7,["14"] = 9,["15"] = 10,["16"] = 11,["17"] = 12,["18"] = 13,["19"] = 14,["20"] = 15,["21"] = 16,["22"] = 17,["23"] = 18,["24"] = 19,["25"] = 20,["26"] = 21,["27"] = 23,["28"] = 24,["29"] = 25,["30"] = 26,["31"] = 27,["32"] = 28,["33"] = 29,["34"] = 30,["35"] = 38,["36"] = 39,["37"] = 42,["38"] = 43,["39"] = 48,["40"] = 49,["41"] = 2});
 local ____exports = {}
 ____exports.GameConfig = __TS__Class()
 local GameConfig = ____exports.GameConfig
@@ -11,7 +11,6 @@ function GameConfig.prototype.____constructor(self)
     GameRules:SetCustomGameSetupAutoLaunchDelay(3)
     GameRules:SetCustomGameSetupRemainingTime(3)
     GameRules:SetCustomGameSetupTimeout(3)
-    GameRules:SetHeroSelectionTime(0)
     GameRules:SetShowcaseTime(0)
     GameRules:SetPreGameTime(0)
     GameRules:SetPostGameTime(30)
@@ -33,10 +32,11 @@ function GameConfig.prototype.____constructor(self)
     game:SetDaynightCycleDisabled(true)
     game:SetForceRightClickAttackDisabled(true)
     game:SetHudCombatEventsDisabled(true)
-    game:SetCustomGameForceHero("npc_dota_hero_phoenix")
     game:SetDaynightCycleDisabled(true)
     game:SetDeathOverlayDisabled(true)
     GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_GOODGUYS, 3)
     GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_BADGUYS, 3)
+    GameRules:SetHeroSelectionTime(0)
+    game:SetCustomGameForceHero("npc_dota_hero_gyrocopter")
 end
 return ____exports
