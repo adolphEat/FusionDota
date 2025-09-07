@@ -1,4 +1,111 @@
+-- Tidehunter Ravage技能 - 支持自走棋式自动释放：当Mana回满时自动释放
+-- 以自身为中心向外扩散出一道冲击波，行进3000距离
+-- 对范围内的所有敌人造成400点伤害，并对所有友军治疗200点血量
+
 tidehunter_ravage = class({})
+
+function tidehunter_ravage:GetManaCost(level)
+    return 150 -- 固定150点Mana消耗
+end
+
+function tidehunter_ravage:OnUpgrade()
+    if not IsServer() then return end
+    
+    local caster = self:GetCaster()
+    
+    -- 启动自走棋式自动释放检查定时器
+    if not self.auto_cast_timer then
+        self.auto_cast_timer = true
+        self.last_cast_time = 0 -- 添加冷却时间记录
+        
+        -- 使用Dota 2内置的定时器系统
+        local function CheckAutoCast()
+            if not IsValidEntity(caster) or not caster:IsAlive() then
+                return -- 停止定时器
+            end
+            
+            -- 检查冷却时间（防止频繁尝试）
+            local current_time = GameRules:GetGameTime()
+            if current_time - self.last_cast_time < 1.5 then
+                return 0.1 -- 继续定时器，但跳过这次检查
+            end
+            
+            -- 检查Mana是否回满（达到最大Mana值）
+            local current_mana = caster:GetMana()
+            local max_mana = caster:GetMaxMana()
+            
+            -- 调试信息（减少输出频率）
+            if current_mana >= max_mana then
+                print("Tidehunter Ravage Auto Cast Check - Mana Full! Current:", current_mana, "Max:", max_mana, "IsFullyCastable:", self:IsFullyCastable())
+            end
+            
+            if current_mana >= max_mana and self:IsFullyCastable() then
+                -- 检查是否有敌人或友军在范围内
+                local has_targets = self:HasTargetsInRange()
+                if has_targets then
+                    print("Tidehunter Ravage Auto Cast: Found targets, casting skill!")
+                    -- 检查是否已经在施法
+                    if not caster:IsChanneling() and not caster:IsSilenced() and not caster:IsStunned() then
+                        print("Tidehunter Ravage Auto Cast: Attempting to cast skill...")
+                        -- 直接调用技能释放，让Dota 2自动处理Mana消耗
+                        caster:CastAbilityNoTarget(self, caster:GetPlayerOwnerID())
+                        self.last_cast_time = current_time -- 记录释放时间
+                    else
+                        print("Tidehunter Ravage Auto Cast: Caster is channeling/silenced/stunned")
+                    end
+                else
+                    print("Tidehunter Ravage Auto Cast: No targets found")
+                end
+            end
+            
+            -- 继续定时器
+            return 0.1 -- 每0.1秒检查一次
+        end
+        
+        -- 启动定时器
+        GameRules:GetGameModeEntity():SetThink(CheckAutoCast, "CheckAutoCast_" .. caster:GetEntityIndex(), 0.1)
+    end
+end
+
+function tidehunter_ravage:HasTargetsInRange()
+    local caster = self:GetCaster()
+    local auto_cast_range = self:GetSpecialValueFor("auto_cast_range")
+    
+    -- 检查范围内是否有敌人
+    local enemies = FindUnitsInRadius(
+        caster:GetTeamNumber(),
+        caster:GetAbsOrigin(),
+        nil,
+        auto_cast_range,
+        DOTA_UNIT_TARGET_TEAM_ENEMY,
+        DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
+        DOTA_UNIT_TARGET_FLAG_NONE,
+        FIND_ANY_ORDER,
+        false
+    )
+    
+    -- 检查范围内是否有友军（除了施法者自己）
+    local allies = FindUnitsInRadius(
+        caster:GetTeamNumber(),
+        caster:GetAbsOrigin(),
+        nil,
+        auto_cast_range,
+        DOTA_UNIT_TARGET_TEAM_FRIENDLY,
+        DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
+        DOTA_UNIT_TARGET_FLAG_NONE,
+        FIND_ANY_ORDER,
+        false
+    )
+    
+    -- 移除施法者自己
+    for i = #allies, 1, -1 do
+        if allies[i] == caster then
+            table.remove(allies, i)
+        end
+    end
+    
+    return #enemies > 0 or #allies > 0
+end
 
 function tidehunter_ravage:OnSpellStart()
     if not IsServer() then return end
@@ -6,10 +113,16 @@ function tidehunter_ravage:OnSpellStart()
     print("=== TIDEHUNTER RAVAGE SPELL STARTED ===")
     
     local caster = self:GetCaster()
+    print("Caster found:", caster:GetUnitName())
+    
     local caster_pos = caster:GetAbsOrigin()
+    print("Caster position:", caster_pos)
+    
+    -- Dota 2会自动处理Mana消耗，不需要手动检查
+    print("Spell execution started")
     
     -- 获取技能参数
-    local damage = self:GetAbilityDamage()
+    local damage = self:GetSpecialValueFor("damage")
     local radius = self:GetSpecialValueFor("radius")
     local heal_amount = self:GetSpecialValueFor("heal_amount")
     
@@ -17,9 +130,8 @@ function tidehunter_ravage:OnSpellStart()
     print("Caster position:", caster_pos)
     print("Caster team:", caster:GetTeamNumber())
     
-    
-    -- 使用完整的 ravage 动画
-    print("Creating complete ravage animation...")
+    -- 创建冲击波粒子特效
+    print("Creating ravage particle effect...")
     
     local ravage_particle = ParticleManager:CreateParticle("particles/heroes/crystal_maiden/tide_2021_ravage.vpcf", PATTACH_WORLDORIGIN, nil)
     print("ravage_particle index:", ravage_particle)
@@ -35,115 +147,79 @@ function tidehunter_ravage:OnSpellStart()
     -- 播放音效
     EmitSoundOn("Ability.Ravage", caster)
     
-    -- 波浪扩散逻辑（配合粒子特效的波浪扩散动画）
-    local wave_speed = 800 -- 波浪扩散速度
-    local wave_duration = radius / wave_speed -- 波浪到达最大范围的时间
+    -- 直接对范围内的所有单位造成伤害和治疗
+    print("Applying damage and heal to all units in range:", radius)
+    print("Caster position:", caster_pos)
+    print("Caster team number:", caster:GetTeamNumber())
     
-    print("Wave parameters - Speed:", wave_speed, "Duration:", wave_duration, "Interval:", 0.05)
+    -- 找到范围内的所有敌人
+    local enemies = FindUnitsInRadius(
+        caster:GetTeamNumber(),
+        caster_pos,
+        nil,
+        radius,
+        DOTA_UNIT_TARGET_TEAM_ENEMY,
+        DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
+        DOTA_UNIT_TARGET_FLAG_NONE,
+        FIND_ANY_ORDER,
+        false
+    )
     
-    -- 创建波浪扩散的定时器
-    local wave_timer = 0
-    local wave_interval = 0.05 -- 每0.05秒检查一次波浪位置
+    -- 找到范围内的所有友军
+    local allies = FindUnitsInRadius(
+        caster:GetTeamNumber(),
+        caster_pos,
+        nil,
+        radius,
+        DOTA_UNIT_TARGET_TEAM_FRIENDLY,
+        DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
+        DOTA_UNIT_TARGET_FLAG_NONE,
+        FIND_ANY_ORDER,
+        false
+    )
     
-    -- 使用 Dota 2 的 SetThink 定时器
-    local function wave_tick()
-        if wave_timer >= wave_duration then
-            print("Wave timer finished, duration:", wave_duration)
-            return nil -- 停止定时器
-        end
-        
-        local current_radius = wave_speed * wave_timer
-        local wave_alpha = 1 - (wave_timer / wave_duration) -- 波浪透明度随距离递减
-        
-        print("Wave timer:", wave_timer, "Current radius:", current_radius, "Alpha:", wave_alpha)
-        
-        -- 检查当前波浪范围内的单位
-        local current_enemies = FindUnitsInRadius(
-            caster:GetTeamNumber(),
-            caster_pos,
-            nil,
-            current_radius,
-            DOTA_UNIT_TARGET_TEAM_ENEMY,
-            DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
-            DOTA_UNIT_TARGET_FLAG_NONE,
-            FIND_ANY_ORDER,
-            false
-        )
-        
-        local current_allies = FindUnitsInRadius(
-            caster:GetTeamNumber(),
-            caster_pos,
-            nil,
-            current_radius,
-            DOTA_UNIT_TARGET_TEAM_FRIENDLY,
-            DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
-            DOTA_UNIT_TARGET_FLAG_NONE,
-            FIND_ANY_ORDER,
-            false
-        )
-        
-        -- 检查上一帧的单位，避免重复处理
-        local last_enemies = self.last_enemies or {}
-        local last_allies = self.last_allies or {}
-        
-        -- 处理新被波浪触碰的敌人
-        for _, enemy in pairs(current_enemies) do
-            local already_hit = false
-            for _, last_enemy in pairs(last_enemies) do
-                if enemy == last_enemy then
-                    already_hit = true
-                    break
-                end
-            end
-            
-            if not already_hit and enemy ~= caster then
-                -- 造成伤害
-                print("Applying damage to enemy:", enemy:GetUnitName(), "Damage:", damage)
-                local damage_table = {
-                    victim = enemy,
-                    attacker = caster,
-                    damage = damage,
-                    damage_type = DAMAGE_TYPE_MAGICAL,
-                    ability = self
-                }
-                ApplyDamage(damage_table)
-                
-                -- 播放命中音效
-                EmitSoundOn("Hero_Tidehunter.Ravage.Target", enemy)
-            end
-        end
-        
-        -- 处理新被波浪触碰的友军
-        for _, ally in pairs(current_allies) do
-            local already_hit = false
-            for _, last_ally in pairs(last_allies) do
-                if ally == last_ally then
-                    already_hit = true
-                    break
-                end
-            end
-            
-            if not already_hit then
-                -- 治疗友军（包括施法者自己）
-                print("Healing ally:", ally:GetUnitName(), "Heal amount:", heal_amount)
-                ally:Heal(heal_amount, caster)
-                
-                -- 显示治疗数字
-                SendOverheadEventMessage(nil, OVERHEAD_ALERT_HEAL, ally, heal_amount, nil)
-                
-                -- 播放治疗音效
-                EmitSoundOn("Hero_Tidehunter.Ravage.Target", ally)
-            end
-        end
-        
-        -- 更新上一帧的单位列表
-        self.last_enemies = current_enemies
-        self.last_allies = current_allies
-        
-        wave_timer = wave_timer + wave_interval
-        return wave_interval
+    print("Found enemies:", #enemies, "Found allies:", #allies)
+    
+    -- 调试：列出所有找到的单位
+    for i, enemy in pairs(enemies) do
+        print("Enemy", i, ":", enemy:GetUnitName(), "at", enemy:GetAbsOrigin())
     end
     
-    -- 启动波浪扩散定时器
-    GameRules:GetGameModeEntity():SetThink(wave_tick, "wave_tick", 0)
-end 
+    for i, ally in pairs(allies) do
+        print("Ally", i, ":", ally:GetUnitName(), "at", ally:GetAbsOrigin())
+    end
+    
+    -- 对敌人造成伤害
+    for _, enemy in pairs(enemies) do
+        if enemy ~= caster then
+            print("Applying damage to enemy:", enemy:GetUnitName(), "Damage:", damage)
+            local damage_table = {
+                victim = enemy,
+                attacker = caster,
+                damage = damage,
+                damage_type = DAMAGE_TYPE_MAGICAL,
+                ability = self
+            }
+            ApplyDamage(damage_table)
+            
+            -- 播放命中音效
+            EmitSoundOn("Hero_Tidehunter.Ravage.Target", enemy)
+        end
+    end
+    
+    -- 对友军进行治疗
+    for _, ally in pairs(allies) do
+        print("Healing ally:", ally:GetUnitName(), "Heal amount:", heal_amount)
+        ally:Heal(heal_amount, caster)
+        
+        -- 显示治疗数字
+        SendOverheadEventMessage(nil, OVERHEAD_ALERT_HEAL, ally, heal_amount, nil)
+        
+        -- 播放治疗音效
+        EmitSoundOn("Hero_Tidehunter.Ravage.Target", ally)
+    end
+    
+    -- 强制恢复角色状态，确保能继续攻击
+    caster:Stop()
+    caster:MoveToPosition(caster:GetAbsOrigin())
+end
