@@ -99,6 +99,36 @@
 		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
 		"MinimapIcon"	"minimap_creep"
 		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"5852"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"5280"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"6758"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"5836"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"6040"//背部（斗篷、翅膀）
+				}
+			}
+		}
 	}
 	
 	"mars1"
@@ -150,6 +180,25 @@
 		{
 			"AttachWearables"
 			{
+				"Wearable2"
+				{
+					"ItemDef"	"14881"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"14880"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"14879"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"14878"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}
@@ -205,6 +254,30 @@
 		{
 			"AttachWearables"
 			{
+				"Wearable1"
+				{
+					"ItemDef"	"13487"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"13486"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"13490"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"13489"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"13488"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}
@@ -260,6 +333,19 @@
 		{
 			"AttachWearables"
 			{
+				"Wearable1"
+				{
+					"ItemDef"	"19524"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"19525"//肩部、护甲
+				}				
+				"Wearable5"
+				{
+					"ItemDef"	"19523"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}
@@ -313,6 +399,24 @@
 		{
 			"AttachWearables"
 			{
+				"Wearable1"
+				{
+					"ItemDef"	"5550"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"5805"//肩部、护甲
+				}			
+				"Wearable4"
+				{
+					"ItemDef"	"5808"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"5807"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}
@@ -366,6 +470,24 @@
 		{
 			"AttachWearables"
 			{
+				"Wearable1"
+				{
+					"ItemDef"	"18774"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"18777"//肩部、护甲
+				}				
+				"Wearable4"
+				{
+					"ItemDef"	"18776"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"18775"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}
@@ -421,6 +543,19 @@
 		{
 			"AttachWearables"
 			{
+				"Wearable1"
+				{
+					"ItemDef"	"17860"//头部
+				}			
+				"Wearable4"
+				{
+					"ItemDef"	"17861"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"17862"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}
@@ -475,6 +610,30 @@
 		{
 			"AttachWearables"
 			{
+					"Wearable1"
+				{
+					"ItemDef"	"18295"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"18294"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"18296"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"18293"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"18292"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}
@@ -531,6 +690,30 @@
 		{
 			"AttachWearables"
 			{
+				"Wearable1"
+				{
+					"ItemDef"	"12332"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"12330"//肩部、护甲
+				}
+
+				//"Wearable3"
+				//{
+				//	"ItemDef"	"18296"//武器
+				//}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"12329"//副手装备（箭袋、盾牌）
+				}
+				
+				//"Wearable5"
+				//{
+				//	"ItemDef"	"18292"//背部（斗篷、翅膀）
+				//}
 			}
 		}
 	}
@@ -585,6 +768,30 @@
 		{
 			"AttachWearables"
 			{
+				"Wearable1"
+				{
+					"ItemDef"	"23339"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"23341"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"23342"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"23340"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"23338"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}
@@ -640,7 +847,26 @@
 		"Creature"
 		{
 			"AttachWearables"
-			{
+			{				
+				"Wearable2"
+				{
+					"ItemDef"	"5460"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"5462"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"5459"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"5461"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}
@@ -697,6 +923,24 @@
 		{
 			"AttachWearables"
 			{
+				"Wearable1"
+				{
+					"ItemDef"	"28288"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"28290"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"28289"//武器
+				}
+				"Wearable5"
+				{
+					"ItemDef"	"28291"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}
@@ -753,6 +997,24 @@
 		{
 			"AttachWearables"
 			{
+				"Wearable1"
+				{
+					"ItemDef"	"5809"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"5781"//肩部、护甲
+				}				
+				"Wearable4"
+				{
+					"ItemDef"	"5782"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"5783"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}
@@ -809,6 +1071,30 @@
 		{
 			"AttachWearables"
 			{
+				"Wearable1"
+				{
+					"ItemDef"	"12687"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"12686"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"12689"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"12688"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"12690"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}

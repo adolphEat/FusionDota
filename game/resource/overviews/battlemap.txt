@@ -1,0 +1,9 @@
+"battlemap"
+{
+    "material"    "overviews/battlemap"
+    "pos_x"       "-2048"
+    "pos_y"       "2048" 
+    "scale"       "4.0"
+    "rotate"      "0"
+    "zoom"        "1.0"
+}

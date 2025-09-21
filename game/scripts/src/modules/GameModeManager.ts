@@ -146,6 +146,11 @@ export class GameModeManager {
         if (mapName.includes('training') || mapName.includes('temp')) {
             return GameMode.TRAINING;
         }
+        
+        // battlemap 应该启动自走棋模式
+        if (mapName.includes('battlemap') || mapName.includes('battle')) {
+            return GameMode.AUTOCHESS;
+        }
 
         // 检查玩家数量
         const playerCount = PlayerResource.GetPlayerCount();

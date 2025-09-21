@@ -6,6 +6,7 @@ import { PerformanceMonitor } from '../utils/performance-monitor';
 import { GameModeManager } from './GameModeManager';
 import { TrainingMode } from './TrainingMode';
 import { AutoChessMode } from './AutoChessMode';
+import { CustomUIHandler } from './CustomUIHandler';
 
 declare global {
     interface CDOTAGameRules {
@@ -16,6 +17,7 @@ declare global {
         GameModeManager: GameModeManager;
         TrainingMode: TrainingMode;
         AutoChessMode: AutoChessMode;
+        CustomUIHandler: CustomUIHandler;
     }
 }
 
@@ -59,6 +61,15 @@ export function ActivateModules() {
             
             // 初始化自走棋模式
             GameRules.AutoChessMode = AutoChessMode.getInstance();
+            
+            // 初始化自定义UI处理器
+            GameRules.CustomUIHandler = CustomUIHandler.getInstance();
+            
+            // 延迟集成UI到游戏模式系统（确保所有模块都已初始化）
+            Timers.CreateTimer(2.0, () => {
+                GameRules.CustomUIHandler.integrateWithGameMode();
+                return undefined;
+            });
             
             
             // 更新系统状态到网络表

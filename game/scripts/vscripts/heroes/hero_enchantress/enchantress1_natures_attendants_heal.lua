@@ -4,10 +4,80 @@
 enchantress1_natures_attendants_heal = class({})
 LinkLuaModifier("modifier_enchantress1_natures_attendants_heal", "heroes/hero_enchantress/enchantress1_natures_attendants_heal.lua", LUA_MODIFIER_MOTION_NONE)
 
+-- 自走棋式自动施法功能
+function enchantress1_natures_attendants_heal:OnCreated()
+    if not IsServer() then return end
+    print("Enchantress Nature's Attendants Heal: OnCreated called")
+end
+
+function enchantress1_natures_attendants_heal:OnUpgrade()
+    if not IsServer() then return end
+    
+    local caster = self:GetCaster()
+    
+    print("Enchantress Nature's Attendants Heal: OnUpgrade called for", caster:GetUnitName())
+    
+    if not self.auto_cast_timer then
+        self.auto_cast_timer = true
+        self.last_cast_time = 0
+        
+        print("Enchantress Nature's Attendants Heal: Starting auto cast timer")
+        
+        local function CheckAutoCast()
+            if not IsValidEntity(caster) or not caster:IsAlive() then
+                return
+            end
+            
+            local current_time = GameRules:GetGameTime()
+            if current_time - self.last_cast_time < 1.0 then
+                return 0.5
+            end
+            
+            local current_mana = caster:GetMana()
+            local max_mana = caster:GetMaxMana()
+            
+            print("Enchantress Nature's Attendants Heal Auto Cast Check - Mana:", current_mana, "Max:", max_mana, "IsFullyCastable:", self:IsFullyCastable())
+            
+            if current_mana >= max_mana and self:IsFullyCastable() then
+                if not caster:IsChanneling() and not caster:IsSilenced() and not caster:IsStunned() then
+                    print("Enchantress Nature's Attendants Heal: Auto casting skill!")
+                    
+                    local success = pcall(function()
+                        caster:CastAbilityNoTarget(self, caster:GetPlayerOwnerID())
+                    end)
+                    
+                    if success then
+                        self.last_cast_time = current_time
+                        print("Enchantress Nature's Attendants Heal: Auto cast successful!")
+                    else
+                        print("Enchantress Nature's Attendants Heal: Auto cast failed!")
+                    end
+                end
+            end
+            
+            return 0.5
+        end
+        
+        -- 使用 Dota 2 原生的定时器系统
+        local function StartTimer()
+            CheckAutoCast()
+            return 0.5
+        end
+        
+        -- 启动定时器
+        GameRules:GetGameModeEntity():SetThink(StartTimer, "EnchantressNaturesAttendantsHealAutoCast", 0.1)
+    end
+end
+
 function enchantress1_natures_attendants_heal:OnSpellStart()
+    print("=== ENCHANTRESS NATURE'S ATTENDANTS HEAL OnSpellStart CALLED ===")
     local caster = self:GetCaster()
     local heal_radius = self:GetSpecialValueFor("heal_radius")
     local duration = self:GetSpecialValueFor("duration")
+    
+    print("Enchantress Nature's Attendants Heal: Caster =", caster:GetUnitName())
+    print("Enchantress Nature's Attendants Heal: Heal radius =", heal_radius)
+    print("Enchantress Nature's Attendants Heal: Duration =", duration)
     
     -- 为施法者添加治疗修改器
     caster:AddNewModifier(caster, self, "modifier_enchantress1_natures_attendants_heal", {duration = duration})
@@ -40,6 +110,10 @@ function enchantress1_natures_attendants_heal:OnSpellStart()
     
     -- 播放施法音效
     EmitSoundOn("Hero_Enchantress.Natures_Attendants", caster)
+    
+    -- 重置单位状态，确保继续普通攻击
+    caster:Stop()
+    caster:MoveToPosition(caster:GetAbsOrigin())
 end
 
 -- 治疗修改器

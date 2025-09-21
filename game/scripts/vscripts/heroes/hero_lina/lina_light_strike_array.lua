@@ -249,7 +249,7 @@ function modifier_lina_light_strike_array_burn:OnIntervalThink()
 end
 
 function modifier_lina_light_strike_array_burn:GetEffectName()
-    return "particles/generic_gameplay/lina_liphoenix_fire_spirit_burn.vpcf"
+    return "particles/generic_gameplay/phoenix_fire_spirit_burn.vpcf"
 end
 
 function modifier_lina_light_strike_array_burn:GetEffectAttachType()

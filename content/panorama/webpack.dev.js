@@ -11,7 +11,7 @@ module.exports = {
         'end-screen': './end_screen/index.tsx',
         'loading-screen': './loading-screen/index.tsx',
         'training-panel': './training-panel/index.tsx',
-        'autochess-panel': './autochess-panel/index.tsx',
+        'autochess-panel': './autochess-panel/index.tsx'
     },
     
     output: {

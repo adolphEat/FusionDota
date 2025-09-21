@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["6"] = 1,["7"] = 1,["8"] = 2,["9"] = 2,["10"] = 3,["11"] = 3,["12"] = 4,["13"] = 4,["14"] = 4,["15"] = 5,["16"] = 5,["17"] = 6,["18"] = 6,["19"] = 7,["20"] = 7,["21"] = 8,["22"] = 8,["25"] = 26,["26"] = 27,["27"] = 28,["28"] = 29,["29"] = 30,["30"] = 31,["31"] = 33,["32"] = 34,["35"] = 84,["36"] = 85,["38"] = 90,["40"] = 92,["43"] = 36,["44"] = 37,["45"] = 40,["46"] = 43,["47"] = 44,["48"] = 47,["49"] = 50,["50"] = 51,["51"] = 52,["52"] = 55,["53"] = 58,["54"] = 61,["55"] = 65,["56"] = 65,["57"] = 65,["58"] = 65,["59"] = 65,["60"] = 65,["61"] = 65,["62"] = 65,["63"] = 65,["64"] = 65,["65"] = 73,["66"] = 76,["67"] = 77,["68"] = 78,["69"] = 80,["76"] = 95,["77"] = 96,["79"] = 98,["80"] = 26});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["6"] = 1,["7"] = 1,["8"] = 2,["9"] = 2,["10"] = 3,["11"] = 3,["12"] = 4,["13"] = 4,["14"] = 4,["15"] = 5,["16"] = 5,["17"] = 6,["18"] = 6,["19"] = 7,["20"] = 7,["21"] = 8,["22"] = 8,["23"] = 9,["24"] = 9,["27"] = 28,["28"] = 29,["29"] = 30,["30"] = 31,["31"] = 32,["32"] = 33,["33"] = 35,["34"] = 36,["37"] = 95,["38"] = 96,["40"] = 101,["42"] = 103,["45"] = 38,["46"] = 39,["47"] = 42,["48"] = 45,["49"] = 46,["50"] = 49,["51"] = 52,["52"] = 53,["53"] = 54,["54"] = 57,["55"] = 60,["56"] = 63,["57"] = 66,["58"] = 69,["59"] = 69,["60"] = 69,["61"] = 70,["62"] = 71,["63"] = 69,["64"] = 69,["65"] = 76,["66"] = 76,["67"] = 76,["68"] = 76,["69"] = 76,["70"] = 76,["71"] = 76,["72"] = 76,["73"] = 76,["74"] = 76,["75"] = 84,["76"] = 87,["77"] = 88,["78"] = 89,["79"] = 91,["86"] = 106,["87"] = 107,["89"] = 109,["90"] = 28});
 local ____exports = {}
 local ____Debug = require("modules.Debug")
 local Debug = ____Debug.Debug
@@ -20,6 +20,8 @@ local ____TrainingMode = require("modules.TrainingMode")
 local TrainingMode = ____TrainingMode.TrainingMode
 local ____AutoChessMode = require("modules.AutoChessMode")
 local AutoChessMode = ____AutoChessMode.AutoChessMode
+local ____CustomUIHandler = require("modules.CustomUIHandler")
+local CustomUIHandler = ____CustomUIHandler.CustomUIHandler
 --- 这个方法会在game_mode实体生成之后调用，且仅调用一次
 -- 因此在这里作为单例模式使用
 function ____exports.ActivateModules(self)
@@ -52,6 +54,14 @@ function ____exports.ActivateModules(self)
                 GameRules.GameModeManager = GameModeManager:getInstance()
                 GameRules.TrainingMode = TrainingMode:getInstance()
                 GameRules.AutoChessMode = AutoChessMode:getInstance()
+                GameRules.CustomUIHandler = CustomUIHandler:getInstance()
+                Timers:CreateTimer(
+                    2,
+                    function()
+                        GameRules.CustomUIHandler:integrateWithGameMode()
+                        return nil
+                    end
+                )
                 GameRules.XNetTable:SetTableValue(
                     "debug_info",
                     "system_status",

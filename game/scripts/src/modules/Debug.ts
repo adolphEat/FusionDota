@@ -6,6 +6,60 @@ type DebugCallbackFunction = (hero: CDOTA_BaseNPC_Hero, ...args: string[]) => vo
 
 /** 所有的测试指令的回调 */
 const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction }> = {
+    ['-show_custom_ui']: {
+        desc: '显示自定义UI面板',
+        func: (hero) => {
+            const debug = (GameRules as any).DebugInstance || null;
+            debug?.debugOutput(hero, 'Showing custom UI panel');
+            
+            // 使用UI处理器显示面板
+            GameRules.CustomUIHandler?.handleDebugUICommand('show_custom');
+        },
+    },
+    ['-show_simple_ui']: {
+        desc: '显示简单按钮UI',
+        func: (hero) => {
+            const debug = (GameRules as any).DebugInstance || null;
+            debug?.debugOutput(hero, 'Showing simple button UI');
+            
+            GameRules.CustomUIHandler?.handleDebugUICommand('show_simple');
+        },
+    },
+    ['-hide_all_ui']: {
+        desc: '隐藏所有自定义UI',
+        func: (hero) => {
+            const debug = (GameRules as any).DebugInstance || null;
+            debug?.debugOutput(hero, 'Hiding all custom UI');
+            
+            GameRules.CustomUIHandler?.handleDebugUICommand('hide_all');
+        },
+    },
+    ['-ui_test']: {
+        desc: '测试UI系统集成',
+        func: (hero) => {
+            const debug = (GameRules as any).DebugInstance || null;
+            debug?.debugOutput(hero, '=== UI System Test ===');
+            
+            // 检查UI处理器状态
+            if (GameRules.CustomUIHandler) {
+                debug?.debugOutput(hero, 'CustomUIHandler: ✓ Initialized');
+            } else {
+                debug?.debugOutput(hero, 'CustomUIHandler: ✗ Not found');
+            }
+            
+            // 检查游戏模式
+            const currentMode = GameRules.GameModeManager?.getCurrentMode() || 'unknown';
+            debug?.debugOutput(hero, `Current Game Mode: ${currentMode}`);
+            
+            // 检查工具模式
+            const isToolsMode = IsInToolsMode();
+            debug?.debugOutput(hero, `Tools Mode: ${isToolsMode}`);
+            
+            // 发送测试事件
+            GameRules.CustomUIHandler?.updateClientUI();
+            debug?.debugOutput(hero, 'UI data update sent to clients');
+        },
+    },
     ['-help']: {
         desc: '显示所有的测试指令',
         func: () => {

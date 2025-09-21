@@ -53,4 +53,21 @@ declare interface CustomGameEventDeclarations {
     open_settings: {};
     open_friends: {};
     open_mail: {};
+    
+    // 自定义UI事件
+    button_clicked: { count: number; PlayerID?: number };
+    request_gold_bonus: { playerId: number; amount: number };
+    custom_panel_action: { playerId: number; action: string; params?: any };
+    
+    // UI响应事件
+    button_click_response: { playerId: number; count: number; message: string };
+    gold_bonus_granted: { amount: number; newTotal: number };
+    unit_spawned: { unitName: string; position: any };
+    hero_teleported: { position: any };
+    show_ui_message: { message: string; duration: number };
+    ui_data_update: { currentTime: number; gameMode: string; playersConnected: number };
+    
+    // 系统事件
+    show_custom_panel: { panelType: string };
+    hide_all_panels: {};
 }

@@ -1,0 +1,11 @@
+<root>
+    <styles>
+        <include src="file://{resources}/styles/dotastyles.css" />
+    </styles>
+    
+    <!-- 简单的HUD根容器 -->
+    <Panel class="HudRoot" hittest="true">
+        <!-- 这里会通过JavaScript动态创建UI元素 -->
+        <Label text="FusionDota HUD Loaded" style="color: white; position: absolute; top: 10px; left: 10px;" />
+    </Panel>
+</root>
