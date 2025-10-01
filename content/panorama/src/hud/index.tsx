@@ -92,13 +92,69 @@ function createSimpleTestButtons(): void {
     
     $.Msg('Both test buttons created successfully!');
     
-    // 添加信息标签
+    // 添加游戏模式信息标签
     const infoLabel = $.CreatePanel('Label', container, 'InfoLabel');
-    infoLabel.text = 'FusionDota框架正常运行!';
-    infoLabel.style.color = 'white';
-    infoLabel.style.fontSize = '14px';
+    infoLabel.text = '当前模式: 加载中...';
+    infoLabel.style.color = '#00ff00';
+    infoLabel.style.fontSize = '16px';
+    infoLabel.style.fontWeight = 'bold';
     infoLabel.style.textAlign = 'center';
     infoLabel.style.marginTop = '10px';
+    infoLabel.style.textShadow = '2px 2px 4px rgba(0,0,0,1)';
+    
+    // 监听游戏模式变化
+    GameEvents.Subscribe('game_mode_changed', (data: any) => {
+        $.Msg('收到游戏模式变化事件:', data);
+        updateGameModeLabel(infoLabel, data.newMode);
+    });
+    
+    // 从网络表读取当前模式（多次尝试）
+    let checkAttempts = 0;
+    const checkGameMode = () => {
+        checkAttempts++;
+        const gameModeData = CustomNetTables.GetTableValue('game_mode', 'current');
+        $.Msg(`尝试读取游戏模式 #${checkAttempts}:`, gameModeData);
+        
+        if (gameModeData && gameModeData.mode) {
+            updateGameModeLabel(infoLabel, gameModeData.mode);
+        } else if (checkAttempts < 10) {
+            $.Schedule(1.0, checkGameMode);
+        }
+    };
+    
+    $.Schedule(0.5, checkGameMode);
+    
+    // 监听网络表变化
+    CustomNetTables.SubscribeNetTableListener('game_mode', (tableName, key, data) => {
+        $.Msg('网络表更新:', tableName, key, data);
+        if (key === 'current' && data && data.mode) {
+            updateGameModeLabel(infoLabel, data.mode);
+        }
+    });
+}
+
+// 更新游戏模式标签
+function updateGameModeLabel(label: Panel, mode: string): void {
+    const modeNames: Record<string, string> = {
+        'normal': '🎮 正常模式',
+        'training': '🏟️ 练功房模式',
+        'autochess': '♟️ 自走棋模式',
+        'custom': '⚙️ 自定义模式'
+    };
+    
+    const displayName = modeNames[mode] || `🎯 ${mode}`;
+    label.text = `当前模式: ${displayName}`;
+    
+    // 根据模式改变颜色
+    const modeColors: Record<string, string> = {
+        'normal': '#00ff00',
+        'training': '#ffff00',
+        'autochess': '#ff00ff',
+        'custom': '#00ffff'
+    };
+    label.style.color = modeColors[mode] || '#ffffff';
+    
+    $.Msg(`游戏模式标签已更新: ${displayName}`);
 }
 
 // 初始化函数
@@ -158,39 +214,10 @@ function initializeHUD(): void {
 $.Msg('=== Starting HUD initialization ===');
 initializeHUD();
 
-// 紧急备用方案 - 直接在DOM上创建按钮
-$.Schedule(2.0, () => {
-    $.Msg('=== Emergency UI creation ===');
-    
-    // 尝试在body或其他全局容器上创建UI
-    try {
-        const body = document.body;
-        if (body) {
-            const emergencyDiv = document.createElement('div');
-            emergencyDiv.innerHTML = `
-                <div style="position: fixed; top: 100px; right: 100px; z-index: 99999; 
-                           background: rgba(255,0,0,0.9); border: 5px solid yellow; 
-                           padding: 20px; border-radius: 10px;">
-                    <h3 style="color: yellow; margin: 0 0 10px 0;">🎮 FusionDota 紧急测试</h3>
-                    <button onclick="alert('按钮1点击成功！')" 
-                           style="padding: 10px 20px; margin: 5px; background: #007bff; 
-                                  color: white; border: none; border-radius: 5px; cursor: pointer;">
-                        紧急按钮1
-                    </button>
-                    <button onclick="alert('按钮2点击成功！')" 
-                           style="padding: 10px 20px; margin: 5px; background: #dc3545; 
-                                  color: white; border: none; border-radius: 5px; cursor: pointer;">
-                        紧急按钮2
-                    </button>
-                </div>
-            `;
-            body.appendChild(emergencyDiv);
-            $.Msg('Emergency UI created with DOM manipulation');
-        }
-    } catch (e) {
-        $.Msg('Emergency UI creation failed: ' + e);
-    }
-});
+// 紧急备用方案已禁用 - 使用主UI系统
+// $.Schedule(2.0, () => {
+//     $.Msg('=== Emergency UI creation ===');
+// });
 
 // 导出React组件（保持兼容性）
 const HudPanel = () => {

@@ -5,10 +5,10 @@ local __TS__StringIncludes = ____lualib.__TS__StringIncludes
 local __TS__ObjectEntries = ____lualib.__TS__ObjectEntries
 local __TS__ObjectKeys = ____lualib.__TS__ObjectKeys
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["12"] = 6,["13"] = 7,["14"] = 8,["15"] = 9,["16"] = 10,["17"] = 29,["18"] = 29,["19"] = 29,["21"] = 34,["22"] = 34,["23"] = 34,["24"] = 34,["25"] = 34,["26"] = 40,["27"] = 41,["28"] = 33,["29"] = 44,["30"] = 45,["31"] = 46,["33"] = 48,["34"] = 44,["35"] = 54,["36"] = 54,["37"] = 54,["39"] = 55,["40"] = 56,["41"] = 57,["43"] = 60,["44"] = 61,["45"] = 62,["46"] = 63,["48"] = 66,["49"] = 67,["50"] = 70,["51"] = 73,["52"] = 75,["53"] = 76,["54"] = 54,["55"] = 82,["56"] = 83,["57"] = 82,["58"] = 89,["59"] = 90,["60"] = 91,["61"] = 89,["62"] = 97,["63"] = 98,["64"] = 97,["65"] = 104,["66"] = 105,["67"] = 104,["68"] = 111,["69"] = 112,["70"] = 111,["71"] = 118,["72"] = 120,["73"] = 122,["74"] = 123,["76"] = 127,["77"] = 129,["78"] = 132,["79"] = 118,["80"] = 138,["81"] = 140,["82"] = 141,["84"] = 145,["85"] = 146,["86"] = 147,["88"] = 151,["89"] = 152,["90"] = 153,["92"] = 156,["93"] = 138,["94"] = 162,["95"] = 164,["96"] = 165,["97"] = 168,["98"] = 169,["99"] = 170,["100"] = 171,["102"] = 175,["103"] = 176,["106"] = 180,["107"] = 181,["109"] = 182,["112"] = 184,["114"] = 185,["117"] = 187,["119"] = 188,["123"] = 162,["124"] = 196,["125"] = 201,["126"] = 205,["127"] = 206,["128"] = 207,["129"] = 209,["130"] = 196,["131"] = 215,["132"] = 218,["133"] = 219,["134"] = 220,["135"] = 221,["136"] = 225,["137"] = 228,["138"] = 229,["139"] = 230,["140"] = 233,["141"] = 235,["142"] = 215,["143"] = 241,["144"] = 244,["145"] = 245,["146"] = 246,["147"] = 248,["148"] = 241,["149"] = 254,["150"] = 255,["151"] = 256,["152"] = 257,["153"] = 258,["154"] = 259,["155"] = 260,["156"] = 261,["157"] = 262,["158"] = 265,["159"] = 266,["160"] = 267,["161"] = 269,["162"] = 254,["163"] = 275,["164"] = 276,["165"] = 276,["166"] = 276,["169"] = 291,["173"] = 279,["174"] = 280,["178"] = 283,["182"] = 286,["184"] = 287,["194"] = 275,["195"] = 299,["196"] = 301,["197"] = 301,["198"] = 301,["199"] = 301,["200"] = 301,["201"] = 301,["202"] = 301,["203"] = 301,["204"] = 308,["205"] = 309,["207"] = 299,["208"] = 320,["209"] = 321,["210"] = 322,["211"] = 322,["212"] = 322,["213"] = 322,["214"] = 322,["215"] = 322,["216"] = 322,["217"] = 322,["218"] = 322,["219"] = 322,["221"] = 320,["222"] = 334,["223"] = 335,["224"] = 336,["225"] = 336,["226"] = 336,["227"] = 336,["228"] = 336,["229"] = 336,["230"] = 335,["231"] = 344,["232"] = 344,["233"] = 344,["234"] = 344,["235"] = 344,["236"] = 344,["237"] = 344,["238"] = 335,["239"] = 358,["240"] = 358,["241"] = 358,["242"] = 358,["243"] = 358,["244"] = 358,["245"] = 365,["246"] = 365,["247"] = 365,["248"] = 365,["249"] = 365,["250"] = 365,["251"] = 365,["252"] = 358,["253"] = 335,["254"] = 374,["255"] = 374,["256"] = 374,["257"] = 374,["258"] = 374,["259"] = 374,["260"] = 335,["261"] = 334,["262"] = 388,["263"] = 389,["264"] = 389,["265"] = 389,["266"] = 389,["267"] = 389,["268"] = 389,["269"] = 389,["270"] = 389,["271"] = 388});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["10"] = 6,["11"] = 6,["12"] = 8,["13"] = 9,["14"] = 10,["15"] = 11,["16"] = 12,["17"] = 31,["18"] = 31,["19"] = 31,["21"] = 36,["22"] = 36,["23"] = 36,["24"] = 36,["25"] = 36,["26"] = 42,["27"] = 35,["28"] = 45,["29"] = 46,["30"] = 47,["32"] = 49,["33"] = 45,["34"] = 55,["35"] = 55,["36"] = 55,["38"] = 57,["39"] = 58,["40"] = 59,["41"] = 60,["43"] = 63,["44"] = 64,["45"] = 65,["46"] = 66,["47"] = 67,["49"] = 70,["50"] = 71,["51"] = 72,["52"] = 75,["53"] = 78,["54"] = 80,["55"] = 81,["56"] = 55,["57"] = 87,["58"] = 88,["59"] = 87,["60"] = 94,["61"] = 95,["62"] = 96,["63"] = 94,["64"] = 102,["65"] = 103,["66"] = 102,["67"] = 109,["68"] = 110,["69"] = 109,["70"] = 116,["71"] = 117,["72"] = 116,["73"] = 123,["74"] = 125,["75"] = 127,["76"] = 128,["78"] = 132,["79"] = 135,["80"] = 138,["81"] = 141,["82"] = 141,["83"] = 141,["84"] = 142,["85"] = 143,["86"] = 143,["87"] = 143,["88"] = 143,["89"] = 143,["90"] = 143,["91"] = 143,["92"] = 143,["93"] = 148,["94"] = 141,["95"] = 141,["96"] = 123,["97"] = 155,["98"] = 157,["99"] = 158,["100"] = 161,["101"] = 162,["102"] = 163,["104"] = 166,["105"] = 167,["106"] = 168,["108"] = 172,["109"] = 173,["110"] = 174,["112"] = 178,["113"] = 179,["114"] = 180,["116"] = 183,["117"] = 155,["118"] = 189,["119"] = 191,["120"] = 192,["121"] = 195,["122"] = 196,["123"] = 197,["124"] = 198,["126"] = 202,["127"] = 203,["130"] = 207,["131"] = 208,["133"] = 209,["136"] = 211,["138"] = 212,["141"] = 214,["143"] = 215,["147"] = 189,["148"] = 223,["149"] = 228,["150"] = 232,["151"] = 233,["152"] = 234,["153"] = 236,["154"] = 223,["155"] = 242,["156"] = 245,["157"] = 246,["158"] = 247,["159"] = 248,["160"] = 252,["161"] = 255,["162"] = 256,["163"] = 257,["164"] = 260,["165"] = 263,["166"] = 264,["167"] = 266,["168"] = 242,["169"] = 272,["170"] = 275,["171"] = 276,["172"] = 277,["173"] = 279,["174"] = 272,["175"] = 285,["176"] = 286,["177"] = 287,["178"] = 288,["179"] = 289,["180"] = 290,["181"] = 291,["182"] = 292,["183"] = 293,["184"] = 296,["185"] = 297,["186"] = 298,["187"] = 300,["188"] = 285,["189"] = 306,["190"] = 307,["191"] = 307,["192"] = 307,["195"] = 322,["199"] = 310,["200"] = 311,["204"] = 314,["208"] = 317,["210"] = 318,["220"] = 306,["221"] = 330,["222"] = 332,["223"] = 332,["224"] = 332,["225"] = 332,["226"] = 332,["227"] = 332,["228"] = 332,["229"] = 332,["230"] = 338,["231"] = 340,["232"] = 341,["234"] = 330,["235"] = 352,["236"] = 353,["237"] = 354,["238"] = 354,["239"] = 354,["240"] = 354,["241"] = 354,["242"] = 354,["243"] = 361,["244"] = 362,["246"] = 364,["248"] = 352,["249"] = 371,["250"] = 372,["251"] = 373,["252"] = 373,["253"] = 373,["254"] = 373,["255"] = 373,["256"] = 373,["257"] = 372,["258"] = 381,["259"] = 381,["260"] = 381,["261"] = 381,["262"] = 381,["263"] = 381,["264"] = 381,["265"] = 372,["266"] = 395,["267"] = 395,["268"] = 395,["269"] = 395,["270"] = 395,["271"] = 395,["272"] = 402,["273"] = 402,["274"] = 402,["275"] = 402,["276"] = 402,["277"] = 402,["278"] = 402,["279"] = 395,["280"] = 372,["281"] = 411,["282"] = 411,["283"] = 411,["284"] = 411,["285"] = 411,["286"] = 411,["287"] = 372,["288"] = 371,["289"] = 425,["290"] = 426,["291"] = 426,["292"] = 426,["293"] = 426,["294"] = 426,["295"] = 426,["296"] = 426,["297"] = 426,["298"] = 425});
 local ____exports = {}
---- 游戏模式管理器 - 管理不同的游戏模式（正常模式、练功房模式等）
--- Game Mode Manager - Manages different game modes (normal, training, etc.)
+local ____time_utils = require("utils.time_utils")
+local getTimestamp = ____time_utils.getTimestamp
 ____exports.GameMode = GameMode or ({})
 ____exports.GameMode.NORMAL = "normal"
 ____exports.GameMode.TRAINING = "training"
@@ -24,7 +24,6 @@ function GameModeManager.prototype.____constructor(self)
         initialized = false
     }
     self:initializeGameMode()
-    print("[GameModeManager] Initialized")
 end
 function GameModeManager.getInstance(self)
     if not ____exports.GameModeManager.instance then
@@ -36,15 +35,18 @@ function GameModeManager.prototype.switchMode(self, mode, force)
     if force == nil then
         force = false
     end
+    print("_____________________________________1")
     if self.settings.initialized and not force then
         print("[GameModeManager] Cannot switch mode after game initialization. Use force=true to override.")
         return false
     end
+    print("_____________________________________2")
     local config = self.settings.modeConfigs[mode]
     if not config then
         print("[GameModeManager] Unknown game mode: " .. mode)
         return false
     end
+    print("_____________________________________3")
     local previousMode = self.settings.currentMode
     self.settings.currentMode = mode
     self:applyModeSettings(config)
@@ -76,14 +78,36 @@ function GameModeManager.prototype.initializeGameMode(self)
     self:setupBaseGameRules()
     self.settings.initialized = true
     self:syncToNetTable()
+    Timers:CreateTimer(
+        2,
+        function()
+            print("[GameModeManager] Sending initial mode notification: " .. self.settings.currentMode)
+            CustomGameEventManager:Send_ServerToAllClients(
+                "game_mode_changed",
+                {
+                    previousMode = ____exports.GameMode.NORMAL,
+                    newMode = self.settings.currentMode,
+                    config = self:getModeConfig()
+                }
+            )
+            return nil
+        end
+    )
 end
 function GameModeManager.prototype.detectGameMode(self)
-    if IsInToolsMode() then
+    local mapName = GetMapName()
+    print("[GameModeManager] Detecting game mode... Map name: " .. mapName)
+    if __TS__StringIncludes(mapName, "battlemap") or __TS__StringIncludes(mapName, "battle") or __TS__StringIncludes(mapName, "autochess") then
+        print("[GameModeManager] Detected AUTOCHESS mode from map name")
+        return ____exports.GameMode.AUTOCHESS
+    end
+    if __TS__StringIncludes(mapName, "training") or __TS__StringIncludes(mapName, "temp") then
+        print("[GameModeManager] Detected TRAINING mode from map name")
         return ____exports.GameMode.TRAINING
     end
-    local mapName = GetMapName()
-    if __TS__StringIncludes(mapName, "training") or __TS__StringIncludes(mapName, "temp") then
-        return ____exports.GameMode.TRAINING
+    if IsInToolsMode() then
+        print("[GameModeManager] Detected tools mode, defaulting to AUTOCHESS")
+        return ____exports.GameMode.AUTOCHESS
     end
     local playerCount = PlayerResource:GetPlayerCount()
     if playerCount == 1 then
@@ -103,19 +127,19 @@ function GameModeManager.prototype.applyModeSettings(self, config)
         self:applyCustomRules(config.customRules)
     end
     repeat
-        local ____switch22 = config.mode
-        local ____cond22 = ____switch22 == ____exports.GameMode.TRAINING
-        if ____cond22 then
+        local ____switch24 = config.mode
+        local ____cond24 = ____switch24 == ____exports.GameMode.TRAINING
+        if ____cond24 then
             self:setupTrainingMode()
             break
         end
-        ____cond22 = ____cond22 or ____switch22 == ____exports.GameMode.AUTOCHESS
-        if ____cond22 then
+        ____cond24 = ____cond24 or ____switch24 == ____exports.GameMode.AUTOCHESS
+        if ____cond24 then
             self:setupAutoChessMode()
             break
         end
-        ____cond22 = ____cond22 or ____switch22 == ____exports.GameMode.NORMAL
-        if ____cond22 then
+        ____cond24 = ____cond24 or ____switch24 == ____exports.GameMode.NORMAL
+        if ____cond24 then
             self:setupNormalMode()
             break
         end
@@ -138,7 +162,9 @@ function GameModeManager.prototype.setupAutoChessMode(self)
     GameRules:SetUseBaseGoldBountyOnHeroes(false)
     GameRules:SetTreeRegrowTime(0)
     GameRules:SetTimeOfDay(0.25)
-    print("[GameModeManager] AutoChess mode configured")
+    SendToServerConsole("sv_cheats 1")
+    SendToServerConsole("dota_fog_of_war_disabled 1")
+    print("[GameModeManager] AutoChess mode configured with fog disabled")
 end
 function GameModeManager.prototype.setupNormalMode(self)
     GameRules:SetHeroSelectionTime(30)
@@ -170,17 +196,17 @@ function GameModeManager.prototype.applyCustomRules(self, rules)
             end
             local ____try, ____hasReturned = pcall(function()
                 repeat
-                    local ____switch30 = key
-                    local ____cond30 = ____switch30 == "startingGold"
-                    if ____cond30 then
+                    local ____switch32 = key
+                    local ____cond32 = ____switch32 == "startingGold"
+                    if ____cond32 then
                         break
                     end
-                    ____cond30 = ____cond30 or ____switch30 == "startingLevel"
-                    if ____cond30 then
+                    ____cond32 = ____cond32 or ____switch32 == "startingLevel"
+                    if ____cond32 then
                         break
                     end
-                    ____cond30 = ____cond30 or ____switch30 == "customSpeed"
-                    if ____cond30 then
+                    ____cond32 = ____cond32 or ____switch32 == "customSpeed"
+                    if ____cond32 then
                         GameRules:SetCustomGameDifficulty(value)
                         break
                     end
@@ -201,22 +227,23 @@ function GameModeManager.prototype.onModeChanged(self, previousMode, newMode)
             config = self:getModeConfig(newMode)
         }
     )
+    print("_____________________________________onModeChanged")
     if GameRules.ErrorTracker then
         GameRules.ErrorTracker:reportCustomError((("Game mode switched: " .. previousMode) .. " → ") .. newMode, {module = "GameModeManager", ["function"] = "onModeChanged", customData = {previousMode = previousMode, newMode = newMode}})
     end
 end
 function GameModeManager.prototype.syncToNetTable(self)
     if GameRules.XNetTable then
-        GameRules.XNetTable:SetTableValue(
-            "game_mode",
-            "current",
-            {
-                mode = self.settings.currentMode,
-                config = self:getModeConfig(),
-                initialized = self.settings.initialized,
-                timestamp = Date:now()
-            }
-        )
+        local data = {
+            mode = self.settings.currentMode,
+            config = self:getModeConfig(),
+            initialized = self.settings.initialized,
+            timestamp = getTimestamp(nil)
+        }
+        GameRules.XNetTable:SetTableValue("game_mode", "current", data)
+        print((("[GameModeManager] Synced to NetTable: mode=" .. self.settings.currentMode) .. ", initialized=") .. tostring(self.settings.initialized))
+    else
+        print("[GameModeManager] Warning: XNetTable not available for sync")
     end
 end
 function GameModeManager.prototype.getDefaultModeConfigs(self)

@@ -2,7 +2,7 @@ local ____lualib = require("lualib_bundle")
 local __TS__ArrayForEach = ____lualib.__TS__ArrayForEach
 local __TS__StringEndsWith = ____lualib.__TS__StringEndsWith
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["7"] = 41,["8"] = 41,["9"] = 42,["10"] = 42,["11"] = 42,["12"] = 43,["13"] = 44,["14"] = 42,["15"] = 42,["17"] = 48,["18"] = 49,["19"] = 49,["20"] = 49,["21"] = 50,["22"] = 49,["23"] = 49,["25"] = 53,["26"] = 54,["27"] = 55,["28"] = 56,["29"] = 57,["30"] = 58,["31"] = 59,["34"] = 64,["35"] = 65,["36"] = 66,["37"] = 66,["38"] = 66,["39"] = 67,["40"] = 66,["41"] = 66,["43"] = 70,["44"] = 70,["45"] = 70,["46"] = 71,["47"] = 71,["48"] = 71,["49"] = 71,["50"] = 71,["51"] = 70,["52"] = 70,["55"] = 76,["56"] = 77,["57"] = 77,["58"] = 77,["59"] = 78,["60"] = 77,["61"] = 77,["63"] = 83,["64"] = 84,["65"] = 85,["66"] = 86,["67"] = 87,["68"] = 88,["72"] = 3,["73"] = 5,["74"] = 14,["75"] = 22,["76"] = 30,["77"] = 37});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["7"] = 48,["8"] = 48,["9"] = 49,["10"] = 49,["11"] = 49,["12"] = 50,["13"] = 51,["14"] = 49,["15"] = 49,["17"] = 55,["18"] = 56,["19"] = 56,["20"] = 56,["21"] = 57,["22"] = 56,["23"] = 56,["25"] = 60,["26"] = 61,["27"] = 62,["28"] = 63,["29"] = 64,["30"] = 65,["31"] = 66,["34"] = 71,["35"] = 72,["36"] = 73,["37"] = 73,["38"] = 73,["39"] = 74,["40"] = 73,["41"] = 73,["43"] = 77,["44"] = 77,["45"] = 77,["46"] = 78,["47"] = 78,["48"] = 78,["49"] = 78,["50"] = 78,["51"] = 77,["52"] = 77,["55"] = 83,["56"] = 84,["57"] = 84,["58"] = 84,["59"] = 85,["60"] = 84,["61"] = 84,["63"] = 90,["64"] = 91,["65"] = 92,["66"] = 93,["67"] = 94,["68"] = 95,["72"] = 3,["73"] = 5,["74"] = 14,["75"] = 22,["76"] = 23,["77"] = 23,["78"] = 23,["79"] = 23,["80"] = 23,["81"] = 23,["82"] = 22,["83"] = 37,["84"] = 44});
 local ____exports = {}
 local precacheEveryResourceInKV, precacheResource, precacheResString, precacheUnits, precacheItems, precacheEverythingFromTable
 function precacheEveryResourceInKV(kvFileList, context)
@@ -72,7 +72,14 @@ end
 function ____exports.default(context)
     precacheResource({}, context)
     precacheEveryResourceInKV({}, context)
-    precacheUnits({}, context)
+    precacheUnits({
+        "npc_dota_hero_antimage",
+        "npc_dota_hero_crystal_maiden",
+        "npc_dota_hero_axe",
+        "npc_dota_hero_drow_ranger",
+        "npc_dota_hero_bounty_hunter",
+        "npc_dota_hero_gyrocopter"
+    }, context)
     precacheItems({}, context)
     print("[Precache] Precache finished.")
 end

@@ -4,5 +4,18 @@
     [
         "hero_list",
         "game_timer",
+        "game_mode",
+        "training_mode",
+        "autochess_game",
+        "autochess_player",
+        "autochess_shop",
+        "player_inventory",
+        "battle_snapshots",
+        "crafting_system",
+        "inventory_stats",
+        "battle_system",
+        "error_reports",
+        "debug_info",
+        "performance_debug",
     ]
 }

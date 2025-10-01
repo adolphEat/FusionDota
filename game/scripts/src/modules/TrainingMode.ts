@@ -4,6 +4,7 @@
  */
 
 import { GameMode, GameModeManager } from './GameModeManager';
+import { getTimestampMs } from '../utils/time_utils';
 
 export interface TrainingSettings {
     infiniteResources: boolean;
@@ -610,7 +611,7 @@ export class TrainingMode {
                 activeScenario: this.activeScenario,
                 spawnedUnitsCount: this.spawnedUnits.length,
                 testDuration: this.activeScenario ? GameRules.GetGameTime() - this.testStartTime : 0,
-                timestamp: Date.now()
+                timestamp: getTimestampMs()
             });
         }
     }

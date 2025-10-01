@@ -129,16 +129,57 @@ declare interface XNetTableDefinitions {
             timestamp: number;
         };
     };
-}
-
-declare interface BasicSettings {}
-
-// 专门为性能调试模块增加的表
-declare interface XNetTableDefinitions {
+    battle_system: {
+        current_battle: {
+            battleId: string;
+            status: string;
+            levelId: string;
+            levelName: string;
+            timestamp: number;
+        };
+        latest_result: any;
+        battle_history: {
+            battles: any[];
+            totalBattles: number;
+        };
+        available_levels?: any;
+        config_status?: any;
+        [key: string]: any;
+    };
+    player_inventory: {
+        [playerKey: string]: {
+            playerId: number;
+            capacity: number;
+            usedSlots: number;
+            gold: number;
+            slots: Array<{
+                slotId: number;
+                locked: boolean;
+                item: {
+                    instanceId: string;
+                    itemId: string;
+                    stackCount: number;
+                    equipped: boolean;
+                    locked: boolean;
+                    charges?: number;
+                } | null;
+            }>;
+        };
+    };
+    crafting_system: {
+        [playerKey: string]: {
+            items: string[];
+            timestamp: number;
+        };
+    };
     performance_debug: {
+        debug_state?: any;
+        debug_data?: any;
         [key: string]: any;
     };
 }
+
+declare interface BasicSettings {}
 
 // 以下是库内部使用的，勿动
 declare interface CustomGameEventDeclarations {

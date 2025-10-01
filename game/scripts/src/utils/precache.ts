@@ -21,8 +21,15 @@ export default function Precache(context: CScriptPrecacheContext) {
     // 需要预载入的单位
     precacheUnits(
         [
-            // 单位名称
-            // 'npc_dota_hero_***',
+            // 自走棋模式使用的英雄
+            'npc_dota_hero_antimage',        // 敌法师
+            'npc_dota_hero_crystal_maiden',  // 水晶室女
+            'npc_dota_hero_axe',             // 斧王
+            'npc_dota_hero_drow_ranger',     // 卓尔游侠
+            'npc_dota_hero_bounty_hunter',   // 赏金猎人
+            
+            // 玩家默认英雄
+            'npc_dota_hero_gyrocopter',      // 矮人直升机（GameConfig中的默认英雄）
         ],
         context
     );

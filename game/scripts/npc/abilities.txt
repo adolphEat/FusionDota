@@ -5,9 +5,9 @@
 // Template: https://github.com/XavierCHN/x-template
 "XLSXContent"
 {
-	"crystal_nova_x" {
-		"BaseClass" "ability_lua"
-		"ScriptFile" "examples/abilities/crystal_nova_x.lua"
+	"shi_li_1" {
+		"BaseClass" "ability_lua（zhi_gai_yuan_ji_neng_shu_zhi）"
+		"ScriptFile" "examples/abilities/shi_li_1.lua"
 		"AbilityValues" {
 			"duration" "4.5"
 			"aoe_radius" "400"
@@ -17,35 +17,47 @@
 			"vision_radius" "900"
 			"nova_damage" "100 150 200 250"
 		}
-		"MaxLevel" "4"
-		"AbilityCooldown" "12.0 12.0 12.0 12.0"
-		"AbilityManaCost" "100 120 140 160"
+		"MaxLevel" "3"
+		"AbilityCooldown" "0 0 0"
+		"AbilityManaCost" "50 50 50"
 		"AbilityTextureName" "crystal_maiden_crystal_nova"
 		"AbilityType" "DOTA_ABILITY_TYPE_BASIC"
-		"AbilityUnitDamageType" "DAMAGE_TYPE_MAGICAL"
-		"AbilityBehavior" "DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_AOE"
+		"AbilityUnitDamageType" "DAMAGE_TYPE_PHYSICAL
+DAMAGE_TYPE_MAGICAL
+DAMAGE_TYPE_PURE"
+		"AbilityBehavior" "xu_yao_e_wai_que_ren_han_yi"
+		"AbilityUnitTargetTeam" "DOTA_UNIT_TARGET_TEAM_ENEMY（di_fang）
+DOTA_UNIT_TARGET_TEAM_FRIENDLY（you_fang）"
+		"AbilityUnitTargetType" "HERO（ying_xiong）
+BASIC（xiao_bing）（xu_yao_e_wai_que_ren_xia）
+CREEP（ye_guai）
+ALL（quan_bu）（xu_yao_e_wai_que_ren_xia）"
+		"AbilityUnitTargetFlags" "xu_yao_e_wai_que_ren_han_yi"
+		"SpellImmunityType" "Default（zan_shi_xian_bu_kao_lv_mo_mian_ji_zhi）"
 		"AbilityCastRange" "700"
 		"AbilityCastPoint" "0.3000"
 	}
-	"counter_helix_x" {
+	"shi_li_2" {
 		"BaseClass" "ability_lua"
-		"ScriptFile" "examples/abilities/counter_helix_x.lua"
+		"ScriptFile" "examples/abilities/shi_li_2.lua"
 		"AbilityValues" {
 			"damage" "75 110 145 180"
 			"radius" "275"
 			"hit_count" "7 6 5 4"
 		}
-		"MaxLevel" "4"
+		"MaxLevel" "3"
+		"AbilityCooldown" "0 0 0"
+		"AbilityManaCost" "50 50 50"
 		"AbilityTextureName" "axe_counter_helix"
-		"AbilityUnitDamageType" "DAMAGE_TYPE_PURE"
+		"AbilityType" "DOTA_ABILITY_TYPE_BASIC"
 		"Precache" {
-			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_axe.vsndevts"
-			"particle"	"particles/units/heroes/hero_axe/axe_counterhelix_ad.vpcf"
-		}
+	"soundfile"	"soundevents/game_sounds_heroes/game_sounds_axe.vsndevts"
+	"particle"	"particles/units/heroes/hero_axe/axe_counterhelix_ad.vpcf"
+}
 	}
-	"tiny_toss_x" {
+	"shi_li_3" {
 		"BaseClass" "ability_lua"
-		"ScriptFile" "examples/abilities/tiny_toss_x.lua"
+		"ScriptFile" "examples/abilities/shi_li_3.lua"
 		"AbilityValues" {
 			"duration" "1.1"
 			"grab_radius" "275"
@@ -53,15 +65,25 @@
 			"bonus_damage_pct" "30 60 90"
 			"toss_damage" "200 250 300 350"
 		}
-		"MaxLevel" "4"
-		"AbilityCooldown" "10"
-		"AbilityManaCost" "70"
+		"MaxLevel" "3"
+		"AbilityCooldown" "0 0 0"
+		"AbilityManaCost" "50 50 50"
 		"AbilityTextureName" "tiny_toss"
-		"AbilityUnitDamageType" "DAMAGE_TYPE_MAGICAL"
+		"AbilityType" "DOTA_ABILITY_TYPE_BASIC"
 		"AbilityCastRange" "1200"
 		"AbilityCastPoint" "0"
 		"Precache" {
             "particle"  "particles/units/heroes/hero_tiny/tiny_toss_blur.vpcf"
 		}
+	}
+	"call_down_rewrite" {
+		"BaseClass" "ability_datadriven（ji_yu_yuan_ji_neng_xi_tiao）"
+		"AbilityValues" {
+		}
+		"MaxLevel" "3"
+		"AbilityCooldown" "0 0 0"
+		"AbilityManaCost" "50 50 50"
+		"AbilityTextureName" "black_dragon_splash_attack"
+		"AbilityType" "DOTA_ABILITY_TYPE_BASIC"
 	}
 }

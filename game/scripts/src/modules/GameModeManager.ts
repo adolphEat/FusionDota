@@ -3,6 +3,8 @@
  * Game Mode Manager - Manages different game modes (normal, training, etc.)
  */
 
+import { getTimestamp } from '../utils/time_utils';
+
 export enum GameMode {
     NORMAL = 'normal',
     TRAINING = 'training',
@@ -38,7 +40,6 @@ export class GameModeManager {
         };
         
         this.initializeGameMode();
-        print('[GameModeManager] Initialized');
     }
 
     public static getInstance(): GameModeManager {
@@ -52,17 +53,21 @@ export class GameModeManager {
      * 切换游戏模式
      */
     public switchMode(mode: GameMode, force: boolean = false): boolean {
+
+        print("_____________________________________1")
         if (this.settings.initialized && !force) {
             print(`[GameModeManager] Cannot switch mode after game initialization. Use force=true to override.`);
             return false;
         }
 
+        print("_____________________________________2")
         const config = this.settings.modeConfigs[mode];
         if (!config) {
             print(`[GameModeManager] Unknown game mode: ${mode}`);
             return false;
         }
 
+        print("_____________________________________3")
         const previousMode = this.settings.currentMode;
         this.settings.currentMode = mode;
 
@@ -126,30 +131,47 @@ export class GameModeManager {
         // 设置基础游戏规则
         this.setupBaseGameRules();
         
+        // 在模式切换完成后才标记为已初始化
         this.settings.initialized = true;
         
         // 同步状态到网络表
         this.syncToNetTable();
+        
+        // 延迟发送初始模式通知，确保客户端已加载
+        Timers.CreateTimer(2.0, () => {
+            print(`[GameModeManager] Sending initial mode notification: ${this.settings.currentMode}`);
+            (CustomGameEventManager.Send_ServerToAllClients as any)('game_mode_changed', {
+                previousMode: GameMode.NORMAL,
+                newMode: this.settings.currentMode,
+                config: this.getModeConfig()
+            });
+            return undefined;
+        });
     }
 
     /**
      * 检测游戏模式（通过启动参数、地图名等）
      */
     private detectGameMode(): GameMode {
-        // 检查是否在工具模式（开发环境）
-        if (IsInToolsMode()) {
-            return GameMode.TRAINING; // 开发环境默认训练模式
-        }
-
-        // 检查地图名称
+        // 检查地图名称（优先级最高）
         const mapName = GetMapName();
+        print(`[GameModeManager] Detecting game mode... Map name: ${mapName}`);
+        
+        // battlemap 应该启动自走棋模式
+        if (mapName.includes('battlemap') || mapName.includes('battle') || mapName.includes('autochess')) {
+            print(`[GameModeManager] Detected AUTOCHESS mode from map name`);
+            return GameMode.AUTOCHESS;
+        }
+        
         if (mapName.includes('training') || mapName.includes('temp')) {
+            print(`[GameModeManager] Detected TRAINING mode from map name`);
             return GameMode.TRAINING;
         }
         
-        // battlemap 应该启动自走棋模式
-        if (mapName.includes('battlemap') || mapName.includes('battle')) {
-            return GameMode.AUTOCHESS;
+        // 检查是否在工具模式（开发环境）- 作为后备
+        if (IsInToolsMode()) {
+            print(`[GameModeManager] Detected tools mode, defaulting to AUTOCHESS`);
+            return GameMode.AUTOCHESS; // 工具模式默认自走棋（便于测试）
         }
 
         // 检查玩家数量
@@ -237,7 +259,11 @@ export class GameModeManager {
         // 设置固定白天
         GameRules.SetTimeOfDay(0.25);
         
-        print('[GameModeManager] AutoChess mode configured');
+        // 启用作弊模式并关闭战争迷雾 (battlemap专用)
+        SendToServerConsole('sv_cheats 1');
+        SendToServerConsole('dota_fog_of_war_disabled 1');
+        
+        print('[GameModeManager] AutoChess mode configured with fog disabled');
     }
 
     /**
@@ -309,6 +335,7 @@ export class GameModeManager {
             config: this.getModeConfig(newMode)
         });
 
+        print("_____________________________________onModeChanged")
         // 如果有错误追踪系统，记录模式切换
         if (GameRules.ErrorTracker) {
             GameRules.ErrorTracker.reportCustomError(`Game mode switched: ${previousMode} → ${newMode}`, {
@@ -324,12 +351,17 @@ export class GameModeManager {
      */
     private syncToNetTable(): void {
         if (GameRules.XNetTable) {
-            GameRules.XNetTable.SetTableValue('game_mode', 'current', {
+            const data = {
                 mode: this.settings.currentMode,
                 config: this.getModeConfig(),
                 initialized: this.settings.initialized,
-                timestamp: Date.now()
-            });
+                timestamp: getTimestamp()
+            };
+            
+            GameRules.XNetTable.SetTableValue('game_mode', 'current', data);
+            print(`[GameModeManager] Synced to NetTable: mode=${this.settings.currentMode}, initialized=${this.settings.initialized}`);
+        } else {
+            print(`[GameModeManager] Warning: XNetTable not available for sync`);
         }
     }
 

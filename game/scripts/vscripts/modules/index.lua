@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__New = ____lualib.__TS__New
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["6"] = 1,["7"] = 1,["8"] = 2,["9"] = 2,["10"] = 3,["11"] = 3,["12"] = 4,["13"] = 4,["14"] = 4,["15"] = 5,["16"] = 5,["17"] = 6,["18"] = 6,["19"] = 7,["20"] = 7,["21"] = 8,["22"] = 8,["23"] = 9,["24"] = 9,["27"] = 28,["28"] = 29,["29"] = 30,["30"] = 31,["31"] = 32,["32"] = 33,["33"] = 35,["34"] = 36,["37"] = 95,["38"] = 96,["40"] = 101,["42"] = 103,["45"] = 38,["46"] = 39,["47"] = 42,["48"] = 45,["49"] = 46,["50"] = 49,["51"] = 52,["52"] = 53,["53"] = 54,["54"] = 57,["55"] = 60,["56"] = 63,["57"] = 66,["58"] = 69,["59"] = 69,["60"] = 69,["61"] = 70,["62"] = 71,["63"] = 69,["64"] = 69,["65"] = 76,["66"] = 76,["67"] = 76,["68"] = 76,["69"] = 76,["70"] = 76,["71"] = 76,["72"] = 76,["73"] = 76,["74"] = 76,["75"] = 84,["76"] = 87,["77"] = 88,["78"] = 89,["79"] = 91,["86"] = 106,["87"] = 107,["89"] = 109,["90"] = 28});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["6"] = 1,["7"] = 1,["8"] = 2,["9"] = 2,["10"] = 3,["11"] = 3,["12"] = 4,["13"] = 4,["14"] = 4,["15"] = 5,["16"] = 5,["17"] = 6,["18"] = 6,["19"] = 7,["20"] = 7,["21"] = 8,["22"] = 8,["23"] = 9,["24"] = 9,["25"] = 15,["26"] = 15,["27"] = 16,["28"] = 16,["31"] = 37,["32"] = 38,["33"] = 39,["34"] = 40,["35"] = 41,["36"] = 42,["37"] = 44,["38"] = 45,["41"] = 114,["42"] = 115,["44"] = 120,["46"] = 122,["49"] = 47,["50"] = 48,["51"] = 51,["52"] = 54,["53"] = 55,["54"] = 58,["55"] = 61,["56"] = 62,["57"] = 63,["58"] = 66,["59"] = 69,["60"] = 70,["61"] = 71,["62"] = 74,["63"] = 75,["64"] = 76,["65"] = 79,["66"] = 82,["67"] = 85,["68"] = 88,["69"] = 88,["70"] = 88,["71"] = 89,["72"] = 90,["73"] = 88,["74"] = 88,["75"] = 95,["76"] = 95,["77"] = 95,["78"] = 95,["79"] = 95,["80"] = 95,["81"] = 95,["82"] = 95,["83"] = 95,["84"] = 95,["85"] = 103,["86"] = 106,["87"] = 107,["88"] = 108,["89"] = 110,["96"] = 125,["97"] = 126,["99"] = 128,["100"] = 37});
 local ____exports = {}
 local ____Debug = require("modules.Debug")
 local Debug = ____Debug.Debug
@@ -22,6 +22,10 @@ local ____AutoChessMode = require("modules.AutoChessMode")
 local AutoChessMode = ____AutoChessMode.AutoChessMode
 local ____CustomUIHandler = require("modules.CustomUIHandler")
 local CustomUIHandler = ____CustomUIHandler.CustomUIHandler
+local ____InventorySystem = require("modules.inventory.InventorySystem")
+local InventorySystem = ____InventorySystem.InventorySystem
+local ____CraftingSystem = require("modules.inventory.CraftingSystem")
+local CraftingSystem = ____CraftingSystem.CraftingSystem
 --- 这个方法会在game_mode实体生成之后调用，且仅调用一次
 -- 因此在这里作为单例模式使用
 function ____exports.ActivateModules(self)
@@ -52,9 +56,15 @@ function ____exports.ActivateModules(self)
                 GameRules.PerformanceMonitor:setThreshold("config_loading", 500)
                 GameRules.PerformanceMonitor:setThreshold("debug_command", 100)
                 GameRules.GameModeManager = GameModeManager:getInstance()
+                print("[Modules] ========== 准备初始化 TrainingMode ==========")
                 GameRules.TrainingMode = TrainingMode:getInstance()
+                print("[Modules] ========== TrainingMode 初始化完成 ==========")
+                print("[Modules] ========== 准备初始化 AutoChessMode ==========")
                 GameRules.AutoChessMode = AutoChessMode:getInstance()
+                print("[Modules] ========== AutoChessMode 初始化完成 ==========")
                 GameRules.CustomUIHandler = CustomUIHandler:getInstance()
+                GameRules.InventorySystem = InventorySystem:getInstance()
+                GameRules.CraftingSystem = CraftingSystem:getInstance()
                 Timers:CreateTimer(
                     2,
                     function()
@@ -69,7 +79,7 @@ function ____exports.ActivateModules(self)
                         errorTracking = true,
                         performanceMonitoring = true,
                         debugMode = IsInToolsMode(),
-                        timestamp = Date:now()
+                        timestamp = GameRules:GetGameTime()
                     }
                 )
                 print("[Modules] GameConfig created successfully")

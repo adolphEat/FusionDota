@@ -4,6 +4,8 @@
  */
 
 import { GameMode, GameModeManager } from './GameModeManager';
+import { ChessBattleSystem } from './autochess/ChessBattleSystem';
+import { getTimestamp } from '../utils/time_utils';
 
 export enum ChessRarity {
     COMMON = 1,      // 普通 (白色)
@@ -65,12 +67,26 @@ export class AutoChessMode {
     private phaseTimer?: string;
     private chessPieceDatabase: Map<string, ChessPiece>;
     private isActive: boolean = false;
+    private battleSystem: ChessBattleSystem;
 
     private constructor() {
-        this.gameState = this.initializeGameState();
+        print('[AutoChessMode] ========== 构造函数开始 ==========');
+        
+        // 先初始化棋子数据库，因为 initializeGameState 需要用到它
+        print('[AutoChessMode] 初始化棋子数据库...');
         this.chessPieceDatabase = this.initializeChessDatabase();
+        
+        // 再初始化游戏状态
+        print('[AutoChessMode] 初始化游戏状态...');
+        this.gameState = this.initializeGameState();
+        
+        print('[AutoChessMode] 初始化战斗系统...');
+        this.battleSystem = ChessBattleSystem.getInstance();
+        
+        print('[AutoChessMode] 初始化自走棋模式...');
         this.initializeAutoChessMode();
-        print('[AutoChessMode] Initialized');
+        
+        print('[AutoChessMode] ✅ Initialized');
     }
 
     public static getInstance(): AutoChessMode {
@@ -158,6 +174,13 @@ export class AutoChessMode {
         this.gameState.currentPhase = RoundPhase.PREPARATION;
         this.gameState.phaseTimeLeft = 30; // 30秒准备时间
         
+        // 将玩家移动到观战区域（靠近棋盘）
+        for (const [playerId, playerState] of this.gameState.playerStates) {
+            if (playerState.isAlive) {
+                this.battleSystem.movePlayerToSpectatorArea(playerId);
+            }
+        }
+        
         // 发放回合收入
         this.distributeRoundIncome();
         
@@ -184,6 +207,17 @@ export class AutoChessMode {
         this.gameState.currentPhase = RoundPhase.BATTLE;
         this.gameState.phaseTimeLeft = 45; // 45秒战斗时间
         
+        // 部署所有玩家的棋子到战场
+        for (const [playerId, playerState] of this.gameState.playerStates) {
+            if (playerState.isAlive) {
+                // 设置玩家为受保护状态（无敌但可移动）
+                this.battleSystem.setPlayerAsProtected(playerId);
+                
+                // 自动部署玩家棋子（从备战席或默认配置）
+                this.deployPlayerChessPieces(playerId);
+            }
+        }
+        
         // 设置对战配对
         this.setupBattleMatching();
         
@@ -201,6 +235,78 @@ export class AutoChessMode {
             timeLeft: this.gameState.phaseTimeLeft,
             round: this.gameState.currentRound
         });
+    }
+
+    /**
+     * 部署玩家棋子到战场
+     */
+    private deployPlayerChessPieces(playerId: PlayerID): void {
+        print(`[AutoChessMode] ========== 开始部署玩家棋子 ==========`);
+        print(`[AutoChessMode] Player ID: ${playerId}`);
+        
+        const playerState = this.gameState.playerStates.get(playerId);
+        if (!playerState) {
+            print(`[AutoChessMode] ERROR: Player state not found for player ${playerId}`);
+            return;
+        }
+
+        // 清空之前的棋子
+        this.battleSystem.clearPlayerPieces(playerId);
+
+        // 从备战席部署棋子
+        const benchPieces = playerState.benchPieces || [];
+        print(`[AutoChessMode] Bench pieces count: ${benchPieces.length}`);
+        
+        if (benchPieces.length > 0) {
+            // 如果有备战席棋子，部署备战席的棋子
+            let slotIndex = 0;
+            for (const piece of benchPieces) {
+                const position = {
+                    x: 1 + slotIndex,  // x位置
+                    y: 1               // y位置（我方区域）
+                };
+                
+                print(`[AutoChessMode] Deploying bench piece: ${piece.id} at (${position.x}, ${position.y})`);
+                const result = this.battleSystem.deployPiece(playerId, piece.id, position);
+                print(`[AutoChessMode] Deploy result: ${result}`);
+                slotIndex++;
+                
+                if (slotIndex >= 7) break; // 最多7个棋子
+            }
+            
+            print(`[AutoChessMode] Deployed ${slotIndex} pieces from bench for player ${playerId}`);
+        } else {
+            // 如果备战席为空，部署默认测试棋子（开发测试用）
+            print(`[AutoChessMode] No bench pieces, deploying default test pieces...`);
+            const defaultPieces = this.getDefaultTestPieces();
+            print(`[AutoChessMode] Default pieces: ${defaultPieces.join(', ')}`);
+            print(`[AutoChessMode] Chess database size: ${this.chessPieceDatabase.size}`);
+            
+            let slotIndex = 0;
+            for (const pieceId of defaultPieces) {
+                const position = {
+                    x: 1 + slotIndex,
+                    y: 1
+                };
+                
+                print(`[AutoChessMode] Attempting to deploy: ${pieceId} at position (${position.x}, ${position.y})`);
+                const result = this.battleSystem.deployPiece(playerId, pieceId, position);
+                print(`[AutoChessMode] Deploy result for ${pieceId}: ${result ? 'SUCCESS' : 'FAILED'}`);
+                slotIndex++;
+            }
+            
+            print(`[AutoChessMode] Deployed ${slotIndex} default test pieces for player ${playerId}`);
+        }
+        
+        print(`[AutoChessMode] ========== 棋子部署完成 ==========`);
+    }
+
+    /**
+     * 获取默认测试棋子（用于开发测试）
+     */
+    private getDefaultTestPieces(): string[] {
+        // 返回一些默认的测试棋子
+        return ['axe', 'axe', 'crystal_maiden'];
     }
 
     /**
@@ -353,8 +459,53 @@ export class AutoChessMode {
             attackRange: 600,
             abilities: ['crystal_maiden_crystal_nova']
         });
+
+        database.set('axe', {
+            id: 'axe',
+            unitName: 'npc_dota_hero_axe',
+            displayName: '斧王',
+            rarity: ChessRarity.COMMON,
+            cost: 1,
+            race: ['兽人'],
+            class: ['战士'],
+            health: 625,
+            damage: 52,
+            armor: 3,
+            attackRange: 150,
+            abilities: ['axe_berserkers_call']
+        });
+
+        database.set('drow_ranger', {
+            id: 'drow_ranger',
+            unitName: 'npc_dota_hero_drow_ranger',
+            displayName: '卓尔游侠',
+            rarity: ChessRarity.COMMON,
+            cost: 1,
+            race: ['不死'],
+            class: ['猎人'],
+            health: 435,
+            damage: 45,
+            armor: 1,
+            attackRange: 625,
+            abilities: ['drow_ranger_frost_arrows']
+        });
+
+        database.set('bounty_hunter', {
+            id: 'bounty_hunter',
+            unitName: 'npc_dota_hero_bounty_hunter',
+            displayName: '赏金猎人',
+            rarity: ChessRarity.COMMON,
+            cost: 1,
+            race: ['地精'],
+            class: ['刺客'],
+            health: 550,
+            damage: 48,
+            armor: 2,
+            attackRange: 150,
+            abilities: ['bounty_hunter_shuriken_toss']
+        });
         
-        // TODO: 添加更多棋子...
+        // TODO: 从配置文件读取更多棋子
         
         return database;
     }
@@ -428,7 +579,7 @@ export class AutoChessMode {
                 GameRules.XNetTable.SetTableValue('autochess_shop', `player_${playerId}`, {
                     pieces: shopPieces,
                     refreshCount: 0,
-                    timestamp: Date.now()
+                    timestamp: getTimestamp()
                 });
             }
         }
@@ -534,54 +685,99 @@ export class AutoChessMode {
     }
 
     /**
-     * 设置战斗配对
+     * 设置战斗配对（仅AI对战）
      */
     private setupBattleMatching(): void {
-        const alivePlayers: PlayerID[] = [];
-        
+        // 所有玩家都对战AI，无需配对
         for (const [playerId, playerState] of this.gameState.playerStates) {
             if (playerState.isAlive) {
-                alivePlayers.push(playerId);
-            }
-        }
-        
-        // 随机配对 (简单实现)
-        for (let i = 0; i < alivePlayers.length; i += 2) {
-            if (i + 1 < alivePlayers.length) {
-                const player1 = alivePlayers[i];
-                const player2 = alivePlayers[i + 1];
-                
-                // 通知客户端战斗配对
-                (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_battle_match', {
-                    player1: player1,
-                    player2: player2,
-                    round: this.gameState.currentRound
+                // 通知客户端将要对战AI
+                (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_battle_vs_ai', {
+                    playerId: playerId,
+                    round: this.gameState.currentRound,
+                    aiLevel: Math.floor(this.gameState.currentRound / 5) + 1
                 });
             }
         }
     }
 
     /**
-     * 开始所有战斗
+     * 开始所有战斗（仅AI对战）
      */
     private startAllBattles(): void {
-        // TODO: 实现战斗逻辑
-        print('[AutoChessMode] Started all battles');
+        // 所有玩家都对战AI
+        for (const [playerId, playerState] of this.gameState.playerStates) {
+            if (playerState.isAlive) {
+                // AI等级随回合增加
+                const aiLevel = Math.floor(this.gameState.currentRound / 5) + 1;
+                
+                print(`[AutoChessMode] Player ${playerId} vs AI (Level ${aiLevel})`);
+                
+                // 开始对战AI
+                this.battleSystem.startBattleVsAI(playerId, aiLevel);
+            }
+        }
+        
+        print('[AutoChessMode] Started all AI battles');
     }
 
     /**
      * 停止所有战斗
      */
     private stopAllBattles(): void {
-        // TODO: 实现战斗停止逻辑
+        // 清理所有玩家的棋子
+        for (const [playerId, playerState] of this.gameState.playerStates) {
+            this.battleSystem.clearPlayerPieces(playerId);
+        }
+        
         print('[AutoChessMode] Stopped all battles');
     }
 
     /**
-     * 计算战斗结果
+     * 计算战斗结果（AI对战）
      */
     private calculateBattleResults(): void {
-        // TODO: 实现战斗结果计算
+        const battles = this.battleSystem.getActiveBattles();
+        
+        for (const battle of battles) {
+            if (!battle.completed) {
+                continue;
+            }
+            
+            const playerId = battle.player1;  // player1总是玩家，player2是AI(-1)
+            const playerState = this.gameState.playerStates.get(playerId);
+            
+            if (!playerState) {
+                continue;
+            }
+            
+            // 判断玩家是否获胜
+            if (battle.winnerId === playerId) {
+                // 玩家胜利
+                playerState.winStreak++;
+                playerState.lossStreak = 0;
+                
+                print(`[AutoChessMode] Player ${playerId} defeated AI!`);
+            } else {
+                // 玩家失败，扣除生命值
+                const damage = Math.min(10, this.gameState.currentRound);
+                playerState.health -= damage;
+                
+                // 更新连胜/连败
+                playerState.lossStreak++;
+                playerState.winStreak = 0;
+                
+                print(`[AutoChessMode] Player ${playerId} lost to AI (${damage} damage)`);
+                
+                // 检查是否淘汰
+                if (playerState.health <= 0) {
+                    playerState.isAlive = false;
+                    playerState.health = 0;
+                    print(`[AutoChessMode] Player ${playerId} eliminated!`);
+                }
+            }
+        }
+        
         print('[AutoChessMode] Calculated battle results');
     }
 
@@ -654,17 +850,101 @@ export class AutoChessMode {
     }
 
     /**
-     * 初始化自走棋模式
+     * 初始化自走棋模式 - 监听游戏状态事件
      */
     private initializeAutoChessMode(): void {
-        // 等待游戏开始后激活
-        Timers.CreateTimer(1.0, () => {
-            const gameModeManager = GameModeManager.getInstance();
-            if (gameModeManager.isAutoChessMode()) {
-                this.activate();
+        print("[AutoChessMode] ========== 监听游戏状态事件 ==========");
+        
+        // 监听游戏状态变化
+        ListenToGameEvent('game_rules_state_change', () => {
+            this.onGameStateChanged();
+        }, this);
+        
+        print("[AutoChessMode] ✅ 游戏状态事件监听已注册");
+    }
+    
+    /**
+     * 游戏状态变化处理
+     */
+    private onGameStateChanged(): void {
+        const gameState = GameRules.State_Get();
+        
+        // 获取状态名称
+        const stateNames = [
+            'INIT',
+            'WAIT_FOR_PLAYERS_TO_LOAD',
+            'CUSTOM_GAME_SETUP',
+            'HERO_SELECTION',
+            'STRATEGY_TIME',
+            'PRE_GAME',
+            'GAME_IN_PROGRESS',
+            'POST_GAME',
+            'DISCONNECT',
+            'TEAM_SHOWCASE',
+            'CUSTOM_GAME_SETUP_2',
+            'WAIT_FOR_MAP_TO_LOAD'
+        ];
+        const stateName = stateNames[gameState] || `UNKNOWN_${gameState}`;
+        
+        print(`[AutoChessMode] ========== 游戏状态变化: ${gameState} (${stateName}) ==========`);
+        
+        // 根据实际状态名称判断
+        // PRE_GAME = 5 (从日志看，这个阶段在后面，可能是状态8)
+        // GAME_IN_PROGRESS = 6 (需要确认)
+        
+        // 在 PRE_GAME 或更晚的阶段激活自走棋
+        if (gameState === 5 || gameState === 8) { // PRE_GAME
+            if (!this.isActive) {
+                print('[AutoChessMode] 📍 PRE_GAME 阶段 - 准备激活自走棋');
+                this.onPreGame();
             }
-            return null;
+        }
+        
+        // 在真正的 GAME_IN_PROGRESS 阶段开始游戏
+        if (gameState === 6 && stateName === 'GAME_IN_PROGRESS') {
+            if (this.isActive && !this.gameState.isGameActive) {
+                print('[AutoChessMode] 📍 GAME_IN_PROGRESS 阶段 - 游戏开始');
+                this.onGameStart();
+            }
+        }
+    }
+    
+    /**
+     * PRE_GAME 阶段处理
+     */
+    private onPreGame(): void {
+        const gameModeManager = GameModeManager.getInstance();
+        
+        if (!gameModeManager.isAutoChessMode()) {
+            print('[AutoChessMode] ⚠️ 不是自走棋模式，跳过激活');
+            return;
+        }
+        
+        print('[AutoChessMode] ✅ 激活自走棋模式...');
+        this.activate();
+        
+        // 激活后等待2秒开始游戏（给游戏环境一点时间初始化）
+        print('[AutoChessMode] 📍 将在2秒后开始游戏...');
+        Timers.CreateTimer(2.0, () => {
+            if (this.isActive && !this.gameState.isGameActive) {
+                print('[AutoChessMode] ✅ 自动开始游戏...');
+                this.startGame();
+            }
+            return undefined;
         });
+    }
+    
+    /**
+     * 游戏开始阶段处理
+     */
+    private onGameStart(): void {
+        if (!this.isActive) {
+            print('[AutoChessMode] ⚠️ 自走棋模式未激活，跳过游戏开始');
+            return;
+        }
+        
+        print('[AutoChessMode] ✅ 自动开始游戏...');
+        this.startGame();
     }
 
     /**
@@ -680,7 +960,7 @@ export class AutoChessMode {
                     phaseTimeLeft: this.gameState.phaseTimeLeft,
                     isGameActive: this.gameState.isGameActive
                 },
-                timestamp: Date.now()
+                timestamp: getTimestamp()
             });
         }
     }
@@ -757,7 +1037,21 @@ export class AutoChessMode {
             benchPieces: playerState.benchPieces,
             isAlive: playerState.isAlive,
             rank: playerState.rank,
-            timestamp: Date.now()
+            timestamp: getTimestamp()
         });
+    }
+
+    /**
+     * 获取棋子定义（公开方法）
+     */
+    public getChessPiece(pieceId: string): ChessPiece | null {
+        return this.chessPieceDatabase.get(pieceId) || null;
+    }
+
+    /**
+     * 获取所有棋子定义（公开方法）
+     */
+    public getAllChessPieces(): ChessPiece[] {
+        return Array.from(this.chessPieceDatabase.values());
     }
 }

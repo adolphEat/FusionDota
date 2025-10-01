@@ -7,6 +7,13 @@ import { GameModeManager } from './GameModeManager';
 import { TrainingMode } from './TrainingMode';
 import { AutoChessMode } from './AutoChessMode';
 import { CustomUIHandler } from './CustomUIHandler';
+import { UnitFactory } from './UnitFactory';
+import { UnitConfigManager } from './UnitConfigManager';
+// import { BattleManager } from './battle-system/Core/BattleManager';
+// import { BattleConfigLoader } from './battle-system/Data/ConfigLoader';
+// import { EntityManager } from './battle-system/Core/EntityManager';
+import { InventorySystem } from './inventory/InventorySystem';
+import { CraftingSystem } from './inventory/CraftingSystem';
 
 declare global {
     interface CDOTAGameRules {
@@ -18,6 +25,8 @@ declare global {
         TrainingMode: TrainingMode;
         AutoChessMode: AutoChessMode;
         CustomUIHandler: CustomUIHandler;
+        InventorySystem: InventorySystem;
+        CraftingSystem: CraftingSystem;
     }
 }
 
@@ -55,15 +64,25 @@ export function ActivateModules() {
             
             // 初始化游戏模式管理器（优先级高）
             GameRules.GameModeManager = GameModeManager.getInstance();
-            
+  
             // 初始化训练模式
+            print('[Modules] ========== 准备初始化 TrainingMode ==========');
             GameRules.TrainingMode = TrainingMode.getInstance();
+            print('[Modules] ========== TrainingMode 初始化完成 ==========');
             
             // 初始化自走棋模式
+            print('[Modules] ========== 准备初始化 AutoChessMode ==========');
             GameRules.AutoChessMode = AutoChessMode.getInstance();
+            print('[Modules] ========== AutoChessMode 初始化完成 ==========');
             
             // 初始化自定义UI处理器
             GameRules.CustomUIHandler = CustomUIHandler.getInstance();
+            
+            // 初始化背包系统
+            GameRules.InventorySystem = InventorySystem.getInstance();
+            
+            // 初始化合成系统
+            GameRules.CraftingSystem = CraftingSystem.getInstance();
             
             // 延迟集成UI到游戏模式系统（确保所有模块都已初始化）
             Timers.CreateTimer(2.0, () => {
@@ -77,7 +96,7 @@ export function ActivateModules() {
                 errorTracking: true,
                 performanceMonitoring: true,
                 debugMode: IsInToolsMode(),
-                timestamp: Date.now()
+                timestamp: GameRules.GetGameTime()
             });
             
            // 如果某个模块不需要在其他地方使用，那么直接在这里使用即可
