@@ -6,26 +6,30 @@ local __TS__NumberToFixed = ____lualib.__TS__NumberToFixed
 local __TS__ArrayFindIndex = ____lualib.__TS__ArrayFindIndex
 local __TS__ArraySplice = ____lualib.__TS__ArraySplice
 local __TS__ArrayFilter = ____lualib.__TS__ArrayFilter
+local __TS__ArrayMap = ____lualib.__TS__ArrayMap
 local __TS__SparseArrayNew = ____lualib.__TS__SparseArrayNew
 local __TS__SparseArrayPush = ____lualib.__TS__SparseArrayPush
 local __TS__SparseArraySpread = ____lualib.__TS__SparseArraySpread
 local __TS__ArraySome = ____lualib.__TS__ArraySome
-local __TS__ArrayMap = ____lualib.__TS__ArrayMap
 local __TS__ArrayFrom = ____lualib.__TS__ArrayFrom
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["18"] = 10,["19"] = 10,["20"] = 43,["21"] = 43,["22"] = 43,["24"] = 49,["25"] = 50,["26"] = 51,["27"] = 54,["28"] = 55,["29"] = 56,["30"] = 57,["31"] = 53,["32"] = 60,["33"] = 61,["34"] = 62,["36"] = 64,["37"] = 60,["38"] = 70,["39"] = 72,["40"] = 70,["41"] = 78,["42"] = 80,["43"] = 80,["44"] = 80,["45"] = 81,["46"] = 82,["47"] = 83,["48"] = 84,["49"] = 80,["50"] = 80,["51"] = 88,["52"] = 88,["53"] = 88,["54"] = 89,["55"] = 90,["56"] = 91,["57"] = 88,["58"] = 88,["59"] = 78,["60"] = 98,["61"] = 99,["62"] = 100,["65"] = 105,["66"] = 108,["67"] = 117,["68"] = 118,["69"] = 120,["70"] = 98,["71"] = 126,["72"] = 127,["73"] = 128,["76"] = 133,["77"] = 136,["78"] = 138,["79"] = 126,["80"] = 144,["81"] = 145,["82"] = 146,["85"] = 151,["86"] = 152,["87"] = 154,["88"] = 144,["89"] = 160,["90"] = 161,["91"] = 162,["94"] = 167,["95"] = 170,["96"] = 173,["97"] = 176,["98"] = 179,["99"] = 180,["100"] = 182,["101"] = 160,["102"] = 188,["103"] = 190,["104"] = 193,["105"] = 194,["106"] = 195,["107"] = 196,["108"] = 197,["109"] = 199,["110"] = 200,["111"] = 201,["112"] = 188,["113"] = 207,["114"] = 209,["115"] = 210,["116"] = 211,["118"] = 215,["119"] = 216,["120"] = 217,["122"] = 221,["123"] = 222,["124"] = 223,["125"] = 224,["127"] = 228,["128"] = 229,["129"] = 231,["130"] = 231,["131"] = 231,["132"] = 231,["133"] = 231,["134"] = 231,["135"] = 231,["136"] = 231,["137"] = 240,["138"] = 241,["139"] = 242,["141"] = 246,["142"] = 249,["143"] = 249,["144"] = 249,["145"] = 249,["146"] = 249,["147"] = 249,["148"] = 249,["149"] = 257,["150"] = 258,["151"] = 259,["152"] = 261,["153"] = 262,["154"] = 207,["155"] = 268,["156"] = 269,["157"] = 270,["158"] = 271,["160"] = 274,["161"] = 274,["162"] = 274,["163"] = 274,["164"] = 278,["165"] = 279,["167"] = 282,["168"] = 285,["169"] = 286,["171"] = 290,["172"] = 291,["173"] = 293,["174"] = 294,["175"] = 268,["176"] = 300,["177"] = 301,["178"] = 302,["181"] = 306,["182"] = 307,["183"] = 308,["186"] = 312,["187"] = 313,["188"] = 300,["189"] = 319,["190"] = 320,["191"] = 323,["192"] = 324,["193"] = 327,["194"] = 327,["195"] = 327,["196"] = 327,["197"] = 327,["198"] = 327,["199"] = 327,["200"] = 335,["201"] = 338,["202"] = 340,["203"] = 341,["204"] = 319,["205"] = 347,["206"] = 347,["207"] = 347,["209"] = 348,["210"] = 351,["211"] = 354,["212"] = 357,["213"] = 357,["214"] = 357,["215"] = 357,["216"] = 357,["217"] = 357,["218"] = 357,["219"] = 365,["220"] = 368,["221"] = 370,["222"] = 371,["223"] = 347,["224"] = 377,["225"] = 378,["226"] = 379,["227"] = 382,["229"] = 384,["230"] = 384,["231"] = 386,["232"] = 389,["233"] = 389,["234"] = 389,["235"] = 389,["236"] = 395,["237"] = 396,["238"] = 396,["239"] = 396,["240"] = 396,["241"] = 396,["242"] = 396,["243"] = 396,["244"] = 396,["245"] = 405,["246"] = 406,["247"] = 408,["248"] = 408,["249"] = 408,["250"] = 408,["251"] = 408,["252"] = 408,["253"] = 408,["255"] = 384,["258"] = 418,["259"] = 377,["260"] = 424,["261"] = 425,["262"] = 426,["265"] = 431,["266"] = 432,["267"] = 434,["268"] = 435,["271"] = 439,["272"] = 440,["273"] = 441,["274"] = 442,["277"] = 447,["278"] = 424,["279"] = 453,["280"] = 454,["281"] = 454,["282"] = 454,["283"] = 455,["284"] = 456,["285"] = 457,["287"] = 461,["288"] = 461,["289"] = 461,["290"] = 461,["291"] = 465,["292"] = 465,["293"] = 465,["294"] = 465,["295"] = 470,["296"] = 471,["297"] = 471,["298"] = 471,["300"] = 471,["302"] = 471,["303"] = 472,["304"] = 473,["305"] = 474,["307"] = 477,["308"] = 454,["309"] = 454,["310"] = 453,["311"] = 484,["312"] = 485,["313"] = 486,["316"] = 490,["317"] = 493,["318"] = 496,["319"] = 484,["320"] = 507,["321"] = 508,["322"] = 509,["325"] = 514,["328"] = 514,["330"] = 514,["331"] = 515,["332"] = 516,["333"] = 517,["336"] = 521,["337"] = 507,["338"] = 527,["339"] = 529,["340"] = 532,["341"] = 534,["342"] = 535,["343"] = 538,["344"] = 538,["345"] = 538,["347"] = 538,["349"] = 538,["350"] = 540,["351"] = 542,["352"] = 544,["353"] = 527,["354"] = 550,["355"] = 551,["356"] = 550,["357"] = 558,["358"] = 559,["359"] = 560,["360"] = 561,["362"] = 564,["363"] = 564,["364"] = 564,["365"] = 564,["366"] = 558,["367"] = 572,["368"] = 574,["369"] = 574,["374"] = 574,["375"] = 572,["376"] = 580,["377"] = 581,["378"] = 582,["379"] = 583,["380"] = 584,["381"] = 585,["382"] = 580,["383"] = 592,["384"] = 594,["385"] = 595,["386"] = 596,["387"] = 597,["388"] = 598,["389"] = 598,["390"] = 598,["391"] = 598,["392"] = 598,["393"] = 598,["394"] = 598,["396"] = 600,["398"] = 602,["399"] = 603,["400"] = 592,["401"] = 609,["402"] = 610,["403"] = 611,["404"] = 612,["406"] = 615,["407"] = 616,["408"] = 617,["409"] = 609,["410"] = 623,["411"] = 624,["412"] = 623,["413"] = 630,["414"] = 631,["415"] = 630,["416"] = 636});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["18"] = 10,["19"] = 10,["20"] = 11,["21"] = 11,["22"] = 44,["23"] = 44,["24"] = 44,["26"] = 51,["27"] = 54,["28"] = 55,["29"] = 56,["30"] = 59,["31"] = 60,["32"] = 61,["33"] = 62,["34"] = 63,["35"] = 58,["36"] = 66,["37"] = 67,["38"] = 68,["40"] = 70,["41"] = 66,["42"] = 76,["43"] = 78,["44"] = 76,["45"] = 84,["46"] = 86,["47"] = 86,["48"] = 86,["49"] = 87,["50"] = 88,["51"] = 89,["52"] = 90,["53"] = 86,["54"] = 86,["55"] = 94,["56"] = 94,["57"] = 94,["58"] = 95,["59"] = 96,["60"] = 97,["61"] = 94,["62"] = 94,["63"] = 84,["64"] = 104,["65"] = 105,["66"] = 106,["69"] = 111,["70"] = 114,["71"] = 117,["72"] = 118,["73"] = 119,["74"] = 120,["75"] = 123,["76"] = 124,["77"] = 125,["78"] = 126,["79"] = 128,["80"] = 104,["81"] = 134,["82"] = 135,["83"] = 136,["86"] = 141,["87"] = 144,["88"] = 146,["89"] = 134,["90"] = 152,["91"] = 153,["92"] = 154,["95"] = 159,["96"] = 160,["97"] = 162,["98"] = 152,["99"] = 168,["100"] = 169,["101"] = 170,["104"] = 175,["105"] = 178,["106"] = 181,["107"] = 184,["108"] = 187,["109"] = 188,["110"] = 190,["111"] = 168,["112"] = 196,["113"] = 198,["114"] = 201,["115"] = 202,["116"] = 203,["117"] = 204,["118"] = 207,["119"] = 208,["120"] = 210,["121"] = 211,["122"] = 196,["123"] = 217,["124"] = 219,["125"] = 220,["126"] = 221,["128"] = 225,["129"] = 226,["130"] = 227,["132"] = 231,["133"] = 232,["134"] = 233,["135"] = 234,["137"] = 238,["138"] = 239,["139"] = 241,["140"] = 241,["141"] = 241,["142"] = 241,["143"] = 241,["144"] = 241,["145"] = 241,["146"] = 241,["147"] = 250,["148"] = 251,["149"] = 252,["151"] = 256,["152"] = 259,["153"] = 260,["154"] = 261,["155"] = 261,["156"] = 261,["157"] = 261,["158"] = 262,["159"] = 263,["160"] = 264,["161"] = 265,["162"] = 265,["163"] = 265,["164"] = 265,["165"] = 266,["167"] = 269,["168"] = 270,["170"] = 272,["173"] = 277,["174"] = 277,["175"] = 277,["176"] = 277,["177"] = 277,["178"] = 277,["179"] = 277,["180"] = 285,["181"] = 286,["182"] = 287,["183"] = 289,["184"] = 290,["185"] = 217,["186"] = 296,["187"] = 297,["188"] = 298,["189"] = 299,["191"] = 302,["192"] = 302,["193"] = 302,["194"] = 302,["195"] = 306,["196"] = 307,["198"] = 310,["199"] = 313,["200"] = 314,["202"] = 318,["203"] = 319,["204"] = 321,["205"] = 322,["206"] = 296,["207"] = 328,["208"] = 329,["209"] = 330,["212"] = 334,["213"] = 335,["214"] = 336,["217"] = 340,["218"] = 341,["219"] = 328,["220"] = 347,["221"] = 348,["222"] = 351,["223"] = 352,["224"] = 355,["225"] = 355,["226"] = 355,["227"] = 355,["228"] = 355,["229"] = 355,["230"] = 355,["231"] = 363,["232"] = 366,["233"] = 368,["234"] = 369,["235"] = 347,["236"] = 375,["237"] = 375,["238"] = 375,["240"] = 376,["241"] = 379,["242"] = 382,["243"] = 385,["244"] = 385,["245"] = 385,["246"] = 385,["247"] = 385,["248"] = 385,["249"] = 385,["250"] = 393,["251"] = 396,["252"] = 398,["253"] = 399,["254"] = 375,["255"] = 405,["256"] = 406,["257"] = 407,["258"] = 410,["260"] = 412,["261"] = 412,["262"] = 414,["263"] = 417,["264"] = 417,["265"] = 417,["266"] = 417,["267"] = 423,["268"] = 424,["269"] = 424,["270"] = 424,["271"] = 424,["272"] = 424,["273"] = 424,["274"] = 424,["275"] = 424,["276"] = 433,["277"] = 434,["278"] = 436,["279"] = 436,["280"] = 436,["281"] = 436,["282"] = 436,["283"] = 436,["284"] = 436,["286"] = 412,["289"] = 446,["290"] = 405,["291"] = 452,["292"] = 453,["293"] = 454,["296"] = 459,["297"] = 460,["298"] = 462,["299"] = 463,["302"] = 467,["303"] = 468,["304"] = 469,["305"] = 470,["308"] = 475,["309"] = 452,["310"] = 481,["311"] = 482,["312"] = 482,["313"] = 482,["314"] = 483,["315"] = 484,["316"] = 485,["318"] = 489,["319"] = 489,["320"] = 489,["321"] = 489,["322"] = 493,["323"] = 493,["324"] = 493,["325"] = 493,["326"] = 498,["327"] = 499,["328"] = 499,["329"] = 499,["331"] = 499,["333"] = 499,["334"] = 500,["335"] = 501,["336"] = 502,["338"] = 505,["339"] = 482,["340"] = 482,["341"] = 481,["342"] = 512,["343"] = 513,["344"] = 514,["347"] = 519,["348"] = 521,["349"] = 524,["350"] = 524,["351"] = 524,["352"] = 524,["353"] = 524,["354"] = 524,["355"] = 524,["356"] = 527,["357"] = 530,["358"] = 533,["359"] = 541,["360"] = 541,["361"] = 541,["362"] = 543,["363"] = 546,["364"] = 547,["366"] = 551,["367"] = 552,["368"] = 541,["369"] = 541,["370"] = 512,["371"] = 559,["372"] = 560,["373"] = 561,["376"] = 566,["379"] = 566,["381"] = 566,["382"] = 567,["383"] = 568,["384"] = 569,["387"] = 573,["388"] = 559,["389"] = 579,["390"] = 581,["391"] = 584,["392"] = 586,["393"] = 587,["394"] = 590,["395"] = 590,["396"] = 590,["398"] = 590,["400"] = 590,["401"] = 592,["402"] = 594,["403"] = 596,["404"] = 579,["405"] = 602,["406"] = 603,["407"] = 602,["408"] = 610,["409"] = 611,["410"] = 612,["411"] = 613,["413"] = 616,["414"] = 616,["415"] = 616,["416"] = 616,["417"] = 610,["418"] = 624,["419"] = 626,["420"] = 626,["425"] = 626,["426"] = 624,["427"] = 632,["428"] = 633,["429"] = 634,["430"] = 635,["431"] = 636,["432"] = 637,["433"] = 632,["434"] = 644,["435"] = 646,["436"] = 647,["437"] = 648,["438"] = 649,["439"] = 650,["440"] = 650,["441"] = 650,["442"] = 650,["443"] = 650,["444"] = 650,["445"] = 650,["447"] = 652,["449"] = 654,["450"] = 655,["451"] = 644,["452"] = 661,["453"] = 662,["454"] = 663,["455"] = 664,["457"] = 667,["458"] = 668,["459"] = 669,["460"] = 661,["461"] = 675,["462"] = 676,["463"] = 675,["464"] = 682,["465"] = 683,["466"] = 682,["467"] = 689,["468"] = 690,["469"] = 692,["470"] = 694,["471"] = 695,["472"] = 697,["473"] = 700,["474"] = 703,["477"] = 707,["478"] = 689,["479"] = 713,["480"] = 715,["481"] = 718,["482"] = 721,["483"] = 723,["484"] = 713,["485"] = 729,["486"] = 730,["487"] = 729,["488"] = 736,["489"] = 737,["490"] = 739,["491"] = 740,["492"] = 741,["494"] = 744,["496"] = 736,["497"] = 751,["498"] = 754,["499"] = 755,["500"] = 756,["501"] = 757,["502"] = 758,["503"] = 760,["504"] = 761,["505"] = 761,["506"] = 761,["507"] = 764,["508"] = 765,["509"] = 766,["511"] = 768,["512"] = 768,["514"] = 769,["515"] = 769,["516"] = 771,["517"] = 772,["518"] = 773,["519"] = 775,["520"] = 775,["521"] = 775,["522"] = 775,["523"] = 775,["524"] = 775,["525"] = 775,["526"] = 775,["527"] = 769,["530"] = 768,["533"] = 751,["534"] = 781,["535"] = 782,["537"] = 783,["538"] = 783,["539"] = 784,["540"] = 785,["541"] = 786,["542"] = 786,["543"] = 786,["544"] = 786,["545"] = 786,["546"] = 786,["547"] = 786,["548"] = 786,["549"] = 786,["550"] = 783,["553"] = 781,["554"] = 790,["555"] = 791,["557"] = 793,["558"] = 793,["559"] = 794,["560"] = 795,["561"] = 796,["562"] = 797,["563"] = 793,["566"] = 799,["567"] = 790,["568"] = 803,["569"] = 804,["570"] = 805,["571"] = 806,["572"] = 807,["573"] = 808,["574"] = 808,["575"] = 808,["576"] = 808,["579"] = 811,["580"] = 812,["581"] = 813,["583"] = 815,["585"] = 804,["586"] = 819,["587"] = 820,["588"] = 803,["589"] = 825});
 local ____exports = {}
 local ____time_utils = require("utils.time_utils")
 local getTimestampMs = ____time_utils.getTimestampMs
+local ____WaveConfigSystem = require("modules.autochess.WaveConfigSystem")
+local WaveConfigSystem = ____WaveConfigSystem.WaveConfigSystem
 ____exports.ChessBattleSystem = __TS__Class()
 local ChessBattleSystem = ____exports.ChessBattleSystem
 ChessBattleSystem.name = "ChessBattleSystem"
 function ChessBattleSystem.prototype.____constructor(self)
+    self.playerSurvivorHealth = __TS__New(Map)
     self.BOARD_SIZE = 8
     self.CELL_SIZE = 128
     self.BOARD_OFFSET = Vector(1058, 978, 200)
     self.activeBattles = __TS__New(Map)
     self.playerDeployedPieces = __TS__New(Map)
+    self.waveConfigSystem = WaveConfigSystem:getInstance()
     self:initialize()
     print("[ChessBattleSystem] Initialized")
 end
@@ -64,8 +68,14 @@ function ChessBattleSystem.prototype.setPlayerAsProtected(self, playerId)
     end
     hero:AddNewModifier(hero, nil, "modifier_invulnerable", {})
     hero:AddNewModifier(hero, nil, "modifier_disarmed", {})
+    hero:SetMoveCapability(DOTA_UNIT_CAP_MOVE_GROUND)
+    hero:SetControllableByPlayer(playerId, true)
+    hero:RemoveModifierByName("modifier_rooted")
+    hero:RemoveModifierByName("modifier_stunned")
     local spectatorPos = self:getSpectatorPosition(playerId)
-    hero:SetAbsOrigin(spectatorPos)
+    local groundPos = GetGroundPosition(spectatorPos, hero)
+    FindClearSpaceForUnit(hero, groundPos, true)
+    hero:AddNewModifier(hero, nil, "modifier_phased", {duration = 0.03})
     print(("[ChessBattleSystem] Player " .. tostring(playerId)) .. " set as protected and moved to spectator position")
 end
 function ChessBattleSystem.prototype.restorePlayerNormalState(self, playerId)
@@ -100,15 +110,15 @@ function ChessBattleSystem.prototype.setPlayerAsSpectator(self, playerId)
     print(("[ChessBattleSystem] Player " .. tostring(playerId)) .. " set as spectator")
 end
 function ChessBattleSystem.prototype.getSpectatorPosition(self, playerId)
-    local mapCenter = Vector(1058, 978, 100)
-    local angle = playerId / 8 * 360
-    local distance = 600
-    local x = mapCenter.x + math.cos(angle * math.pi / 180) * distance
-    local y = mapCenter.y + math.sin(angle * math.pi / 180) * distance
-    local z = self.BOARD_OFFSET.z
-    local spectatorPos = Vector(x, y, z)
-    print(((((((("[ChessBattleSystem] Spectator position for player " .. tostring(playerId)) .. ": (") .. __TS__NumberToFixed(x, 1)) .. ", ") .. __TS__NumberToFixed(y, 1)) .. ", ") .. __TS__NumberToFixed(z, 1)) .. ")")
-    return spectatorPos
+    local mapCenter = Vector(self.BOARD_OFFSET.x, self.BOARD_OFFSET.y, 0)
+    local angle = playerId / 8 * 2 * math.pi
+    local ringDistance = self.BOARD_SIZE * self.CELL_SIZE / 2 + 200
+    local x = mapCenter.x + math.cos(angle) * ringDistance
+    local y = mapCenter.y + math.sin(angle) * ringDistance
+    local pos = Vector(x, y, 0)
+    local ground = GetGroundPosition(pos, nil)
+    print(((((((("[ChessBattleSystem] Spectator position for player " .. tostring(playerId)) .. ": (") .. __TS__NumberToFixed(ground.x, 1)) .. ", ") .. __TS__NumberToFixed(ground.y, 1)) .. ", ") .. __TS__NumberToFixed(ground.z, 1)) .. ")")
+    return ground
 end
 function ChessBattleSystem.prototype.deployPiece(self, playerId, pieceId, position)
     if not self:isValidPosition(position) then
@@ -139,6 +149,27 @@ function ChessBattleSystem.prototype.deployPiece(self, playerId, pieceId, positi
         return false
     end
     self:applyChessPieceStats(unit, chessPiece)
+    local survivorList = self.playerSurvivorHealth:get(playerId)
+    if survivorList and #survivorList > 0 then
+        local idx = __TS__ArrayFindIndex(
+            survivorList,
+            function(____, s) return s.pieceId == pieceId end
+        )
+        if idx ~= -1 then
+            local val = __TS__ArraySplice(survivorList, idx, 1)[1]
+            local maxHp = unit:GetMaxHealth()
+            unit:SetHealth(math.max(
+                1,
+                math.min(val.health, maxHp)
+            ))
+            print((("[ChessBattleSystem] Apply survivor HP " .. tostring(val.health)) .. " to ") .. pieceId)
+        end
+        if #survivorList == 0 then
+            self.playerSurvivorHealth:delete(playerId)
+        else
+            self.playerSurvivorHealth:set(playerId, survivorList)
+        end
+    end
     local deployed = {
         pieceId = pieceId,
         unit = unit,
@@ -313,9 +344,29 @@ function ChessBattleSystem.prototype.onBattleComplete(self, battleId)
     if not battle then
         return
     end
+    self:recordSurvivorHealth(battle)
     print((("[ChessBattleSystem] Battle " .. battleId) .. " completed. Winner: ") .. tostring(battle.winnerId))
+    local playerSnapshot = __TS__ArrayMap(
+        __TS__ArrayFilter(
+            battle.player1Pieces,
+            function(____, p) return p.unit and not p.unit:IsNull() and p.unit:IsAlive() end
+        ),
+        function(____, p) return {pieceId = p.pieceId, position = {x = p.position.x, y = p.position.y}} end
+    )
+    local playerIdForTest = battle.player1
     self:cleanupBattle(battleId)
     CustomGameEventManager:Send_ServerToAllClients("battle_completed", {battleId = battleId, winnerId = battle.winnerId, player1 = battle.player1, player2 = battle.player2})
+    Timers:CreateTimer(
+        5,
+        function()
+            self.playerDeployedPieces:set(playerIdForTest, {})
+            for ____, s in ipairs(playerSnapshot) do
+                self:deployPiece(playerIdForTest, s.pieceId, s.position)
+            end
+            self:startBattleVsAI(playerIdForTest)
+            return nil
+        end
+    )
 end
 function ChessBattleSystem.prototype.cleanupBattle(self, battleId)
     local battle = self.activeBattles:get(battleId)
@@ -412,6 +463,128 @@ function ChessBattleSystem.prototype.getPlayerPieces(self, playerId)
 end
 function ChessBattleSystem.prototype.getActiveBattles(self)
     return __TS__ArrayFrom(self.activeBattles:values())
+end
+function ChessBattleSystem.prototype.activatePlayerPieces(self, playerId)
+    print(("[ChessBattleSystem] 激活玩家 " .. tostring(playerId)) .. " 的棋子")
+    local pieces = self.playerDeployedPieces:get(playerId) or ({})
+    for ____, piece in ipairs(pieces) do
+        if piece.unit and IsValidEntity(piece.unit) then
+            self:removePreparationModifiers(piece.unit)
+            piece.unit:SetMoveCapability(DOTA_UNIT_CAP_MOVE_GROUND)
+            print(((("[ChessBattleSystem] 激活棋子: " .. piece.pieceId) .. " (") .. piece.unit:GetUnitName()) .. ")")
+        end
+    end
+    print(((("[ChessBattleSystem] 玩家 " .. tostring(playerId)) .. " 的 ") .. tostring(#pieces)) .. " 个棋子已激活")
+end
+function ChessBattleSystem.prototype.removePreparationModifiers(self, unit)
+    unit:RemoveModifierByName("modifier_silence")
+    unit:RemoveModifierByName("modifier_disarmed")
+    unit:RemoveModifierByName("modifier_autochess_preparation")
+    print(("[ChessBattleSystem] 移除单位 " .. unit:GetUnitName()) .. " 的准备阶段修饰符")
+end
+function ChessBattleSystem.prototype.getWaveConfigSystem(self)
+    return self.waveConfigSystem
+end
+function ChessBattleSystem.prototype.startNewWave(self, waveNumber)
+    print("[ChessBattleSystem] 开始新波次: " .. tostring(waveNumber))
+    local waveConfig = self.waveConfigSystem:startNewWave(waveNumber)
+    if waveConfig then
+        print("[ChessBattleSystem] 使用波次配置: " .. waveConfig.name)
+    else
+        print("[ChessBattleSystem] ERROR: 无法获取波次配置 for wave " .. tostring(waveNumber))
+    end
+end
+function ChessBattleSystem.prototype.recreateHexBoard(self)
+    local r = self.CELL_SIZE * 0.5
+    local w = math.sqrt(3) * r
+    local vert = 1.5 * r
+    local cols = self.BOARD_SIZE
+    local rows = self.BOARD_SIZE
+    local duration = 1.2
+    local colorR = 0
+    local colorG = 120
+    local colorB = 255
+    local origin = Vector(self.BOARD_OFFSET.x - 100, self.BOARD_OFFSET.y, self.BOARD_OFFSET.z - 100)
+    local colOffset = (cols - 1) * w * 0.5
+    local rowOffset = (rows - 1) * vert * 0.5
+    do
+        local row = 0
+        while row < rows do
+            do
+                local col = 0
+                while col < cols do
+                    local x = origin.x + (col * w + row % 2 * (w * 0.5)) - colOffset
+                    local y = origin.y + row * vert - rowOffset
+                    local center = Vector(x, y, origin.z)
+                    self:drawHexAt(
+                        center,
+                        r,
+                        duration,
+                        colorR,
+                        colorG,
+                        colorB
+                    )
+                    col = col + 1
+                end
+            end
+            row = row + 1
+        end
+    end
+end
+function ChessBattleSystem.prototype.drawHexAt(self, center, radius, duration, r, g, b)
+    local corners = self:getHexCornersPointy(center, radius)
+    do
+        local i = 0
+        while i < 6 do
+            local a = corners[i + 1]
+            local c = corners[(i + 1) % 6 + 1]
+            DebugDrawLine(
+                a,
+                c,
+                r,
+                g,
+                b,
+                true,
+                duration
+            )
+            i = i + 1
+        end
+    end
+end
+function ChessBattleSystem.prototype.getHexCornersPointy(self, center, radius)
+    local pts = {}
+    do
+        local i = 0
+        while i < 6 do
+            local angle = math.pi / 180 * (60 * i - 30)
+            local x = center.x + radius * math.cos(angle)
+            local y = center.y + radius * math.sin(angle)
+            pts[#pts + 1] = Vector(x, y, center.z)
+            i = i + 1
+        end
+    end
+    return pts
+end
+function ChessBattleSystem.prototype.recordSurvivorHealth(self, battle)
+    local function updateFor(____, playerId, pieces)
+        local survivors = {}
+        for ____, p in ipairs(pieces) do
+            if p.unit and not p.unit:IsNull() and p.unit:IsAlive() then
+                survivors[#survivors + 1] = {
+                    pieceId = p.pieceId,
+                    health = p.unit:GetHealth()
+                }
+            end
+        end
+        if #survivors > 0 then
+            self.playerSurvivorHealth:set(playerId, survivors)
+            print((("[ChessBattleSystem] Stored " .. tostring(#survivors)) .. " survivor HP entries for player ") .. tostring(playerId))
+        else
+            self.playerSurvivorHealth:delete(playerId)
+        end
+    end
+    updateFor(nil, battle.player1, battle.player1Pieces)
+    updateFor(nil, battle.player2, battle.player2Pieces)
 end
 ____exports.chessBattleSystem = ____exports.ChessBattleSystem:getInstance()
 return ____exports

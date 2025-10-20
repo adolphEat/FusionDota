@@ -6,7 +6,7 @@ local Map = ____lualib.Map
 local __TS__ArrayFrom = ____lualib.__TS__ArrayFrom
 local __TS__ArrayFilter = ____lualib.__TS__ArrayFilter
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["11"] = 6,["12"] = 6,["13"] = 7,["14"] = 7,["15"] = 8,["16"] = 8,["17"] = 10,["18"] = 11,["19"] = 11,["20"] = 12,["21"] = 12,["22"] = 13,["23"] = 13,["24"] = 14,["25"] = 14,["26"] = 15,["27"] = 15,["28"] = 18,["29"] = 19,["30"] = 20,["31"] = 21,["32"] = 64,["33"] = 64,["34"] = 64,["36"] = 69,["37"] = 73,["38"] = 76,["39"] = 77,["40"] = 80,["41"] = 81,["42"] = 83,["43"] = 84,["44"] = 86,["45"] = 87,["46"] = 89,["47"] = 72,["48"] = 92,["49"] = 93,["50"] = 94,["52"] = 96,["53"] = 92,["54"] = 102,["55"] = 103,["56"] = 104,["59"] = 108,["60"] = 109,["61"] = 110,["64"] = 114,["65"] = 115,["66"] = 116,["67"] = 118,["68"] = 121,["69"] = 102,["70"] = 127,["71"] = 128,["74"] = 132,["75"] = 133,["76"] = 134,["77"] = 136,["78"] = 139,["79"] = 127,["80"] = 145,["81"] = 146,["82"] = 147,["85"] = 151,["86"] = 152,["87"] = 153,["88"] = 156,["89"] = 159,["90"] = 161,["91"] = 164,["92"] = 145,["93"] = 173,["94"] = 174,["95"] = 175,["96"] = 178,["97"] = 178,["98"] = 178,["99"] = 179,["100"] = 180,["103"] = 185,["104"] = 188,["105"] = 191,["106"] = 193,["107"] = 196,["108"] = 173,["109"] = 206,["110"] = 207,["111"] = 208,["112"] = 211,["113"] = 211,["114"] = 211,["115"] = 212,["116"] = 214,["117"] = 217,["120"] = 222,["121"] = 225,["122"] = 228,["123"] = 230,["124"] = 233,["125"] = 206,["126"] = 243,["127"] = 244,["128"] = 245,["129"] = 247,["130"] = 248,["131"] = 249,["134"] = 254,["135"] = 257,["136"] = 258,["137"] = 260,["138"] = 262,["139"] = 263,["140"] = 264,["141"] = 269,["142"] = 270,["143"] = 271,["144"] = 272,["145"] = 274,["149"] = 277,["151"] = 280,["152"] = 281,["153"] = 282,["154"] = 283,["155"] = 285,["156"] = 286,["157"] = 287,["158"] = 292,["159"] = 293,["160"] = 294,["161"] = 295,["163"] = 298,["165"] = 301,["166"] = 243,["167"] = 307,["168"] = 309,["169"] = 307,["170"] = 315,["171"] = 316,["172"] = 317,["174"] = 320,["175"] = 320,["176"] = 320,["177"] = 321,["178"] = 321,["179"] = 324,["180"] = 330,["181"] = 331,["182"] = 332,["184"] = 335,["185"] = 320,["186"] = 320,["187"] = 315,["188"] = 342,["190"] = 343,["191"] = 344,["193"] = 345,["196"] = 347,["198"] = 348,["202"] = 342,["203"] = 356,["204"] = 358,["205"] = 361,["206"] = 364,["207"] = 365,["210"] = 370,["211"] = 370,["212"] = 371,["213"] = 356,["214"] = 377,["215"] = 378,["216"] = 378,["217"] = 378,["218"] = 378,["219"] = 378,["220"] = 378,["221"] = 378,["222"] = 378,["223"] = 377,["224"] = 391,["225"] = 392,["226"] = 401,["227"] = 401,["228"] = 401,["229"] = 402,["231"] = 403,["232"] = 404,["234"] = 405,["237"] = 407,["239"] = 408,["242"] = 410,["244"] = 411,["247"] = 413,["249"] = 414,["252"] = 416,["254"] = 417,["258"] = 420,["260"] = 423,["261"] = 391,["262"] = 429,["263"] = 430,["264"] = 433,["265"] = 433,["266"] = 433,["267"] = 433,["268"] = 433,["269"] = 433,["270"] = 433,["271"] = 433,["272"] = 433,["273"] = 433,["274"] = 433,["275"] = 433,["276"] = 433,["277"] = 433,["278"] = 448,["279"] = 448,["280"] = 448,["281"] = 448,["282"] = 448,["283"] = 448,["284"] = 448,["285"] = 448,["286"] = 448,["287"] = 448,["288"] = 448,["289"] = 448,["290"] = 448,["291"] = 448,["292"] = 463,["293"] = 463,["294"] = 463,["295"] = 463,["296"] = 463,["297"] = 463,["298"] = 463,["299"] = 463,["300"] = 463,["301"] = 463,["302"] = 463,["303"] = 463,["304"] = 463,["305"] = 463,["306"] = 478,["307"] = 478,["308"] = 478,["309"] = 478,["310"] = 478,["311"] = 478,["312"] = 478,["313"] = 478,["314"] = 478,["315"] = 478,["316"] = 478,["317"] = 478,["318"] = 478,["319"] = 478,["320"] = 493,["321"] = 493,["322"] = 493,["323"] = 493,["324"] = 493,["325"] = 493,["326"] = 493,["327"] = 493,["328"] = 493,["329"] = 493,["330"] = 493,["331"] = 493,["332"] = 493,["333"] = 493,["334"] = 510,["335"] = 429,["336"] = 516,["337"] = 517,["339"] = 518,["340"] = 518,["341"] = 519,["342"] = 520,["343"] = 520,["344"] = 520,["345"] = 520,["346"] = 520,["347"] = 520,["348"] = 520,["349"] = 520,["350"] = 520,["351"] = 520,["352"] = 520,["353"] = 520,["354"] = 520,["355"] = 520,["356"] = 535,["358"] = 518,["361"] = 516,["362"] = 543,["363"] = 544,["364"] = 544,["365"] = 544,["369"] = 545,["370"] = 545,["373"] = 548,["374"] = 551,["375"] = 551,["376"] = 551,["377"] = 551,["378"] = 552,["379"] = 555,["380"] = 556,["382"] = 558,["383"] = 559,["385"] = 562,["386"] = 564,["394"] = 543,["395"] = 571,["396"] = 572,["397"] = 572,["398"] = 572,["402"] = 573,["403"] = 573,["406"] = 575,["407"] = 578,["408"] = 579,["409"] = 579,["410"] = 579,["411"] = 579,["412"] = 579,["413"] = 579,["414"] = 579,["415"] = 579,["416"] = 579,["425"] = 571,["426"] = 591,["427"] = 592,["428"] = 593,["429"] = 596,["431"] = 598,["432"] = 598,["433"] = 599,["434"] = 600,["435"] = 601,["436"] = 602,["438"] = 598,["441"] = 606,["442"] = 591,["443"] = 612,["444"] = 613,["446"] = 616,["447"] = 617,["449"] = 618,["452"] = 620,["454"] = 621,["455"] = 622,["458"] = 624,["460"] = 625,["461"] = 626,["462"] = 627,["466"] = 631,["467"] = 632,["468"] = 633,["469"] = 634,["470"] = 635,["473"] = 638,["474"] = 612,["475"] = 644,["476"] = 645,["477"] = 646,["478"] = 647,["480"] = 650,["481"] = 651,["482"] = 653,["483"] = 653,["484"] = 653,["485"] = 654,["486"] = 655,["487"] = 656,["490"] = 660,["491"] = 644,["492"] = 666,["493"] = 667,["494"] = 669,["495"] = 670,["496"] = 672,["497"] = 673,["498"] = 674,["502"] = 679,["503"] = 680,["505"] = 683,["506"] = 684,["507"] = 666,["508"] = 690,["509"] = 692,["510"] = 692,["511"] = 692,["512"] = 693,["513"] = 695,["514"] = 695,["515"] = 695,["516"] = 695,["517"] = 695,["518"] = 695,["519"] = 695,["520"] = 695,["523"] = 690,["524"] = 707,["525"] = 709,["526"] = 709,["527"] = 709,["528"] = 710,["529"] = 712,["530"] = 714,["531"] = 717,["534"] = 721,["535"] = 707,["536"] = 727,["537"] = 729,["538"] = 729,["539"] = 729,["540"] = 730,["542"] = 733,["543"] = 727,["544"] = 739,["545"] = 740,["546"] = 742,["550"] = 743,["551"] = 744,["554"] = 747,["555"] = 748,["556"] = 750,["557"] = 751,["560"] = 755,["561"] = 757,["562"] = 758,["563"] = 760,["565"] = 763,["566"] = 764,["567"] = 767,["568"] = 768,["569"] = 770,["570"] = 773,["571"] = 774,["572"] = 775,["573"] = 776,["583"] = 781,["584"] = 739,["585"] = 787,["586"] = 788,["587"] = 788,["588"] = 788,["589"] = 788,["590"] = 791,["591"] = 787,["592"] = 797,["593"] = 798,["594"] = 801,["595"] = 801,["596"] = 801,["597"] = 802,["598"] = 803,["602"] = 808,["603"] = 811,["604"] = 797,["605"] = 820,["606"] = 820,["607"] = 828,["608"] = 829,["609"] = 830,["610"] = 831,["612"] = 828,["613"] = 841,["614"] = 841,["615"] = 848,["616"] = 848,["617"] = 855,["618"] = 856,["619"] = 859,["620"] = 859,["621"] = 859,["622"] = 860,["623"] = 859,["624"] = 859,["625"] = 859,["626"] = 863,["627"] = 855,["628"] = 869,["629"] = 870,["630"] = 873,["631"] = 873,["632"] = 873,["633"] = 873,["634"] = 873,["635"] = 873,["636"] = 873,["637"] = 873,["638"] = 873,["639"] = 873,["640"] = 873,["641"] = 873,["642"] = 873,["643"] = 873,["644"] = 887,["645"] = 889,["646"] = 896,["647"] = 897,["648"] = 898,["649"] = 899,["652"] = 904,["653"] = 905,["654"] = 906,["655"] = 907,["658"] = 869,["659"] = 915,["660"] = 916,["661"] = 918,["662"] = 919,["665"] = 923,["666"] = 924,["667"] = 927,["668"] = 928,["669"] = 928,["670"] = 928,["671"] = 929,["672"] = 930,["673"] = 931,["675"] = 933,["676"] = 928,["677"] = 928,["678"] = 915,["679"] = 940,["680"] = 941,["681"] = 942,["684"] = 946,["685"] = 947,["686"] = 940,["687"] = 953,["688"] = 954,["689"] = 955,["690"] = 955,["691"] = 955,["692"] = 955,["693"] = 955,["694"] = 955,["695"] = 955,["696"] = 955,["697"] = 955,["699"] = 953,["700"] = 971,["701"] = 972,["702"] = 971,["703"] = 982,["704"] = 983,["705"] = 984,["706"] = 986,["707"] = 987,["709"] = 991,["710"] = 992,["712"] = 996,["713"] = 997,["714"] = 998,["716"] = 1002,["717"] = 1003,["719"] = 1007,["720"] = 1008,["721"] = 1008,["722"] = 1009,["723"] = 1011,["724"] = 1014,["725"] = 1016,["726"] = 982,["727"] = 1022,["728"] = 1023,["729"] = 1024,["732"] = 1028,["733"] = 1028,["734"] = 1028,["735"] = 1028,["736"] = 1028,["737"] = 1028,["738"] = 1028,["739"] = 1028,["740"] = 1028,["741"] = 1028,["742"] = 1028,["743"] = 1028,["744"] = 1028,["745"] = 1028,["746"] = 1028,["747"] = 1028,["748"] = 1028,["749"] = 1028,["750"] = 1022,["751"] = 1047,["752"] = 1048,["753"] = 1047,["754"] = 1054,["755"] = 1055,["756"] = 1054});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["11"] = 6,["12"] = 6,["13"] = 7,["14"] = 7,["15"] = 8,["16"] = 8,["17"] = 10,["18"] = 11,["19"] = 11,["20"] = 12,["21"] = 12,["22"] = 13,["23"] = 13,["24"] = 14,["25"] = 14,["26"] = 15,["27"] = 15,["28"] = 18,["29"] = 19,["30"] = 20,["31"] = 21,["32"] = 64,["33"] = 64,["34"] = 64,["36"] = 69,["37"] = 73,["38"] = 76,["39"] = 77,["40"] = 80,["41"] = 81,["42"] = 83,["43"] = 84,["44"] = 86,["45"] = 87,["46"] = 89,["47"] = 72,["48"] = 92,["49"] = 93,["50"] = 94,["52"] = 96,["53"] = 92,["54"] = 102,["55"] = 103,["56"] = 104,["59"] = 108,["60"] = 109,["61"] = 110,["64"] = 114,["65"] = 115,["66"] = 116,["67"] = 118,["68"] = 121,["69"] = 102,["70"] = 127,["71"] = 128,["74"] = 132,["75"] = 133,["76"] = 134,["77"] = 136,["78"] = 139,["79"] = 127,["80"] = 145,["81"] = 146,["82"] = 147,["85"] = 151,["86"] = 152,["87"] = 153,["88"] = 156,["89"] = 159,["90"] = 161,["91"] = 164,["92"] = 145,["93"] = 173,["94"] = 174,["95"] = 175,["96"] = 178,["97"] = 178,["98"] = 178,["99"] = 179,["100"] = 180,["103"] = 185,["104"] = 188,["105"] = 191,["106"] = 194,["107"] = 197,["108"] = 199,["109"] = 202,["110"] = 173,["111"] = 212,["112"] = 213,["113"] = 214,["114"] = 217,["115"] = 217,["116"] = 217,["117"] = 218,["118"] = 220,["119"] = 223,["122"] = 228,["123"] = 231,["124"] = 234,["125"] = 237,["126"] = 239,["127"] = 242,["128"] = 212,["129"] = 252,["130"] = 253,["131"] = 254,["132"] = 256,["133"] = 257,["134"] = 258,["137"] = 264,["138"] = 265,["139"] = 268,["140"] = 270,["142"] = 273,["143"] = 252,["144"] = 279,["145"] = 281,["146"] = 279,["147"] = 287,["148"] = 288,["149"] = 290,["150"] = 290,["151"] = 290,["152"] = 291,["153"] = 292,["154"] = 295,["155"] = 298,["156"] = 299,["158"] = 302,["160"] = 305,["163"] = 309,["164"] = 287,["165"] = 315,["166"] = 316,["167"] = 317,["170"] = 320,["171"] = 320,["172"] = 320,["173"] = 320,["174"] = 320,["175"] = 320,["176"] = 320,["178"] = 322,["179"] = 322,["180"] = 323,["181"] = 324,["182"] = 326,["183"] = 328,["184"] = 328,["185"] = 331,["186"] = 336,["187"] = 337,["189"] = 322,["192"] = 341,["193"] = 315,["194"] = 347,["195"] = 348,["196"] = 349,["199"] = 351,["200"] = 352,["202"] = 355,["203"] = 355,["204"] = 356,["205"] = 357,["206"] = 362,["207"] = 363,["208"] = 355,["211"] = 347,["212"] = 370,["213"] = 371,["214"] = 372,["215"] = 375,["216"] = 376,["217"] = 376,["218"] = 376,["220"] = 376,["222"] = 376,["223"] = 378,["224"] = 379,["227"] = 383,["228"] = 386,["229"] = 386,["230"] = 386,["231"] = 387,["232"] = 388,["233"] = 389,["236"] = 393,["237"] = 370,["238"] = 399,["239"] = 400,["240"] = 403,["241"] = 405,["242"] = 399,["243"] = 411,["244"] = 412,["245"] = 413,["247"] = 416,["248"] = 416,["249"] = 416,["250"] = 417,["251"] = 417,["252"] = 420,["253"] = 421,["255"] = 425,["256"] = 431,["257"] = 432,["258"] = 433,["260"] = 436,["261"] = 416,["262"] = 416,["263"] = 411,["264"] = 443,["266"] = 444,["267"] = 445,["269"] = 446,["272"] = 448,["274"] = 449,["278"] = 443,["279"] = 457,["280"] = 459,["281"] = 462,["282"] = 465,["283"] = 466,["286"] = 471,["287"] = 471,["288"] = 472,["289"] = 457,["290"] = 478,["291"] = 479,["292"] = 479,["293"] = 479,["294"] = 479,["295"] = 479,["296"] = 479,["297"] = 479,["298"] = 479,["299"] = 478,["300"] = 492,["301"] = 493,["302"] = 502,["303"] = 502,["304"] = 502,["305"] = 503,["307"] = 504,["308"] = 505,["310"] = 506,["313"] = 508,["315"] = 509,["318"] = 511,["320"] = 512,["323"] = 514,["325"] = 515,["328"] = 517,["330"] = 518,["334"] = 521,["336"] = 524,["337"] = 492,["338"] = 530,["339"] = 531,["340"] = 534,["341"] = 534,["342"] = 534,["343"] = 534,["344"] = 534,["345"] = 534,["346"] = 534,["347"] = 534,["348"] = 534,["349"] = 534,["350"] = 534,["351"] = 534,["352"] = 534,["353"] = 534,["354"] = 549,["355"] = 549,["356"] = 549,["357"] = 549,["358"] = 549,["359"] = 549,["360"] = 549,["361"] = 549,["362"] = 549,["363"] = 549,["364"] = 549,["365"] = 549,["366"] = 549,["367"] = 549,["368"] = 564,["369"] = 564,["370"] = 564,["371"] = 564,["372"] = 564,["373"] = 564,["374"] = 564,["375"] = 564,["376"] = 564,["377"] = 564,["378"] = 564,["379"] = 564,["380"] = 564,["381"] = 564,["382"] = 579,["383"] = 579,["384"] = 579,["385"] = 579,["386"] = 579,["387"] = 579,["388"] = 579,["389"] = 579,["390"] = 579,["391"] = 579,["392"] = 579,["393"] = 579,["394"] = 579,["395"] = 579,["396"] = 594,["397"] = 594,["398"] = 594,["399"] = 594,["400"] = 594,["401"] = 594,["402"] = 594,["403"] = 594,["404"] = 594,["405"] = 594,["406"] = 594,["407"] = 594,["408"] = 594,["409"] = 594,["410"] = 611,["411"] = 530,["412"] = 617,["413"] = 618,["415"] = 619,["416"] = 619,["417"] = 620,["418"] = 621,["419"] = 621,["420"] = 621,["421"] = 621,["422"] = 621,["423"] = 621,["424"] = 621,["425"] = 621,["426"] = 621,["427"] = 621,["428"] = 621,["429"] = 621,["430"] = 621,["431"] = 621,["432"] = 636,["434"] = 619,["437"] = 617,["438"] = 644,["439"] = 645,["440"] = 645,["441"] = 645,["445"] = 646,["446"] = 646,["449"] = 649,["450"] = 652,["451"] = 652,["452"] = 652,["453"] = 652,["454"] = 653,["455"] = 656,["456"] = 657,["458"] = 659,["459"] = 660,["461"] = 663,["462"] = 665,["470"] = 644,["471"] = 672,["472"] = 673,["473"] = 673,["474"] = 673,["478"] = 674,["479"] = 674,["482"] = 676,["483"] = 679,["484"] = 680,["485"] = 680,["486"] = 680,["487"] = 680,["488"] = 680,["489"] = 680,["490"] = 680,["491"] = 680,["492"] = 680,["501"] = 672,["502"] = 692,["503"] = 693,["504"] = 694,["505"] = 697,["507"] = 699,["508"] = 699,["509"] = 700,["510"] = 701,["511"] = 702,["512"] = 703,["514"] = 699,["517"] = 707,["518"] = 692,["519"] = 713,["520"] = 714,["522"] = 717,["523"] = 718,["525"] = 719,["528"] = 721,["530"] = 722,["531"] = 723,["534"] = 725,["536"] = 726,["537"] = 727,["538"] = 728,["542"] = 732,["543"] = 733,["544"] = 734,["545"] = 735,["546"] = 736,["549"] = 739,["550"] = 713,["551"] = 745,["552"] = 746,["553"] = 747,["554"] = 748,["556"] = 751,["557"] = 752,["558"] = 754,["559"] = 754,["560"] = 754,["561"] = 755,["562"] = 756,["563"] = 757,["566"] = 761,["567"] = 745,["568"] = 767,["569"] = 768,["570"] = 770,["571"] = 771,["572"] = 773,["573"] = 774,["574"] = 775,["578"] = 780,["579"] = 781,["581"] = 784,["582"] = 785,["583"] = 767,["584"] = 791,["585"] = 793,["586"] = 793,["587"] = 793,["588"] = 794,["589"] = 796,["590"] = 796,["591"] = 796,["592"] = 796,["593"] = 796,["594"] = 796,["595"] = 796,["596"] = 796,["599"] = 791,["600"] = 808,["601"] = 810,["602"] = 810,["603"] = 810,["604"] = 811,["605"] = 813,["606"] = 815,["607"] = 818,["610"] = 822,["611"] = 808,["612"] = 828,["613"] = 830,["614"] = 830,["615"] = 830,["616"] = 831,["618"] = 834,["619"] = 828,["620"] = 840,["621"] = 841,["622"] = 843,["626"] = 844,["627"] = 845,["630"] = 848,["631"] = 849,["632"] = 851,["633"] = 852,["636"] = 856,["637"] = 858,["638"] = 859,["639"] = 861,["641"] = 864,["642"] = 865,["643"] = 868,["644"] = 869,["645"] = 871,["646"] = 874,["647"] = 875,["648"] = 876,["649"] = 877,["659"] = 882,["660"] = 840,["661"] = 888,["662"] = 889,["663"] = 889,["664"] = 889,["665"] = 889,["666"] = 892,["667"] = 888,["668"] = 898,["669"] = 899,["670"] = 902,["671"] = 902,["672"] = 902,["673"] = 903,["674"] = 904,["678"] = 909,["679"] = 912,["680"] = 898,["681"] = 921,["682"] = 921,["683"] = 929,["684"] = 930,["685"] = 931,["686"] = 932,["688"] = 929,["689"] = 942,["690"] = 942,["691"] = 949,["692"] = 949,["693"] = 956,["694"] = 957,["695"] = 960,["696"] = 960,["697"] = 960,["698"] = 961,["699"] = 960,["700"] = 960,["701"] = 960,["702"] = 964,["703"] = 956,["704"] = 970,["705"] = 971,["706"] = 974,["707"] = 974,["708"] = 974,["709"] = 974,["710"] = 974,["711"] = 974,["712"] = 974,["713"] = 974,["714"] = 974,["715"] = 974,["716"] = 974,["717"] = 974,["718"] = 974,["719"] = 974,["720"] = 988,["721"] = 990,["722"] = 997,["723"] = 998,["724"] = 999,["725"] = 1000,["728"] = 1005,["729"] = 1006,["730"] = 1007,["731"] = 1008,["734"] = 970,["735"] = 1016,["736"] = 1017,["737"] = 1019,["738"] = 1020,["741"] = 1024,["742"] = 1025,["743"] = 1028,["744"] = 1029,["745"] = 1029,["746"] = 1029,["747"] = 1030,["748"] = 1031,["749"] = 1032,["751"] = 1034,["752"] = 1029,["753"] = 1029,["754"] = 1016,["755"] = 1041,["756"] = 1042,["757"] = 1043,["760"] = 1047,["761"] = 1048,["762"] = 1041,["763"] = 1054,["764"] = 1055,["765"] = 1056,["766"] = 1056,["767"] = 1056,["768"] = 1056,["769"] = 1056,["770"] = 1056,["771"] = 1056,["772"] = 1056,["773"] = 1056,["775"] = 1054,["776"] = 1072,["777"] = 1073,["778"] = 1072,["779"] = 1083,["780"] = 1084,["781"] = 1085,["782"] = 1087,["783"] = 1088,["785"] = 1092,["786"] = 1093,["788"] = 1097,["789"] = 1098,["790"] = 1099,["792"] = 1103,["793"] = 1104,["795"] = 1108,["796"] = 1109,["797"] = 1109,["798"] = 1110,["799"] = 1112,["800"] = 1115,["801"] = 1117,["802"] = 1083,["803"] = 1123,["804"] = 1124,["805"] = 1125,["808"] = 1129,["809"] = 1129,["810"] = 1129,["811"] = 1129,["812"] = 1129,["813"] = 1129,["814"] = 1129,["815"] = 1129,["816"] = 1129,["817"] = 1129,["818"] = 1129,["819"] = 1129,["820"] = 1129,["821"] = 1129,["822"] = 1129,["823"] = 1129,["824"] = 1129,["825"] = 1129,["826"] = 1123,["827"] = 1148,["828"] = 1149,["829"] = 1148,["830"] = 1155,["831"] = 1156,["832"] = 1155});
 local ____exports = {}
 local ____GameModeManager = require("modules.GameModeManager")
 local GameModeManager = ____GameModeManager.GameModeManager
@@ -92,7 +92,7 @@ function AutoChessMode.prototype.startGame(self)
 end
 function AutoChessMode.prototype.startPreparationPhase(self)
     self.gameState.currentPhase = ____exports.RoundPhase.PREPARATION
-    self.gameState.phaseTimeLeft = 30
+    self.gameState.phaseTimeLeft = 10
     for ____, ____value in __TS__Iterator(self.gameState.playerStates) do
         local playerId = ____value[1]
         local playerState = ____value[2]
@@ -100,8 +100,10 @@ function AutoChessMode.prototype.startPreparationPhase(self)
             self.battleSystem:movePlayerToSpectatorArea(playerId)
         end
     end
+    self.battleSystem:recreateHexBoard()
     self:distributeRoundIncome()
     self:refreshAllPlayersShop()
+    self:createPlayerInitialPieces()
     self:startPhaseTimer()
     print("[AutoChessMode] Started preparation phase for round " .. tostring(self.gameState.currentRound))
     CustomGameEventManager:Send_ServerToAllClients("autochess_phase_started", {phase = ____exports.RoundPhase.PREPARATION, timeLeft = self.gameState.phaseTimeLeft, round = self.gameState.currentRound})
@@ -117,6 +119,7 @@ function AutoChessMode.prototype.startBattlePhase(self)
             self:deployPlayerChessPieces(playerId)
         end
     end
+    self:createEnemyPieces()
     self:setupBattleMatching()
     self:startAllBattles()
     self:startPhaseTimer()
@@ -124,48 +127,118 @@ function AutoChessMode.prototype.startBattlePhase(self)
     CustomGameEventManager:Send_ServerToAllClients("autochess_phase_started", {phase = ____exports.RoundPhase.BATTLE, timeLeft = self.gameState.phaseTimeLeft, round = self.gameState.currentRound})
 end
 function AutoChessMode.prototype.deployPlayerChessPieces(self, playerId)
-    print("[AutoChessMode] ========== 开始部署玩家棋子 ==========")
-    print("[AutoChessMode] Player ID: " .. tostring(playerId))
+    print("[AutoChessMode] ========== 开始部署玩家棋子到战斗位置 ==========")
+    print((("[AutoChessMode] Player ID: " .. tostring(playerId)) .. ", Phase: ") .. self.gameState.currentPhase)
     local playerState = self.gameState.playerStates:get(playerId)
     if not playerState then
         print("[AutoChessMode] ERROR: Player state not found for player " .. tostring(playerId))
         return
     end
-    self.battleSystem:clearPlayerPieces(playerId)
-    local benchPieces = playerState.benchPieces or ({})
-    print("[AutoChessMode] Bench pieces count: " .. tostring(#benchPieces))
-    if #benchPieces > 0 then
-        local slotIndex = 0
-        for ____, piece in ipairs(benchPieces) do
-            local position = {x = 1 + slotIndex, y = 1}
-            print(((((("[AutoChessMode] Deploying bench piece: " .. piece.id) .. " at (") .. tostring(position.x)) .. ", ") .. tostring(position.y)) .. ")")
-            local result = self.battleSystem:deployPiece(playerId, piece.id, position)
-            print("[AutoChessMode] Deploy result: " .. tostring(result))
-            slotIndex = slotIndex + 1
-            if slotIndex >= 7 then
-                break
-            end
-        end
-        print((("[AutoChessMode] Deployed " .. tostring(slotIndex)) .. " pieces from bench for player ") .. tostring(playerId))
-    else
-        print("[AutoChessMode] No bench pieces, deploying default test pieces...")
-        local defaultPieces = self:getDefaultTestPieces()
-        print("[AutoChessMode] Default pieces: " .. table.concat(defaultPieces, ", "))
-        print("[AutoChessMode] Chess database size: " .. tostring(self.chessPieceDatabase.size))
-        local slotIndex = 0
-        for ____, pieceId in ipairs(defaultPieces) do
-            local position = {x = 1 + slotIndex, y = 1}
-            print(((((("[AutoChessMode] Attempting to deploy: " .. pieceId) .. " at position (") .. tostring(position.x)) .. ", ") .. tostring(position.y)) .. ")")
-            local result = self.battleSystem:deployPiece(playerId, pieceId, position)
-            print((("[AutoChessMode] Deploy result for " .. pieceId) .. ": ") .. (result and "SUCCESS" or "FAILED"))
-            slotIndex = slotIndex + 1
-        end
-        print((("[AutoChessMode] Deployed " .. tostring(slotIndex)) .. " default test pieces for player ") .. tostring(playerId))
+    if self.gameState.currentPhase == ____exports.RoundPhase.BATTLE then
+        print(("[AutoChessMode] 战斗阶段：激活玩家 " .. tostring(playerId)) .. " 的棋子")
+        self.battleSystem:activatePlayerPieces(playerId)
+        print(("[AutoChessMode] 玩家 " .. tostring(playerId)) .. " 的棋子已激活，准备战斗")
     end
-    print("[AutoChessMode] ========== 棋子部署完成 ==========")
+    print("[AutoChessMode] ========== 战斗阶段棋子部署完成 ==========")
 end
 function AutoChessMode.prototype.getDefaultTestPieces(self)
     return {"axe", "axe", "crystal_maiden"}
+end
+function AutoChessMode.prototype.createPlayerInitialPieces(self)
+    print("[AutoChessMode] ========== 开始创建玩家初始棋子 ==========")
+    for ____, ____value in __TS__Iterator(self.gameState.playerStates) do
+        local playerId = ____value[1]
+        local playerState = ____value[2]
+        if playerState.isAlive then
+            print(("[AutoChessMode] 为玩家 " .. tostring(playerId)) .. " 创建初始棋子...")
+            self.battleSystem:clearPlayerPieces(playerId)
+            if self.gameState.currentRound == 1 then
+                self:createFirstRoundPieces(playerId)
+            else
+                self:deployPiecesFromBench(playerId)
+            end
+            print(("[AutoChessMode] 玩家 " .. tostring(playerId)) .. " 初始棋子创建完成")
+        end
+    end
+    print("[AutoChessMode] ========== 玩家初始棋子创建完成 ==========")
+end
+function AutoChessMode.prototype.createFirstRoundPieces(self, playerId)
+    local playerState = self.gameState.playerStates:get(playerId)
+    if not playerState then
+        return
+    end
+    local initialPieces = {
+        "axe",
+        "crystal_maiden",
+        "drow_ranger",
+        "crystal_maiden",
+        "crystal_maiden"
+    }
+    do
+        local i = 0
+        while i < #initialPieces do
+            local pieceId = initialPieces[i + 1]
+            local piece = self.chessPieceDatabase:get(pieceId)
+            if piece then
+                local ____playerState_benchPieces_0 = playerState.benchPieces
+                ____playerState_benchPieces_0[#____playerState_benchPieces_0 + 1] = piece
+                local position = {x = 1 + i, y = 1}
+                print(((((("[AutoChessMode] 创建初始棋子: " .. pieceId) .. " 在位置 (") .. tostring(position.x)) .. ", ") .. tostring(position.y)) .. ")")
+                self.battleSystem:deployPiece(playerId, pieceId, position)
+            end
+            i = i + 1
+        end
+    end
+    print(((("[AutoChessMode] 玩家 " .. tostring(playerId)) .. " 第一回合初始棋子创建完成，共 ") .. tostring(#initialPieces)) .. " 个")
+end
+function AutoChessMode.prototype.deployPiecesFromBench(self, playerId)
+    local playerState = self.gameState.playerStates:get(playerId)
+    if not playerState then
+        return
+    end
+    local benchPieces = playerState.benchPieces or ({})
+    print((("[AutoChessMode] 玩家 " .. tostring(playerId)) .. " 备战席棋子数量: ") .. tostring(#benchPieces))
+    do
+        local i = 0
+        while i < math.min(#benchPieces, 7) do
+            local piece = benchPieces[i + 1]
+            local position = {x = 1 + i, y = 1}
+            print(((((("[AutoChessMode] 部署备战席棋子: " .. piece.id) .. " 到位置 (") .. tostring(position.x)) .. ", ") .. tostring(position.y)) .. ")")
+            self.battleSystem:deployPiece(playerId, piece.id, position)
+            i = i + 1
+        end
+    end
+end
+function AutoChessMode.prototype.createEnemyPieces(self)
+    print("[AutoChessMode] ========== 开始创建敌人棋子 ==========")
+    print("[AutoChessMode] 当前回合: " .. tostring(self.gameState.currentRound))
+    local waveConfigSystem = self.battleSystem:getWaveConfigSystem()
+    local ____waveConfigSystem_1
+    if waveConfigSystem then
+        ____waveConfigSystem_1 = waveConfigSystem:startNewWave(self.gameState.currentRound)
+    else
+        ____waveConfigSystem_1 = nil
+    end
+    local waveConfig = ____waveConfigSystem_1
+    if not waveConfig then
+        print("[AutoChessMode] ERROR: 无法获取波次配置 for round " .. tostring(self.gameState.currentRound))
+        return
+    end
+    print(((("[AutoChessMode] 使用波次配置: " .. waveConfig.name) .. " (") .. waveConfig.id) .. ")")
+    for ____, ____value in __TS__Iterator(self.gameState.playerStates) do
+        local playerId = ____value[1]
+        local playerState = ____value[2]
+        if playerState.isAlive then
+            print(("[AutoChessMode] 为玩家 " .. tostring(playerId)) .. " 创建敌人棋子...")
+            self:createEnemyForPlayer(playerId, waveConfig)
+        end
+    end
+    print("[AutoChessMode] ========== 敌人棋子创建完成 ==========")
+end
+function AutoChessMode.prototype.createEnemyForPlayer(self, playerId, waveConfig)
+    print((("[AutoChessMode] 为玩家 " .. tostring(playerId)) .. " 创建敌人，使用配置: ") .. tostring(waveConfig.name))
+    self.battleSystem:startNewWave(self.gameState.currentRound)
+    print(("[AutoChessMode] 玩家 " .. tostring(playerId)) .. " 的敌人棋子创建完成")
 end
 function AutoChessMode.prototype.startPhaseTimer(self)
     if self.phaseTimer then
@@ -174,8 +247,11 @@ function AutoChessMode.prototype.startPhaseTimer(self)
     self.phaseTimer = Timers:CreateTimer(
         1,
         function()
-            local ____self_gameState_0, ____phaseTimeLeft_1 = self.gameState, "phaseTimeLeft"
-            ____self_gameState_0[____phaseTimeLeft_1] = ____self_gameState_0[____phaseTimeLeft_1] - 1
+            local ____self_gameState_2, ____phaseTimeLeft_3 = self.gameState, "phaseTimeLeft"
+            ____self_gameState_2[____phaseTimeLeft_3] = ____self_gameState_2[____phaseTimeLeft_3] - 1
+            if self.gameState.currentPhase == ____exports.RoundPhase.PREPARATION then
+                self.battleSystem:recreateHexBoard()
+            end
             CustomGameEventManager:Send_ServerToAllClients("autochess_time_update", {timeLeft = self.gameState.phaseTimeLeft, phase = self.gameState.currentPhase})
             if self.gameState.phaseTimeLeft <= 0 then
                 self:onPhaseTimeEnd()
@@ -187,14 +263,14 @@ function AutoChessMode.prototype.startPhaseTimer(self)
 end
 function AutoChessMode.prototype.onPhaseTimeEnd(self)
     repeat
-        local ____switch35 = self.gameState.currentPhase
-        local ____cond35 = ____switch35 == ____exports.RoundPhase.PREPARATION
-        if ____cond35 then
+        local ____switch51 = self.gameState.currentPhase
+        local ____cond51 = ____switch51 == ____exports.RoundPhase.PREPARATION
+        if ____cond51 then
             self:startBattlePhase()
             break
         end
-        ____cond35 = ____cond35 or ____switch35 == ____exports.RoundPhase.BATTLE
-        if ____cond35 then
+        ____cond51 = ____cond51 or ____switch51 == ____exports.RoundPhase.BATTLE
+        if ____cond51 then
             self:endBattlePhase()
             break
         end
@@ -207,8 +283,8 @@ function AutoChessMode.prototype.endBattlePhase(self)
         self:endGame()
         return
     end
-    local ____self_gameState_2, ____currentRound_3 = self.gameState, "currentRound"
-    ____self_gameState_2[____currentRound_3] = ____self_gameState_2[____currentRound_3] + 1
+    local ____self_gameState_4, ____currentRound_5 = self.gameState, "currentRound"
+    ____self_gameState_4[____currentRound_5] = ____self_gameState_4[____currentRound_5] + 1
     self:startPreparationPhase()
 end
 function AutoChessMode.prototype.initializeGameState(self)
@@ -228,29 +304,29 @@ function AutoChessMode.prototype.initializeChessPool(self)
         local piece = ____value[2]
         local count = 0
         repeat
-            local ____switch41 = piece.rarity
-            local ____cond41 = ____switch41 == ____exports.ChessRarity.COMMON
-            if ____cond41 then
+            local ____switch57 = piece.rarity
+            local ____cond57 = ____switch57 == ____exports.ChessRarity.COMMON
+            if ____cond57 then
                 count = 45
                 break
             end
-            ____cond41 = ____cond41 or ____switch41 == ____exports.ChessRarity.UNCOMMON
-            if ____cond41 then
+            ____cond57 = ____cond57 or ____switch57 == ____exports.ChessRarity.UNCOMMON
+            if ____cond57 then
                 count = 30
                 break
             end
-            ____cond41 = ____cond41 or ____switch41 == ____exports.ChessRarity.RARE
-            if ____cond41 then
+            ____cond57 = ____cond57 or ____switch57 == ____exports.ChessRarity.RARE
+            if ____cond57 then
                 count = 25
                 break
             end
-            ____cond41 = ____cond41 or ____switch41 == ____exports.ChessRarity.EPIC
-            if ____cond41 then
+            ____cond57 = ____cond57 or ____switch57 == ____exports.ChessRarity.EPIC
+            if ____cond57 then
                 count = 15
                 break
             end
-            ____cond41 = ____cond41 or ____switch41 == ____exports.ChessRarity.LEGENDARY
-            if ____cond41 then
+            ____cond57 = ____cond57 or ____switch57 == ____exports.ChessRarity.LEGENDARY
+            if ____cond57 then
                 count = 10
                 break
             end
@@ -364,10 +440,10 @@ function AutoChessMode.prototype.distributeRoundIncome(self)
         local playerId = ____value[1]
         local playerState = ____value[2]
         do
-            local __continue49
+            local __continue65
             repeat
                 if not playerState.isAlive then
-                    __continue49 = true
+                    __continue65 = true
                     break
                 end
                 local income = 5
@@ -384,9 +460,9 @@ function AutoChessMode.prototype.distributeRoundIncome(self)
                 end
                 playerState.gold = playerState.gold + income
                 print(((((("[AutoChessMode] Player " .. tostring(playerId)) .. " received ") .. tostring(income)) .. " gold (total: ") .. tostring(playerState.gold)) .. ")")
-                __continue49 = true
+                __continue65 = true
             until true
-            if not __continue49 then
+            if not __continue65 then
                 break
             end
         end
@@ -397,10 +473,10 @@ function AutoChessMode.prototype.refreshAllPlayersShop(self)
         local playerId = ____value[1]
         local playerState = ____value[2]
         do
-            local __continue55
+            local __continue71
             repeat
                 if not playerState.isAlive then
-                    __continue55 = true
+                    __continue71 = true
                     break
                 end
                 local shopPieces = self:generateShopPieces(playerState.level)
@@ -415,9 +491,9 @@ function AutoChessMode.prototype.refreshAllPlayersShop(self)
                         }
                     )
                 end
-                __continue55 = true
+                __continue71 = true
             until true
-            if not __continue55 then
+            if not __continue71 then
                 break
             end
         end
@@ -443,20 +519,20 @@ end
 function AutoChessMode.prototype.calculateRarityChances(self, playerLevel)
     local chances = __TS__New(Map)
     repeat
-        local ____switch64 = playerLevel
-        local ____cond64 = ____switch64 == 1
-        if ____cond64 then
+        local ____switch80 = playerLevel
+        local ____cond80 = ____switch80 == 1
+        if ____cond80 then
             chances:set(____exports.ChessRarity.COMMON, 100)
             break
         end
-        ____cond64 = ____cond64 or ____switch64 == 2
-        if ____cond64 then
+        ____cond80 = ____cond80 or ____switch80 == 2
+        if ____cond80 then
             chances:set(____exports.ChessRarity.COMMON, 70)
             chances:set(____exports.ChessRarity.UNCOMMON, 30)
             break
         end
-        ____cond64 = ____cond64 or ____switch64 == 3
-        if ____cond64 then
+        ____cond80 = ____cond80 or ____switch80 == 3
+        if ____cond80 then
             chances:set(____exports.ChessRarity.COMMON, 60)
             chances:set(____exports.ChessRarity.UNCOMMON, 35)
             chances:set(____exports.ChessRarity.RARE, 5)
@@ -545,16 +621,16 @@ function AutoChessMode.prototype.calculateBattleResults(self)
     local battles = self.battleSystem:getActiveBattles()
     for ____, battle in ipairs(battles) do
         do
-            local __continue89
+            local __continue105
             repeat
                 if not battle.completed then
-                    __continue89 = true
+                    __continue105 = true
                     break
                 end
                 local playerId = battle.player1
                 local playerState = self.gameState.playerStates:get(playerId)
                 if not playerState then
-                    __continue89 = true
+                    __continue105 = true
                     break
                 end
                 if battle.winnerId == playerId then
@@ -573,9 +649,9 @@ function AutoChessMode.prototype.calculateBattleResults(self)
                         print(("[AutoChessMode] Player " .. tostring(playerId)) .. " eliminated!")
                     end
                 end
-                __continue89 = true
+                __continue105 = true
             until true
-            if not __continue89 then
+            if not __continue105 then
                 break
             end
         end
@@ -717,8 +793,8 @@ function AutoChessMode.prototype.buyChessPiece(self, playerId, pieceId)
         return false
     end
     playerState.gold = playerState.gold - piece.cost
-    local ____playerState_benchPieces_4 = playerState.benchPieces
-    ____playerState_benchPieces_4[#____playerState_benchPieces_4 + 1] = piece
+    local ____playerState_benchPieces_6 = playerState.benchPieces
+    ____playerState_benchPieces_6[#____playerState_benchPieces_6 + 1] = piece
     self.gameState.chessPool:set(pieceId, remaining - 1)
     print((("[AutoChessMode] Player " .. tostring(playerId)) .. " bought ") .. piece.displayName)
     self:syncPlayerState(playerId)

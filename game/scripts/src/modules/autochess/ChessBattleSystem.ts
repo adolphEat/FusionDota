@@ -8,6 +8,7 @@
 import { ChessPiece, ChessRarity } from '../AutoChessMode';
 import { unitFactory } from '../UnitFactory';
 import { getTimestampMs } from '../../utils/time_utils';
+import { WaveConfigSystem } from './WaveConfigSystem';
 
 /**
  * 棋盘位置
@@ -44,6 +45,10 @@ export class ChessBattleSystem {
     private static instance: ChessBattleSystem;
     private activeBattles: Map<string, BattleMatch>;  // battleId -> BattleMatch
     private playerDeployedPieces: Map<PlayerID, DeployedPiece[]>;
+    private waveConfigSystem: WaveConfigSystem;
+    
+    // 持久化：上一场战斗幸存棋子的血量（按 pieceId 顺序消费）
+    private playerSurvivorHealth: Map<PlayerID, Array<{ pieceId: string; health: number }>> = new Map();
     
     // 棋盘配置
     private readonly BOARD_SIZE = 8;
@@ -53,6 +58,7 @@ export class ChessBattleSystem {
     private constructor() {
         this.activeBattles = new Map();
         this.playerDeployedPieces = new Map();
+        this.waveConfigSystem = WaveConfigSystem.getInstance();
         this.initialize();
         print('[ChessBattleSystem] Initialized');
     }
@@ -107,15 +113,17 @@ export class ChessBattleSystem {
         // 禁止攻击（防止攻击棋子）
         hero.AddNewModifier(hero, undefined, 'modifier_disarmed', {});
         
-        // 保持原有队伍（不设置为中立）
-        // hero.SetTeam(DotaTeam.NEUTRALS); // 移除这行
-        
-        // 保持可见（不隐藏）
-        // hero.AddNoDraw(); // 移除这行
-        
-        // 移动到观战位置（靠近棋盘）
+        // 确保可以移动且可控
+        hero.SetMoveCapability(UnitMoveCapability.GROUND);
+        hero.SetControllableByPlayer(playerId, true);
+        hero.RemoveModifierByName('modifier_rooted');
+        hero.RemoveModifierByName('modifier_stunned');
+
+        // 移动到观战位置（靠近棋盘，落在地面上，可行走）
         const spectatorPos = this.getSpectatorPosition(playerId);
-        hero.SetAbsOrigin(spectatorPos);
+        const groundPos = GetGroundPosition(spectatorPos, hero);
+        FindClearSpaceForUnit(hero, groundPos, true);
+        hero.AddNewModifier(hero, undefined, 'modifier_phased', { duration: 0.03 });
         
         print(`[ChessBattleSystem] Player ${playerId} set as protected and moved to spectator position`);
     }
@@ -186,19 +194,21 @@ export class ChessBattleSystem {
      * 获取观战位置
      */
     private getSpectatorPosition(playerId: PlayerID): Vector {
-        // 地图中心位置 (1058, 978, 100)
-        const mapCenter = Vector(1058, 978, 100);
+        // 地图中心位置 (与棋盘同心)
+        const mapCenter = Vector(this.BOARD_OFFSET.x, this.BOARD_OFFSET.y, 0);
         
-        // 根据玩家ID计算观战位置（在地图中心附近）
-        const angle = (playerId / 8) * 360;
-        const distance = 600; // 观战距离，基于地图大小调整
-        const x = mapCenter.x + Math.cos(angle * Math.PI / 180) * distance;
-        const y = mapCenter.y + Math.sin(angle * Math.PI / 180) * distance;
-        const z = this.BOARD_OFFSET.z; // 使用棋盘的Z值，与棋子同一水平面
+        // 根据玩家ID计算观战位置（在棋盘边缘外圈，避免高台）
+        const angle = (playerId / 8) * 2 * Math.PI;
+        const ringDistance = (this.BOARD_SIZE * this.CELL_SIZE) / 2 + 200; // 棋盘半径外再偏移200
+        const x = mapCenter.x + Math.cos(angle) * ringDistance;
+        const y = mapCenter.y + Math.sin(angle) * ringDistance;
         
-        const spectatorPos = Vector(x, y, z);
-        print(`[ChessBattleSystem] Spectator position for player ${playerId}: (${x.toFixed(1)}, ${y.toFixed(1)}, ${z.toFixed(1)})`);
-        return spectatorPos;
+        // 使用地表高度，避免被放到高处
+        const pos = Vector(x, y, 0);
+        const ground = GetGroundPosition(pos, undefined as any);
+        
+        print(`[ChessBattleSystem] Spectator position for player ${playerId}: (${ground.x.toFixed(1)}, ${ground.y.toFixed(1)}, ${ground.z.toFixed(1)})`);
+        return ground;
     }
 
     /**
@@ -244,6 +254,24 @@ export class ChessBattleSystem {
 
         // 应用棋子属性
         this.applyChessPieceStats(unit, chessPiece);
+
+        // 若存在上一场的剩余血量，设置为初始血量（按 pieceId 顺序消费）
+        const survivorList = this.playerSurvivorHealth.get(playerId);
+        if (survivorList && survivorList.length > 0) {
+            const idx = survivorList.findIndex(s => s.pieceId === pieceId);
+            if (idx !== -1) {
+                const val = survivorList.splice(idx, 1)[0];
+                const maxHp = unit.GetMaxHealth();
+                unit.SetHealth(Math.max(1, Math.min(val.health, maxHp)));
+                print(`[ChessBattleSystem] Apply survivor HP ${val.health} to ${pieceId}`);
+            }
+            // 若该玩家列表消费完，清空存根
+            if (survivorList.length === 0) {
+                this.playerSurvivorHealth.delete(playerId);
+            } else {
+                this.playerSurvivorHealth.set(playerId, survivorList);
+            }
+        }
 
         // 记录部署的棋子
         const deployed: DeployedPiece = {
@@ -487,7 +515,16 @@ export class ChessBattleSystem {
             return;
         }
 
+        // 记录双方幸存棋子的当前血量，供下一场作为初始血量
+        this.recordSurvivorHealth(battle);
+
         print(`[ChessBattleSystem] Battle ${battleId} completed. Winner: ${battle.winnerId}`);
+
+        // 取快照用于测试重开一局
+        const playerSnapshot: Array<{ pieceId: string; position: BoardPosition }> = battle.player1Pieces
+            .filter(p => p.unit && !p.unit.IsNull() && p.unit.IsAlive())
+            .map(p => ({ pieceId: p.pieceId, position: { x: p.position.x, y: p.position.y } }));
+        const playerIdForTest = battle.player1;
 
         // 清理战场
         this.cleanupBattle(battleId);
@@ -498,6 +535,21 @@ export class ChessBattleSystem {
             winnerId: battle.winnerId,
             player1: battle.player1,
             player2: battle.player2
+        });
+
+        // 测试：5秒后重新创建敌人阵容并按原位置重新部署玩家阵容，验证血量继承
+        Timers.CreateTimer(5.0, () => {
+            // 重置玩家的已部署列表（清除无效引用）
+            this.playerDeployedPieces.set(playerIdForTest, []);
+
+            // 依据快照重新部署玩家棋子（deployPiece 会应用幸存血量）
+            for (const s of playerSnapshot) {
+                this.deployPiece(playerIdForTest, s.pieceId, s.position);
+            }
+
+            // 再次开启对AI战斗
+            this.startBattleVsAI(playerIdForTest);
+            return undefined;
         });
     }
 
@@ -629,6 +681,143 @@ export class ChessBattleSystem {
      */
     public getActiveBattles(): BattleMatch[] {
         return Array.from(this.activeBattles.values());
+    }
+
+    /**
+     * 激活玩家的棋子（准备阶段 -> 战斗阶段）
+     */
+    public activatePlayerPieces(playerId: PlayerID): void {
+        print(`[ChessBattleSystem] 激活玩家 ${playerId} 的棋子`);
+        
+        const pieces = this.playerDeployedPieces.get(playerId) || [];
+        
+        for (const piece of pieces) {
+            if (piece.unit && IsValidEntity(piece.unit)) {
+                // 移除准备阶段的限制（如沉默、缴械等）
+                this.removePreparationModifiers(piece.unit);
+                
+                // 确保单位可以攻击和移动
+                piece.unit.SetMoveCapability(UnitMoveCapability.GROUND);
+                // piece.unit.SetAttackCapability(UnitAttackCapability.ATTACK_RANGED); // TODO: 修复攻击能力设置
+                
+                print(`[ChessBattleSystem] 激活棋子: ${piece.pieceId} (${piece.unit.GetUnitName()})`);
+            }
+        }
+        
+        print(`[ChessBattleSystem] 玩家 ${playerId} 的 ${pieces.length} 个棋子已激活`);
+    }
+
+    /**
+     * 移除准备阶段的修饰符
+     */
+    private removePreparationModifiers(unit: CDOTA_BaseNPC): void {
+        // 移除沉默效果
+        unit.RemoveModifierByName('modifier_silence');
+        
+        // 移除缴械效果
+        unit.RemoveModifierByName('modifier_disarmed');
+        
+        // 移除其他准备阶段的限制
+        unit.RemoveModifierByName('modifier_autochess_preparation');
+        
+        print(`[ChessBattleSystem] 移除单位 ${unit.GetUnitName()} 的准备阶段修饰符`);
+    }
+
+    /**
+     * 获取波次配置系统
+     */
+    public getWaveConfigSystem(): WaveConfigSystem {
+        return this.waveConfigSystem;
+    }
+
+    /**
+     * 开始新波次
+     */
+    public startNewWave(waveNumber: number): void {
+        print(`[ChessBattleSystem] 开始新波次: ${waveNumber}`);
+        
+        const waveConfig = this.waveConfigSystem.startNewWave(waveNumber);
+        if (waveConfig) {
+            print(`[ChessBattleSystem] 使用波次配置: ${waveConfig.name}`);
+            // 这里可以添加具体的波次生成逻辑
+        } else {
+            print(`[ChessBattleSystem] ERROR: 无法获取波次配置 for wave ${waveNumber}`);
+        }
+    }
+
+    /**
+     * 重新创建棋盘六边形网格（蓝色，尖角朝上/蜂窝紧密排列）
+     */
+    public recreateHexBoard(): void {
+        // this.clearHexBoard?.(); // 若存在清理函数则先清理粒子/线
+
+        const r = this.CELL_SIZE * 0.5;                 // 六边形半径
+        const w = Math.sqrt(3) * r;                     // 点朝上宽度
+        const vert = 1.5 * r;                           // 行间垂直间距
+        const cols = this.BOARD_SIZE;
+        const rows = this.BOARD_SIZE;
+
+        const duration = 1.2;                            // Debug 线持续时间（由计时器循环刷新）
+        const colorR = 0, colorG = 120, colorB = 255;    // 蓝色
+
+        // 以棋盘中心为原点，向四周排布
+        const origin = Vector(this.BOARD_OFFSET.x - 100, this.BOARD_OFFSET.y, this.BOARD_OFFSET.z - 100);
+        const colOffset = (cols - 1) * w * 0.5;          // 使网格整体居中
+        const rowOffset = (rows - 1) * vert * 0.5;
+
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                // 点朝上布局（pointy-top）：同行列间距 w，奇偶行在 X 方向偏移 w/2
+                const x = origin.x + (col * w + (row % 2) * (w * 0.5)) - colOffset;
+                const y = origin.y + (row * vert) - rowOffset;
+                const center = Vector(x, y, origin.z);
+
+                this.drawHexAt(center, r, duration, colorR, colorG, colorB);
+            }
+        }
+        // print('[ChessBattleSystem] Recreated pointy-top blue hex grid.');
+    }
+
+    private drawHexAt(center: Vector, radius: number, duration: number, r: number, g: number, b: number): void {
+        const corners = this.getHexCornersPointy(center, radius);
+        for (let i = 0; i < 6; i++) {
+            const a = corners[i];
+            const c = corners[(i + 1) % 6];
+            DebugDrawLine(a, c, r, g, b, true, duration);
+        }
+    }
+
+    private getHexCornersPointy(center: Vector, radius: number): Vector[] {
+        const pts: Vector[] = [];
+        // 点朝上（pointy-top）：初始角度 30° 以让尖角向上
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 180) * (60 * i - 30); // -30,30,90,...
+            const x = center.x + radius * Math.cos(angle);
+            const y = center.y + radius * Math.sin(angle);
+            pts.push(Vector(x, y, center.z));
+        }
+        return pts;
+    }
+
+    /** 记录幸存棋子的血量 */
+    private recordSurvivorHealth(battle: BattleMatch): void {
+        const updateFor = (playerId: PlayerID, pieces: DeployedPiece[]) => {
+            const survivors: Array<{ pieceId: string; health: number }> = [];
+            for (const p of pieces) {
+                if (p.unit && !p.unit.IsNull() && p.unit.IsAlive()) {
+                    survivors.push({ pieceId: p.pieceId, health: p.unit.GetHealth() });
+                }
+            }
+            if (survivors.length > 0) {
+                this.playerSurvivorHealth.set(playerId, survivors);
+                print(`[ChessBattleSystem] Stored ${survivors.length} survivor HP entries for player ${playerId}`);
+            } else {
+                this.playerSurvivorHealth.delete(playerId);
+            }
+        };
+
+        updateFor(battle.player1, battle.player1Pieces);
+        updateFor(battle.player2, battle.player2Pieces);
     }
 }
 
