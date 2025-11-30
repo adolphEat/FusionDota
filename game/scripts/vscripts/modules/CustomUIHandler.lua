@@ -1,8 +1,9 @@
 local ____lualib = require("lualib_bundle")
 local __TS__Class = ____lualib.__TS__Class
 local __TS__New = ____lualib.__TS__New
+local __TS__ArraySome = ____lualib.__TS__ArraySome
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["9"] = 6,["10"] = 6,["11"] = 6,["13"] = 10,["14"] = 11,["15"] = 9,["16"] = 14,["17"] = 15,["18"] = 16,["20"] = 18,["21"] = 14,["22"] = 24,["23"] = 26,["24"] = 26,["25"] = 26,["26"] = 27,["27"] = 26,["28"] = 26,["29"] = 31,["30"] = 31,["31"] = 31,["32"] = 32,["33"] = 31,["34"] = 31,["35"] = 36,["36"] = 36,["37"] = 36,["38"] = 37,["39"] = 36,["40"] = 36,["41"] = 24,["42"] = 44,["43"] = 45,["44"] = 46,["45"] = 48,["46"] = 54,["47"] = 54,["48"] = 54,["49"] = 54,["50"] = 54,["51"] = 54,["52"] = 54,["53"] = 54,["54"] = 44,["55"] = 64,["56"] = 65,["57"] = 66,["58"] = 68,["59"] = 71,["60"] = 72,["63"] = 77,["64"] = 78,["65"] = 79,["70"] = 97,["73"] = 90,["74"] = 90,["75"] = 90,["76"] = 90,["77"] = 90,["78"] = 95,["84"] = 64,["85"] = 104,["86"] = 105,["87"] = 106,["88"] = 107,["89"] = 109,["91"] = 111,["92"] = 112,["94"] = 113,["97"] = 115,["99"] = 116,["102"] = 118,["104"] = 119,["108"] = 122,["111"] = 104,["112"] = 129,["113"] = 130,["114"] = 131,["117"] = 155,["120"] = 134,["121"] = 134,["122"] = 134,["123"] = 134,["124"] = 134,["125"] = 134,["126"] = 134,["127"] = 134,["128"] = 143,["129"] = 144,["130"] = 147,["131"] = 147,["132"] = 147,["133"] = 147,["134"] = 147,["136"] = 152,["143"] = 129,["144"] = 162,["145"] = 163,["146"] = 164,["147"] = 165,["150"] = 169,["153"] = 180,["156"] = 172,["157"] = 173,["158"] = 176,["159"] = 176,["160"] = 176,["161"] = 176,["162"] = 176,["168"] = 162,["169"] = 187,["170"] = 188,["171"] = 189,["174"] = 206,["177"] = 193,["178"] = 194,["179"] = 197,["180"] = 200,["187"] = 187,["188"] = 213,["189"] = 215,["190"] = 216,["191"] = 214,["192"] = 214,["193"] = 214,["194"] = 214,["195"] = 214,["196"] = 220,["197"] = 222,["198"] = 222,["199"] = 222,["200"] = 222,["201"] = 222,["203"] = 225,["205"] = 213,["206"] = 232,["207"] = 234,["208"] = 234,["209"] = 234,["210"] = 235,["211"] = 236,["212"] = 234,["213"] = 234,["214"] = 232,["215"] = 243,["216"] = 244,["218"] = 246,["219"] = 247,["221"] = 248,["224"] = 252,["226"] = 253,["229"] = 257,["231"] = 260,["235"] = 243,["236"] = 268,["237"] = 270,["238"] = 272,["239"] = 273,["241"] = 277,["242"] = 279,["243"] = 268,["244"] = 285,["246"] = 286,["247"] = 287,["249"] = 288,["252"] = 292,["254"] = 293,["257"] = 297,["259"] = 298,["263"] = 301,["266"] = 285,["267"] = 307});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["10"] = 6,["11"] = 6,["12"] = 6,["14"] = 10,["15"] = 11,["16"] = 9,["17"] = 14,["18"] = 15,["19"] = 16,["21"] = 18,["22"] = 14,["23"] = 24,["24"] = 26,["25"] = 26,["26"] = 26,["27"] = 27,["28"] = 26,["29"] = 26,["30"] = 31,["31"] = 31,["32"] = 31,["33"] = 32,["34"] = 31,["35"] = 31,["36"] = 36,["37"] = 36,["38"] = 36,["39"] = 37,["40"] = 36,["41"] = 36,["42"] = 41,["43"] = 41,["44"] = 41,["45"] = 42,["46"] = 41,["47"] = 41,["48"] = 45,["49"] = 45,["50"] = 45,["51"] = 46,["52"] = 45,["53"] = 45,["54"] = 49,["55"] = 49,["56"] = 49,["57"] = 50,["58"] = 49,["59"] = 49,["60"] = 54,["61"] = 54,["62"] = 54,["63"] = 55,["64"] = 54,["65"] = 54,["66"] = 24,["67"] = 62,["68"] = 63,["69"] = 64,["70"] = 66,["71"] = 72,["72"] = 72,["73"] = 72,["74"] = 72,["75"] = 72,["76"] = 72,["77"] = 72,["78"] = 72,["79"] = 62,["80"] = 82,["81"] = 83,["82"] = 84,["83"] = 86,["84"] = 89,["85"] = 90,["88"] = 95,["89"] = 96,["90"] = 97,["95"] = 115,["98"] = 108,["99"] = 108,["100"] = 108,["101"] = 108,["102"] = 108,["103"] = 113,["109"] = 82,["110"] = 122,["111"] = 123,["112"] = 124,["113"] = 126,["115"] = 128,["116"] = 129,["118"] = 130,["122"] = 133,["125"] = 122,["126"] = 140,["127"] = 141,["128"] = 142,["129"] = 143,["130"] = 145,["132"] = 147,["133"] = 148,["135"] = 149,["138"] = 151,["140"] = 152,["143"] = 154,["145"] = 155,["148"] = 157,["150"] = 158,["154"] = 161,["157"] = 140,["158"] = 168,["159"] = 169,["160"] = 170,["163"] = 194,["166"] = 173,["167"] = 173,["168"] = 173,["169"] = 173,["170"] = 173,["171"] = 173,["172"] = 173,["173"] = 173,["174"] = 182,["175"] = 183,["176"] = 186,["177"] = 186,["178"] = 186,["179"] = 186,["180"] = 186,["182"] = 191,["189"] = 168,["190"] = 201,["191"] = 202,["192"] = 203,["193"] = 204,["196"] = 208,["199"] = 219,["202"] = 211,["203"] = 212,["204"] = 215,["205"] = 215,["206"] = 215,["207"] = 215,["208"] = 215,["214"] = 201,["215"] = 226,["216"] = 227,["217"] = 228,["220"] = 245,["223"] = 232,["224"] = 233,["225"] = 236,["226"] = 239,["233"] = 226,["234"] = 252,["235"] = 254,["236"] = 255,["237"] = 253,["238"] = 253,["239"] = 253,["240"] = 253,["241"] = 253,["242"] = 259,["243"] = 261,["244"] = 261,["245"] = 261,["246"] = 261,["247"] = 261,["249"] = 264,["251"] = 252,["252"] = 271,["253"] = 273,["254"] = 273,["255"] = 273,["256"] = 274,["257"] = 275,["258"] = 273,["259"] = 273,["260"] = 271,["261"] = 282,["262"] = 283,["264"] = 285,["265"] = 286,["267"] = 287,["270"] = 291,["272"] = 292,["275"] = 296,["277"] = 299,["281"] = 282,["282"] = 307,["283"] = 309,["284"] = 311,["285"] = 312,["287"] = 316,["288"] = 318,["289"] = 307,["290"] = 324,["292"] = 325,["293"] = 326,["295"] = 327,["298"] = 331,["300"] = 332,["303"] = 336,["305"] = 337,["309"] = 340,["312"] = 324,["313"] = 347,["314"] = 348,["315"] = 349,["316"] = 351,["317"] = 352,["319"] = 354,["321"] = 347,["322"] = 361,["323"] = 362,["324"] = 363,["325"] = 365,["326"] = 366,["328"] = 368,["330"] = 361,["331"] = 375,["332"] = 376,["333"] = 377,["334"] = 378,["335"] = 380,["336"] = 381,["338"] = 383,["340"] = 375,["341"] = 390,["342"] = 391,["343"] = 393,["344"] = 394,["347"] = 399,["348"] = 400,["349"] = 402,["350"] = 405,["351"] = 406,["352"] = 408,["353"] = 408,["354"] = 408,["355"] = 408,["356"] = 412,["357"] = 413,["358"] = 414,["362"] = 419,["363"] = 423,["364"] = 423,["365"] = 423,["366"] = 423,["367"] = 423,["368"] = 423,["369"] = 423,["370"] = 423,["371"] = 441,["372"] = 442,["373"] = 442,["374"] = 442,["375"] = 442,["376"] = 442,["377"] = 423,["378"] = 423,["379"] = 453,["380"] = 454,["381"] = 455,["382"] = 390,["383"] = 460});
 local ____exports = {}
 --- 自定义UI事件处理器
 -- 处理来自客户端UI的事件
@@ -36,6 +37,30 @@ function CustomUIHandler.prototype.registerEventHandlers(self)
         "custom_panel_action",
         function(_, data)
             self:onCustomPanelAction(data)
+        end
+    )
+    CustomGameEventManager:RegisterListener(
+        "autochess_wave_continue",
+        function(_, data)
+            self:onWaveContinue(data)
+        end
+    )
+    CustomGameEventManager:RegisterListener(
+        "autochess_wave_claim_reward",
+        function(_, data)
+            self:onWaveClaimReward(data)
+        end
+    )
+    CustomGameEventManager:RegisterListener(
+        "autochess_wave_select_stage",
+        function(_, data)
+            self:onWaveSelectStage(data)
+        end
+    )
+    CustomGameEventManager:RegisterListener(
+        "quick_action",
+        function(_, data)
+            self:onQuickAction(data)
         end
     )
 end
@@ -82,26 +107,47 @@ function CustomUIHandler.prototype.onGoldBonusRequested(self, data)
         end
     end
 end
+function CustomUIHandler.prototype.onQuickAction(self, data)
+    local playerId = data.PlayerID
+    local action = data.action
+    print((("[CustomUIHandler] Quick action received: " .. tostring(action)) .. " from player ") .. tostring(playerId))
+    repeat
+        local ____switch20 = action
+        local ____cond20 = ____switch20 == "test_kill"
+        if ____cond20 then
+            self:handleTestKillEnemies(playerId)
+            break
+        end
+        do
+            print("[CustomUIHandler] Unknown quick action: " .. tostring(action))
+        end
+    until true
+end
 function CustomUIHandler.prototype.onCustomPanelAction(self, data)
     local playerId = data.playerId
     local action = data.action
     local params = data.params or ({})
     print((("[CustomUIHandler] Player " .. tostring(playerId)) .. " performed action: ") .. tostring(action))
     repeat
-        local ____switch16 = action
-        local ____cond16 = ____switch16 == "spawn_unit"
-        if ____cond16 then
+        local ____switch22 = action
+        local ____cond22 = ____switch22 == "spawn_unit"
+        if ____cond22 then
             self:handleSpawnUnit(playerId, params)
             break
         end
-        ____cond16 = ____cond16 or ____switch16 == "teleport_hero"
-        if ____cond16 then
+        ____cond22 = ____cond22 or ____switch22 == "teleport_hero"
+        if ____cond22 then
             self:handleTeleportHero(playerId, params)
             break
         end
-        ____cond16 = ____cond16 or ____switch16 == "show_message"
-        if ____cond16 then
+        ____cond22 = ____cond22 or ____switch22 == "show_message"
+        if ____cond22 then
             self:handleShowMessage(playerId, params)
+            break
+        end
+        ____cond22 = ____cond22 or ____switch22 == "test_kill"
+        if ____cond22 then
+            self:handleTestKillEnemies(playerId)
             break
         end
         do
@@ -215,18 +261,18 @@ end
 function CustomUIHandler.prototype.showUIForGameMode(self, mode)
     print("[CustomUIHandler] Showing UI for game mode: " .. mode)
     repeat
-        local ____switch36 = mode
-        local ____cond36 = ____switch36 == "training"
-        if ____cond36 then
+        local ____switch42 = mode
+        local ____cond42 = ____switch42 == "training"
+        if ____cond42 then
             CustomGameEventManager:Send_ServerToAllClients("show_custom_panel", {panelType = "training"})
             break
         end
-        ____cond36 = ____cond36 or ____switch36 == "autochess"
-        if ____cond36 then
+        ____cond42 = ____cond42 or ____switch42 == "autochess"
+        if ____cond42 then
             CustomGameEventManager:Send_ServerToAllClients("show_custom_panel", {panelType = "autochess"})
             break
         end
-        ____cond36 = ____cond36 or ____switch36 == "normal"
+        ____cond42 = ____cond42 or ____switch42 == "normal"
         do
             CustomGameEventManager:Send_ServerToAllClients("hide_all_panels", {})
             break
@@ -243,19 +289,19 @@ function CustomUIHandler.prototype.integrateWithGameMode(self)
 end
 function CustomUIHandler.prototype.handleDebugUICommand(self, command, playerId)
     repeat
-        local ____switch40 = command
-        local ____cond40 = ____switch40 == "show_simple"
-        if ____cond40 then
+        local ____switch46 = command
+        local ____cond46 = ____switch46 == "show_simple"
+        if ____cond46 then
             CustomGameEventManager:Send_ServerToAllClients("show_custom_panel", {panelType = "simple"})
             break
         end
-        ____cond40 = ____cond40 or ____switch40 == "show_custom"
-        if ____cond40 then
+        ____cond46 = ____cond46 or ____switch46 == "show_custom"
+        if ____cond46 then
             CustomGameEventManager:Send_ServerToAllClients("show_custom_panel", {panelType = "custom"})
             break
         end
-        ____cond40 = ____cond40 or ____switch40 == "hide_all"
-        if ____cond40 then
+        ____cond46 = ____cond46 or ____switch46 == "hide_all"
+        if ____cond46 then
             CustomGameEventManager:Send_ServerToAllClients("hide_all_panels", {})
             break
         end
@@ -263,6 +309,76 @@ function CustomUIHandler.prototype.handleDebugUICommand(self, command, playerId)
             print("[CustomUIHandler] Unknown debug UI command: " .. command)
         end
     until true
+end
+function CustomUIHandler.prototype.onWaveContinue(self, data)
+    local playerId = data.playerId
+    print("[CustomUIHandler] Wave continue requested by player " .. tostring(playerId))
+    if GameRules.AutoChessMode then
+        GameRules.AutoChessMode:handleWaveContinue(playerId)
+    else
+        print("[CustomUIHandler] AutoChessMode not available")
+    end
+end
+function CustomUIHandler.prototype.onWaveClaimReward(self, data)
+    local playerId = data.playerId
+    print("[CustomUIHandler] Wave reward claim requested by player " .. tostring(playerId))
+    if GameRules.AutoChessMode then
+        GameRules.AutoChessMode:handleWaveRewardClaim(playerId)
+    else
+        print("[CustomUIHandler] AutoChessMode not available")
+    end
+end
+function CustomUIHandler.prototype.onWaveSelectStage(self, data)
+    local playerId = data.playerId
+    local stageId = data.stageId
+    print((("[CustomUIHandler] Wave stage selection by player " .. tostring(playerId)) .. ": ") .. tostring(stageId))
+    if GameRules.AutoChessMode then
+        GameRules.AutoChessMode:handleWaveStageSelection(playerId, stageId)
+    else
+        print("[CustomUIHandler] AutoChessMode not available")
+    end
+end
+function CustomUIHandler.prototype.handleTestKillEnemies(self, playerId)
+    print("[CustomUIHandler] Test kill enemies requested by player " .. tostring(playerId))
+    if not GameRules.AutoChessMode then
+        print("[CustomUIHandler] AutoChessMode not available")
+        return
+    end
+    local allUnits = Entities:FindAllByClassname("npc_dota_creature")
+    local heroes = Entities:FindAllByClassname("npc_dota_hero")
+    local killedCount = 0
+    for ____, unit in ipairs(allUnits) do
+        if unit and not unit:IsNull() and unit:IsAlive() then
+            local isPlayerHero = __TS__ArraySome(
+                heroes,
+                function(____, hero) return hero == unit and hero:IsRealHero() and hero:GetPlayerOwnerID() >= 0 end
+            )
+            if not isPlayerHero then
+                unit:ForceKill(false)
+                killedCount = killedCount + 1
+            end
+        end
+    end
+    print(("[CustomUIHandler] Test killed " .. tostring(killedCount)) .. " enemy units")
+    local settlementData = {
+        winner = "player",
+        round = 1,
+        duration = 10000,
+        stats = {damageDealt = 12540, damageTaken = 8320, unitsKilled = killedCount, unitsSurvived = 1},
+        levelName = "测试关卡",
+        rewardGold = 100,
+        availableStages = {{id = "stage_easy", name = "绿意平原", difficulty = "简单"}, {id = "stage_medium", name = "霜冻峡谷", difficulty = "普通"}, {id = "stage_hard", name = "灼炎堡垒", difficulty = "困难"}},
+        playerSummary = {[playerId] = {
+            health = 100,
+            gold = 500,
+            isAlive = true,
+            winStreak = 0,
+            lossStreak = 0
+        }}
+    }
+    CustomGameEventManager:Send_ServerToAllClients("autochess_wave_settlement", settlementData)
+    print("[CustomUIHandler] Sent settlement event to all clients")
+    print((((("[CustomUIHandler] Settlement data - round: " .. tostring(settlementData.round)) .. ", winner: ") .. settlementData.winner) .. ", duration: ") .. tostring(settlementData.duration))
 end
 ____exports.CustomUI = ____exports.CustomUIHandler:getInstance()
 return ____exports

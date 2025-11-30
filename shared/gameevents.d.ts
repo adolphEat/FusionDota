@@ -16,6 +16,11 @@ declare interface CustomGameEventDeclarations {
     training_unit_killed: { unitName: string; remainingUnits: number; };
     game_mode_changed: { oldMode: string; newMode: string; };
     
+    // 游戏状态事件
+    game_state_changed: { state: number; timestamp: number; };
+    game_start: { timestamp: number; };
+    game_end: { timestamp: number; };
+    
     // 自走棋模式事件
     autochess_game_started: { round: number; phase: string; };
     autochess_game_ended: { winner: number; round: number; };

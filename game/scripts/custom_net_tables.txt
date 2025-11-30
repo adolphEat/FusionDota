@@ -17,5 +17,8 @@
         "error_reports",
         "debug_info",
         "performance_debug",
+        "game_state",
+        "server_selection",
+        "player_info",
     ]
 }

@@ -34,7 +34,7 @@ export class GameModeManager {
 
     private constructor() {
         this.settings = {
-            currentMode: GameMode.NORMAL,
+            currentMode: GameMode.AUTOCHESS, // 默认自走棋模式
             modeConfigs: this.getDefaultModeConfigs(),
             initialized: false
         };
@@ -124,8 +124,19 @@ export class GameModeManager {
         // 检测启动参数或配置来确定初始模式
         const detectedMode = this.detectGameMode();
         
-        if (detectedMode !== GameMode.NORMAL) {
+        print(`[GameModeManager] Initializing game mode. Current: ${this.settings.currentMode}, Detected: ${detectedMode}`);
+        
+        // 如果检测到的模式与当前模式不同，或者当前模式是默认的，则切换
+        if (detectedMode !== this.settings.currentMode) {
+            print(`[GameModeManager] Switching from ${this.settings.currentMode} to ${detectedMode}`);
             this.switchMode(detectedMode);
+        } else {
+            // 即使模式相同，也要应用设置以确保配置正确
+            print(`[GameModeManager] Mode already set to ${detectedMode}, applying settings...`);
+            const config = this.settings.modeConfigs[detectedMode];
+            if (config) {
+                this.applyModeSettings(config);
+            }
         }
 
         // 设置基础游戏规则
@@ -136,6 +147,8 @@ export class GameModeManager {
         
         // 同步状态到网络表
         this.syncToNetTable();
+        
+        print(`[GameModeManager] Game mode initialized: ${this.settings.currentMode}`);
         
         // 延迟发送初始模式通知，确保客户端已加载
         Timers.CreateTimer(2.0, () => {
@@ -177,10 +190,12 @@ export class GameModeManager {
         // 检查玩家数量
         const playerCount = PlayerResource.GetPlayerCount();
         if (playerCount === 1) {
-            return GameMode.TRAINING; // 单人默认训练模式
+            // 单人模式默认自走棋（单机自走棋）
+            return GameMode.AUTOCHESS;
         }
 
-        return GameMode.NORMAL;
+        // 默认返回自走棋模式
+        return GameMode.AUTOCHESS;
     }
 
     /**

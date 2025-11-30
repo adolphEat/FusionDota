@@ -136,11 +136,21 @@ gulp.task('csv_to_localization:watch', csv_to_localization(true));
 gulp.task('compile_less', compile_less());
 gulp.task('compile_less:watch', compile_less(true));
 
-gulp.task('predev', gulp.series('sheet_2_kv', 'kv_2_js', 'csv_to_localization', 'create_image_precache'));
+// 表格导出任务已屏蔽
+// gulp.task('predev', gulp.series('sheet_2_kv', 'kv_2_js', 'csv_to_localization', 'create_image_precache'));
+gulp.task('predev', gulp.series('create_image_precache'));
+
+// 表格导出任务已屏蔽
+// gulp.task(
+//     'dev',
+//     gulp.parallel('sheet_2_kv:watch', 'csv_to_localization:watch', 'create_image_precache:watch', 'kv_2_js:watch', 'compile_less:watch')
+// );
 gulp.task(
     'dev',
-    gulp.parallel('sheet_2_kv:watch', 'csv_to_localization:watch', 'create_image_precache:watch', 'kv_2_js:watch', 'compile_less:watch')
+    gulp.parallel('create_image_precache:watch', 'compile_less:watch')
 );
+
 gulp.task('build', gulp.series('predev'));
-gulp.task('jssync', gulp.series('sheet_2_kv', 'kv_2_js'));
+// 表格导出任务已屏蔽
+// gulp.task('jssync', gulp.series('sheet_2_kv', 'kv_2_js'));
 gulp.task('prod', gulp.series('predev'));

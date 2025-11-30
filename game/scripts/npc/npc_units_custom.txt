@@ -51,13 +51,13 @@
 		"MinimapIcon"	"minimap_creep"
 		"MinimapIconSize"	"256"
 	}
-
+//1 fei dan wei
 	"windrunner1"
 	{
 		"BaseClass"	"npc_dota_creature"
 		"Ability1"	"windrunner_powershot"
-		"Ability2"	""
-		"Ability3"	""
+		"Ability2"	"sylph_2"
+		"Ability3"	"ranger_3"
 		"Ability4"	""
 		"Ability5"	""
 		"Ability6"	""
@@ -126,6 +126,77 @@
 				"Wearable5"
 				{
 					"ItemDef"	"6040"//背部（斗篷、翅膀）
+				}
+			}
+		}
+	}
+
+	"treant_protector1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Ability1"	"treant_protector_living_armor"
+		"Ability2"	"warrior_1"
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/treant_protector/treant_protector.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_TreantProtector"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_treant.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_MELEE_ATTACK"
+		"AttackDamageMin"	"50"
+		"AttackDamageMax"	"50"
+		"AttackRate"	"1.00"
+		"AttackAnimationPoint"	"1.67"
+		"AttackRange"	"200"
+		"ArmorPhysical"	"4"
+		"MagicalResistance"	"15"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"650"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"100"
+		"StatusManaRegen"	"1"
+		"StatusStartingMana"	"40"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"18774"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"18777"//肩部、护甲
+				}				
+				"Wearable4"
+				{
+					"ItemDef"	"18776"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"18775"//背部（斗篷、翅膀）
 				}
 			}
 		}
@@ -203,11 +274,87 @@
 		}
 	}
 
-	"crystal_maiden1"
+"lion1"
 	{
 		"BaseClass"	"npc_dota_creature"
-		"Ability1"	"tidehunter_ravage"
-		"Ability2"	""
+		"Name"	"lion1"
+		"Ability1"	"lion_hex"
+		"Ability2"	"wild_3"
+		"Ability3"	"warlock_2"
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/lion/lion.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Lion"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_lion.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
+		"AttackDamageMin"	"40"
+		"AttackDamageMax"	"40"
+		"AttackRate"	"1.54"
+		"AttackAnimationPoint"	"0.7"
+		"AttackRange"	"600"
+		"ProjectileModel"	"particles/heroes/lion/lion_base_attack.vpcf"
+		"ProjectileSpeed"	"900"
+		"ArmorPhysical"	"2"
+		"MagicalResistance"	"5"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"500"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"70"
+		"StatusManaRegen"	"3"
+		"StatusStartingMana"	"0"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{				
+				"Wearable2"
+				{
+					"ItemDef"	"5460"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"5462"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"5459"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"5461"//背部（斗篷、翅膀）
+				}
+			}
+		}
+	}
+
+	"enchantress1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Name"	"enchantress1"
+		"Ability1"	"enchantress1_natures_attendants_heal"
+		"Ability2"	"mage_1"
 		"Ability3"	""
 		"Ability4"	""
 		"Ability5"	""
@@ -222,27 +369,107 @@
 		"Ability14"	""
 		"Ability15"	""
 		"Ability16"	""
-		"Model"	"models/heroes/crystal_maiden/crystal_maiden.vmdl"
+		"Model"	"models/heroes/enchantress/enchantress.vmdl"
 		"ModelScale"	"1"
-		"SoundSet"	"Hero_Crystal"
-		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_crystalmaiden.vsndevts"
+		"SoundSet"	"Hero_Enchantress"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_enchantress.vsndevts"
 		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
-		"AttackDamageMin"	"60"
-		"AttackDamageMax"	"60"
-		"AttackRate"	"1.54"
-		"AttackAnimationPoint"	"0.80"
-		"AttackRange"	"600"
-		"ProjectileModel"	"particles/heroes/crystal_maiden/maiden_base_attack.vpcf"
-		"ProjectileSpeed"	"800"
-		"ArmorPhysical"	"5"
-		"MagicalResistance"	"20"
-		"MovementTurnRate"	"10"
+		"AttackDamageMin"	"50"
+		"AttackDamageMax"	"50"
+		"AttackRate"	"1.43"
+		"AttackAnimationPoint"	"0.7"
+		"AttackRange"	"400"
+		"ProjectileModel"	"particles/heroes/enchantress/enchantress_base_attack.vpcf"
+		"ProjectileSpeed"	"900"
+		"ArmorPhysical"	"1.5"
+		"MagicalResistance"	"5"
+		"MovementTurnRate"	"5"
 		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
 		"MovementSpeed"	"500"
-		"StatusHealth"	"900"
+		"StatusHealth"	"550"
 		"StatusHealthRegen"	"0"
-		"StatusMana"	"150"
-		"StatusManaRegen"	"5"
+		"StatusMana"	"100"
+		"StatusManaRegen"	"2"
+		"StatusStartingMana"	"20"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"12687"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"12686"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"12689"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"12688"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"12690"//背部（斗篷、翅膀）
+				}
+			}
+		}
+	}
+
+	"razor1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Name"	"razor1"
+		"Ability1"	"razor_eye_of_the_storm"
+		"Ability2"	"void_1"
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/razor/razor.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Razor"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_razor.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
+		"AttackDamageMin"	"50"
+		"AttackDamageMax"	"50"
+		"AttackRate"	"1.43"
+		"AttackAnimationPoint"	"0.7"
+		"AttackRange"	"400"
+		"ProjectileModel"	"particles/heroes/razor/razor_base_attack.vpcf"
+		"ProjectileSpeed"	"2000"
+		"ArmorPhysical"	"2"
+		"MagicalResistance"	"5"
+		"MovementTurnRate"	"5"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"550"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"100"
+		"StatusManaRegen"	"2"
 		"StatusStartingMana"	"0"
 		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
 		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
@@ -256,105 +483,39 @@
 			{
 				"Wearable1"
 				{
-					"ItemDef"	"13487"//头部
+					"ItemDef"	"5362"//头部
 				}
 				
 				"Wearable2"
 				{
-					"ItemDef"	"13486"//肩部、护甲
+					"ItemDef"	"5349"//肩部、护甲
 				}
 
 				"Wearable3"
 				{
-					"ItemDef"	"13490"//武器
+					"ItemDef"	"5380"//武器
 				}
 				
 				"Wearable4"
 				{
-					"ItemDef"	"13489"//副手装备（箭袋、盾牌）
+					"ItemDef"	"5357"//副手装备（箭袋、盾牌）
 				}
 				
 				"Wearable5"
 				{
-					"ItemDef"	"13488"//背部（斗篷、翅膀）
+					"ItemDef"	"5357"//背部（斗篷、翅膀）
 				}
 			}
 		}
 	}
 
-	"lina1"
-	{
-		"BaseClass"	"npc_dota_creature"
-		"Ability1"	"lina_light_strike_array"
-		"Ability2"	""
-		"Ability3"	""
-		"Ability4"	""
-		"Ability5"	""
-		"Ability6"	""
-		"Ability7"	""
-		"Ability8"	""
-		"Ability9"	""
-		"Ability10"	"universal_mana_restore_on_attack"
-		"Ability11"	"universal_mana_restore_on_damage"
-		"Ability12"	""
-		"Ability13"	""
-		"Ability14"	""
-		"Ability15"	""
-		"Ability16"	""
-		"Model"	"models/heroes/lina/lina.vmdl"
-		"ModelScale"	"1"
-		"SoundSet"	"Hero_Lina"
-		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_lina.vsndevts"
-		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
-		"AttackDamageMin"	"55"
-		"AttackDamageMax"	"55"
-		"AttackRate"	"1.43"
-		"AttackAnimationPoint"	"0.65"
-		"AttackRange"	"600"
-		"ProjectileModel"	"particles/heroes/lina/lina_base_attack.vpcf"
-		"ProjectileSpeed"	"1000"
-		"ArmorPhysical"	"3"
-		"MagicalResistance"	"15"
-		"MovementTurnRate"	"10"
-		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
-		"MovementSpeed"	"500"
-		"StatusHealth"	"650"
-		"StatusHealthRegen"	"0"
-		"StatusMana"	"100"
-		"StatusManaRegen"	"4"
-		"StatusStartingMana"	"60"
-		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
-		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
-		"TeamName"	"DOTA_TEAM_GOODGUYS"
-		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
-		"MinimapIcon"	"minimap_creep"
-		"MinimapIconSize"	"256"
-		"Creature"
-		{
-			"AttachWearables"
-			{
-				"Wearable1"
-				{
-					"ItemDef"	"19524"//头部
-				}
-				
-				"Wearable2"
-				{
-					"ItemDef"	"19525"//肩部、护甲
-				}				
-				"Wearable5"
-				{
-					"ItemDef"	"19523"//背部（斗篷、翅膀）
-				}
-			}
-		}
-	}
+// 2 fei dan wei
 
-	"ursa1"
+"ursa1"
 	{
 		"BaseClass"	"npc_dota_creature"
 		"Ability1"	"ursa_earthshock"
-		"Ability2"	""
+		"Ability2"	"knight_1"
 		"Ability3"	""
 		"Ability4"	""
 		"Ability5"	""
@@ -421,151 +582,12 @@
 		}
 	}
 
-	"treant_protector1"
-	{
-		"BaseClass"	"npc_dota_creature"
-		"Ability1"	"treant_protector_living_armor"
-		"Ability2"	""
-		"Ability3"	""
-		"Ability4"	""
-		"Ability5"	""
-		"Ability6"	""
-		"Ability7"	""
-		"Ability8"	""
-		"Ability9"	""
-		"Ability10"	"universal_mana_restore_on_attack"
-		"Ability11"	"universal_mana_restore_on_damage"
-		"Ability12"	""
-		"Ability13"	""
-		"Ability14"	""
-		"Ability15"	""
-		"Ability16"	""
-		"Model"	"models/heroes/treant_protector/treant_protector.vmdl"
-		"ModelScale"	"1"
-		"SoundSet"	"Hero_TreantProtector"
-		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_treant.vsndevts"
-		"AttackCapabilities"	"DOTA_UNIT_CAP_MELEE_ATTACK"
-		"AttackDamageMin"	"50"
-		"AttackDamageMax"	"50"
-		"AttackRate"	"1.00"
-		"AttackAnimationPoint"	"1.67"
-		"AttackRange"	"200"
-		"ArmorPhysical"	"4"
-		"MagicalResistance"	"15"
-		"MovementTurnRate"	"10"
-		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
-		"MovementSpeed"	"500"
-		"StatusHealth"	"650"
-		"StatusHealthRegen"	"0"
-		"StatusMana"	"100"
-		"StatusManaRegen"	"1"
-		"StatusStartingMana"	"40"
-		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
-		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
-		"TeamName"	"DOTA_TEAM_GOODGUYS"
-		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
-		"MinimapIcon"	"minimap_creep"
-		"MinimapIconSize"	"256"
-		"Creature"
-		{
-			"AttachWearables"
-			{
-				"Wearable1"
-				{
-					"ItemDef"	"18774"//头部
-				}
-				
-				"Wearable2"
-				{
-					"ItemDef"	"18777"//肩部、护甲
-				}				
-				"Wearable4"
-				{
-					"ItemDef"	"18776"//副手装备（箭袋、盾牌）
-				}
-				
-				"Wearable5"
-				{
-					"ItemDef"	"18775"//背部（斗篷、翅膀）
-				}
-			}
-		}
-	}
-	
-	"viper1"
-	{
-		"BaseClass"	"npc_dota_creature"
-		"Ability1"	"viper_nethertoxin"
-		"Ability2"	""
-		"Ability3"	""
-		"Ability4"	""
-		"Ability5"	""
-		"Ability6"	""
-		"Ability7"	""
-		"Ability8"	""
-		"Ability9"	""
-		"Ability10"	"universal_mana_restore_on_attack"
-		"Ability11"	"universal_mana_restore_on_damage"
-		"Ability12"	""
-		"Ability13"	""
-		"Ability14"	""
-		"Ability15"	""
-		"Ability16"	""
-		"Model"	"models/heroes/viper/viper.vmdl"
-		"ModelScale"	"1"
-		"SoundSet"	"Hero_viper"
-		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_viper.vsndevts"
-		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
-		"AttackDamageMin"	"70"
-		"AttackDamageMax"	"70"
-		"AttackRate"	"1.33"
-		"AttackAnimationPoint"	"0.55"
-		"AttackRange"	"600"
-		"ProjectileModel"	"particles/heroes/viper/viper_base_attack.vpcf"
-		"ProjectileSpeed"	"1200"
-		"ArmorPhysical"	"4"
-		"MagicalResistance"	"15"
-		"MovementTurnRate"	"10"
-		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
-		"MovementSpeed"	"500"
-		"StatusHealth"	"750"
-		"StatusHealthRegen"	"0"
-		"StatusMana"	"0"
-		"StatusManaRegen"	"0"
-		"StatusStartingMana"	"0"
-		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
-		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
-		"TeamName"	"DOTA_TEAM_GOODGUYS"
-		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
-		"MinimapIcon"	"minimap_creep"
-		"MinimapIconSize"	"256"
-		"Creature"
-		{
-			"AttachWearables"
-			{
-				"Wearable1"
-				{
-					"ItemDef"	"17860"//头部
-				}			
-				"Wearable4"
-				{
-					"ItemDef"	"17861"//副手装备（箭袋、盾牌）
-				}
-				
-				"Wearable5"
-				{
-					"ItemDef"	"17862"//背部（斗篷、翅膀）
-				}
-			}
-		}
-	}
-	
 	"axe1"
 	{
 		"BaseClass"	"npc_dota_creature"
 		"Name"	"axe1"
 		"Ability1"	"axe_battle_hunger_custom"
-		"Ability2"	""
+		"Ability2"	"berserker_2"
 		"Ability3"	""
 		"Ability4"	""
 		"Ability5"	""
@@ -582,7 +604,7 @@
 		"Ability16"	""
 		"Model"	"models/heroes/axe/axe.vmdl"
 		"ModelScale"	"1"
-		"SoundSet"	"Hero_axe"
+		"SoundSet"	"Hero_Axe"
 		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_axe.vsndevts"
 		"AttackCapabilities"	"DOTA_UNIT_CAP_MELEE_ATTACK"
 		"AttackDamageMin"	"65"
@@ -633,239 +655,6 @@
 				"Wearable5"
 				{
 					"ItemDef"	"18292"//背部（斗篷、翅膀）
-				}
-			}
-		}
-	}
-
-	"enigma1"
-	{
-		"BaseClass"	"npc_dota_creature"
-		"Name"	"enigma1"
-		"Ability1"	"enigma_black_hole"
-		"Ability2"	""
-		"Ability3"	""
-		"Ability4"	""
-		"Ability5"	""
-		"Ability6"	""
-		"Ability7"	""
-		"Ability8"	""
-		"Ability9"	""
-		"Ability10"	"universal_mana_restore_on_attack"
-		"Ability11"	"universal_mana_restore_on_damage"
-		"Ability12"	""
-		"Ability13"	""
-		"Ability14"	""
-		"Ability15"	""
-		"Ability16"	""
-		"Model"	"models/heroes/enigma/enigma.vmdl"
-		"ModelScale"	"1"
-		"SoundSet"	"Hero_enigma"
-		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_enigma.vsndevts"
-		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
-		"AttackDamageMin"	"70"
-		"AttackDamageMax"	"70"
-		"AttackRate"	"1.54"
-		"AttackAnimationPoint"	"0.8"
-		"AttackRange"	"800"
-		"ProjectileModel"	"particles/heroes/enigma/enigma_base_attack.vpcf"
-		"ProjectileSpeed"	"900"
-		"ArmorPhysical"	"6"
-		"MagicalResistance"	"20"
-		"MovementTurnRate"	"10"
-		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
-		"MovementSpeed"	"500"
-		"StatusHealth"	"1000"
-		"StatusHealthRegen"	"0"
-		"StatusMana"	"150"
-		"StatusManaRegen"	"4"
-		"StatusStartingMana"	"50"
-		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
-		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
-		"TeamName"	"DOTA_TEAM_GOODGUYS"
-		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
-		"MinimapIcon"	"minimap_creep"
-		"MinimapIconSize"	"256"
-		"Creature"
-		{
-			"AttachWearables"
-			{
-				"Wearable1"
-				{
-					"ItemDef"	"12332"//头部
-				}
-				
-				"Wearable2"
-				{
-					"ItemDef"	"12330"//肩部、护甲
-				}
-
-				//"Wearable3"
-				//{
-				//	"ItemDef"	"18296"//武器
-				//}
-				
-				"Wearable4"
-				{
-					"ItemDef"	"12329"//副手装备（箭袋、盾牌）
-				}
-				
-				//"Wearable5"
-				//{
-				//	"ItemDef"	"18292"//背部（斗篷、翅膀）
-				//}
-			}
-		}
-	}
-
-	"ember_spirit1"
-	{
-		"BaseClass"	"npc_dota_creature"
-		"Name"	"ember_spirit1"
-		"Ability1"	"ember_spirit_inner_Fire"
-		"Ability2"	""
-		"Ability3"	""
-		"Ability4"	""
-		"Ability5"	""
-		"Ability6"	""
-		"Ability7"	""
-		"Ability8"	""
-		"Ability9"	""
-		"Ability10"	"universal_mana_restore_on_attack"
-		"Ability11"	"universal_mana_restore_on_damage"
-		"Ability12"	""
-		"Ability13"	""
-		"Ability14"	""
-		"Ability15"	""
-		"Ability16"	""
-		"Model"	"models/heroes/ember_spirit/ember_spirit.vmdl"
-		"ModelScale"	"1"
-		"SoundSet"	"Hero_EmberSpirit"
-		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_ember_spirit.vsndevts"
-		"AttackCapabilities"	"DOTA_UNIT_CAP_MELEE_ATTACK"
-		"AttackDamageMin"	"65"
-		"AttackDamageMax"	"65"
-		"AttackRate"	"1.54"
-		"AttackAnimationPoint"	"0.75"
-		"AttackRange"	"200"
-		"ArmorPhysical"	"7"
-		"MagicalResistance"	"25"
-		"MovementTurnRate"	"10"
-		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
-		"MovementSpeed"	"500"
-		"StatusHealth"	"850"
-		"StatusHealthRegen"	"0"
-		"StatusMana"	"100"
-		"StatusManaRegen"	"1"
-		"StatusStartingMana"	"0"
-		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
-		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
-		"TeamName"	"DOTA_TEAM_GOODGUYS"
-		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
-		"MinimapIcon"	"minimap_creep"
-		"MinimapIconSize"	"256"
-		"Creature"
-		{
-			"AttachWearables"
-			{
-				"Wearable1"
-				{
-					"ItemDef"	"23339"//头部
-				}
-				
-				"Wearable2"
-				{
-					"ItemDef"	"23341"//肩部、护甲
-				}
-
-				"Wearable3"
-				{
-					"ItemDef"	"23342"//武器
-				}
-				
-				"Wearable4"
-				{
-					"ItemDef"	"23340"//副手装备（箭袋、盾牌）
-				}
-				
-				"Wearable5"
-				{
-					"ItemDef"	"23338"//背部（斗篷、翅膀）
-				}
-			}
-		}
-	}
-
-	"lion1"
-	{
-		"BaseClass"	"npc_dota_creature"
-		"Name"	"lion1"
-		"Ability1"	"lion_hex"
-		"Ability2"	""
-		"Ability3"	""
-		"Ability4"	""
-		"Ability5"	""
-		"Ability6"	""
-		"Ability7"	""
-		"Ability8"	""
-		"Ability9"	""
-		"Ability10"	"universal_mana_restore_on_attack"
-		"Ability11"	"universal_mana_restore_on_damage"
-		"Ability12"	""
-		"Ability13"	""
-		"Ability14"	""
-		"Ability15"	""
-		"Ability16"	""
-		"Model"	"models/heroes/lion/lion.vmdl"
-		"ModelScale"	"1"
-		"SoundSet"	"Hero_Lion"
-		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_lion.vsndevts"
-		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
-		"AttackDamageMin"	"40"
-		"AttackDamageMax"	"40"
-		"AttackRate"	"1.54"
-		"AttackAnimationPoint"	"0.7"
-		"AttackRange"	"600"
-		"ProjectileModel"	"particles/heroes/lion/lion_base_attack.vpcf"
-		"ProjectileSpeed"	"900"
-		"ArmorPhysical"	"2"
-		"MagicalResistance"	"5"
-		"MovementTurnRate"	"10"
-		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
-		"MovementSpeed"	"500"
-		"StatusHealth"	"500"
-		"StatusHealthRegen"	"0"
-		"StatusMana"	"70"
-		"StatusManaRegen"	"3"
-		"StatusStartingMana"	"0"
-		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
-		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
-		"TeamName"	"DOTA_TEAM_GOODGUYS"
-		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
-		"MinimapIcon"	"minimap_creep"
-		"MinimapIconSize"	"256"
-		"Creature"
-		{
-			"AttachWearables"
-			{				
-				"Wearable2"
-				{
-					"ItemDef"	"5460"//肩部、护甲
-				}
-
-				"Wearable3"
-				{
-					"ItemDef"	"5462"//武器
-				}
-				
-				"Wearable4"
-				{
-					"ItemDef"	"5459"//副手装备（箭袋、盾牌）
-				}
-				
-				"Wearable5"
-				{
-					"ItemDef"	"5461"//背部（斗篷、翅膀）
 				}
 			}
 		}
@@ -945,6 +734,222 @@
 		}
 	}
 
+//3 fei dan wei
+
+"lina1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Ability1"	"lina_light_strike_array"
+		"Ability2"	"divine_general_1"
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/lina/lina.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Lina"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_lina.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
+		"AttackDamageMin"	"55"
+		"AttackDamageMax"	"55"
+		"AttackRate"	"1.43"
+		"AttackAnimationPoint"	"0.65"
+		"AttackRange"	"600"
+		"ProjectileModel"	"particles/heroes/lina/lina_base_attack.vpcf"
+		"ProjectileSpeed"	"1000"
+		"ArmorPhysical"	"3"
+		"MagicalResistance"	"15"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"650"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"100"
+		"StatusManaRegen"	"4"
+		"StatusStartingMana"	"60"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"19524"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"19525"//肩部、护甲
+				}				
+				"Wearable5"
+				{
+					"ItemDef"	"19523"//背部（斗篷、翅膀）
+				}
+			}
+		}
+	}
+
+"viper1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Ability1"	"viper_nethertoxin"
+		"Ability2"	""
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/viper/viper.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Viper"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_viper.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
+		"AttackDamageMin"	"70"
+		"AttackDamageMax"	"70"
+		"AttackRate"	"1.33"
+		"AttackAnimationPoint"	"0.55"
+		"AttackRange"	"600"
+		"ProjectileModel"	"particles/heroes/viper/viper_base_attack.vpcf"
+		"ProjectileSpeed"	"1200"
+		"ArmorPhysical"	"4"
+		"MagicalResistance"	"15"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"750"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"0"
+		"StatusManaRegen"	"0"
+		"StatusStartingMana"	"0"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"17860"//头部
+				}			
+				"Wearable4"
+				{
+					"ItemDef"	"17861"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"17862"//背部（斗篷、翅膀）
+				}
+			}
+		}
+	}
+
+"ember_spirit1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Name"	"ember_spirit1"
+		"Ability1"	"ember_spirit_inner_Fire"
+		"Ability2"	""
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/ember_spirit/ember_spirit.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_EmberSpirit"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_ember_spirit.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_MELEE_ATTACK"
+		"AttackDamageMin"	"65"
+		"AttackDamageMax"	"65"
+		"AttackRate"	"1.54"
+		"AttackAnimationPoint"	"0.75"
+		"AttackRange"	"200"
+		"ArmorPhysical"	"7"
+		"MagicalResistance"	"25"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"850"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"100"
+		"StatusManaRegen"	"1"
+		"StatusStartingMana"	"0"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"23339"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"23341"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"23342"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"23340"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"23338"//背部（斗篷、翅膀）
+				}
+			}
+		}
+	}
+
 	"death_prophet1"
 	{
 		"BaseClass"	"npc_dota_creature"
@@ -1019,11 +1024,11 @@
 		}
 	}
 
-"enchantress1"
+	"anti_mage1"
 	{
 		"BaseClass"	"npc_dota_creature"
-		"Name"	"enchantress1"
-		"Ability1"	"enchantress1_natures_attendants_heal"
+		"Name"	"anti_mage1"
+		"Ability1"	"anti_mage_counterspell"
 		"Ability2"	""
 		"Ability3"	""
 		"Ability4"	""
@@ -1039,27 +1044,581 @@
 		"Ability14"	""
 		"Ability15"	""
 		"Ability16"	""
-		"Model"	"models/heroes/enchantress/enchantress.vmdl"
+		"Model"	"models/heroes/antimage/antimage.vmdl"
 		"ModelScale"	"1"
-		"SoundSet"	"Hero_Enchantress"
-		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_enchantress.vsndevts"
-		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
-		"AttackDamageMin"	"50"
-		"AttackDamageMax"	"50"
-		"AttackRate"	"1.43"
-		"AttackAnimationPoint"	"0.7"
-		"AttackRange"	"400"
-		"ProjectileModel"	"particles/heroes/enchantress/enchantress_base_attack.vpcf"
-		"ProjectileSpeed"	"900"
-		"ArmorPhysical"	"20"
-		"MagicalResistance"	"1.5"
-		"MovementTurnRate"	"5"
+		"SoundSet"	"Hero_Antimage"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_antimage.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_MELEE_ATTACK"
+		"AttackDamageMin"	"60"
+		"AttackDamageMax"	"60"
+		"AttackRate"	"1.54"
+		"AttackAnimationPoint"	"0.9"
+		"AttackRange"	"200"
+		"ArmorPhysical"	"7"
+		"MagicalResistance"	"20"
+		"MovementTurnRate"	"10"
 		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
 		"MovementSpeed"	"500"
-		"StatusHealth"	"550"
+		"StatusHealth"	"800"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"80"
+		"StatusManaRegen"	"0"
+		"StatusStartingMana"	"50"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"14509"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"14506"//肩部、护甲
+				}
+				"Wearable2B"
+				{
+					"ItemDef"	"14511"//肩部、护甲（第二件）
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"14512"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"14510"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"14508"//背部（斗篷、翅膀）
+				}
+			}
+		}
+	}
+
+//4 fei dan wei
+
+"crystal_maiden1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Ability1"	"tidehunter_ravage"
+		"Ability2"	""
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/crystal_maiden/crystal_maiden.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Crystal"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_crystalmaiden.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
+		"AttackDamageMin"	"60"
+		"AttackDamageMax"	"60"
+		"AttackRate"	"1.54"
+		"AttackAnimationPoint"	"0.80"
+		"AttackRange"	"600"
+		"ProjectileModel"	"particles/heroes/crystal_maiden/maiden_base_attack.vpcf"
+		"ProjectileSpeed"	"800"
+		"ArmorPhysical"	"5"
+		"MagicalResistance"	"20"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"900"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"150"
+		"StatusManaRegen"	"5"
+		"StatusStartingMana"	"0"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"13487"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"13486"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"13490"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"13489"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"13488"//背部（斗篷、翅膀）
+				}
+			}
+		}
+	}
+
+	"ogre_magi1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Ability1"	"ogre_magi_fireblast"
+		"Ability2"	""
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/ogre_magi/ogre_magi.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Ogre_Magi"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_ogre_magi.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_MELEE_ATTACK"
+		"AttackDamageMin"	"60"
+		"AttackDamageMax"	"60"
+		"AttackRate"	"1.67"
+		"AttackAnimationPoint"	"1.00"
+		"AttackRange"	"200"
+		"ArmorPhysical"	"7"
+		"MagicalResistance"	"25"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"1100"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"80"
+		"StatusManaRegen"	"1"
+		"StatusStartingMana"	"0"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"19373"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"19372"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"19374"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"19370"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"19371"//背部（斗篷、翅膀）
+				}
+			}
+		}
+	}
+
+"shadow_fiend1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Ability1"	"shadow_fiend_Shadowraze"
+		"Ability2"	"destroyer_1"
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/shadow_fiend/shadow_fiend.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Shadow_Fiend"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_nevermore.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_NO_ATTACK"
+		"AttackDamageMin"	"0"
+		"AttackDamageMax"	"0"
+		"AttackRate"	"1.00"
+		"AttackAnimationPoint"	"1.00"
+		"AttackRange"	"0"
+		"ArmorPhysical"	"6"
+		"MagicalResistance"	"25"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"850"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"6"
+		"StatusManaRegen"	"1"
+		"StatusStartingMana"	"0"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"9496"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"9494"//肩部、护甲
+				}
+
+				//"Wearable3"
+				//{
+				//	"ItemDef"	"19374"//武器
+				//}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"9495"//副手装备（箭袋、盾牌）
+				}
+				
+				//"Wearable5"
+				//{
+				//	"ItemDef"	"19371"//背部（斗篷、翅膀）
+				//}
+			}
+		}
+	}
+
+"underlord1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Ability1"	"underlord_pit_of_malice"
+		"Ability2"	""
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/underlord/abyssal_underlord_v2.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Abyssal_Underlord"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_abyssal_underlord.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_MELEE_ATTACK"
+		"AttackDamageMin"	"70"
+		"AttackDamageMax"	"70"
+		"AttackRate"	"1.67"
+		"AttackAnimationPoint"	"0.60"
+		"AttackRange"	"200"
+		"ArmorPhysical"	"8"
+		"MagicalResistance"	"30"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"1100"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"130"
+		"StatusManaRegen"	"1"
+		"StatusStartingMana"	"40"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"9078"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"9077"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"9076"//武器
+				}
+				
+				//"Wearable4"
+				//{
+				//	"ItemDef"	"9495"//副手装备（箭袋、盾牌）
+				//}
+				
+				//"Wearable5"
+				//{
+				//	"ItemDef"	"19371"//背部（斗篷、翅膀）
+				//}
+			}
+		}
+	}
+
+//5 fei dan wei
+
+	"enigma1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Name"	"enigma1"
+		"Ability1"	"enigma_black_hole"
+		"Ability2"	""
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/enigma/enigma.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Enigma"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_enigma.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
+		"AttackDamageMin"	"70"
+		"AttackDamageMax"	"70"
+		"AttackRate"	"1.54"
+		"AttackAnimationPoint"	"0.8"
+		"AttackRange"	"800"
+		"ProjectileModel"	"particles/heroes/enigma/enigma_base_attack.vpcf"
+		"ProjectileSpeed"	"900"
+		"ArmorPhysical"	"6"
+		"MagicalResistance"	"20"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"1000"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"150"
+		"StatusManaRegen"	"4"
+		"StatusStartingMana"	"50"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"12332"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"12330"//肩部、护甲
+				}
+
+				//"Wearable3"
+				//{
+				//	"ItemDef"	"18296"//武器
+				//}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"12329"//副手装备（箭袋、盾牌）
+				}
+				
+				//"Wearable5"
+				//{
+				//	"ItemDef"	"18292"//背部（斗篷、翅膀）
+				//}
+			}
+		}
+	}
+
+"zeus1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Name"	"zeus1"
+		"Ability1"	"zeus_Thundergods_Wrath"
+		"Ability2"	""
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/zeus/zeus.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Zuus"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_zuus.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
+		"AttackDamageMin"	"80"
+		"AttackDamageMax"	"80"
+		"AttackRate"	"1.33"
+		"AttackAnimationPoint"	"0.6"
+		"AttackRange"	"600"
+		"ProjectileModel"	"particles/heroes/zeus/zuus_base_attack.vpcf"
+		"ProjectileSpeed"	"900"
+		"ArmorPhysical"	"6"
+		"MagicalResistance"	"20"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"1000"
 		"StatusHealthRegen"	"0"
 		"StatusMana"	"100"
-		"StatusManaRegen"	"2"
+		"StatusManaRegen"	"3"
+		"StatusStartingMana"	"0"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"9052"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"9039"//肩部、护甲
+				}
+
+				//"Wearable3"
+				//{
+				//	"ItemDef"	"18296"//武器
+				//}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"9038"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"9037"//背部（斗篷、翅膀）
+				}
+			}
+		}
+	}
+
+"dawnbreaker1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Name"	"dawnbreaker11"
+		"Ability1"	"dawnbreaker1_solar_guardian_land"
+		"Ability2"	""
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/dawnbreaker/dawnbreaker.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Dawnbreaker"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_dawnbreaker.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_MELEE_ATTACK"
+		"AttackDamageMin"	"70"
+		"AttackDamageMax"	"70"
+		"AttackRate"	"1.67"
+		"AttackAnimationPoint"	"0.8"
+		"AttackRange"	"200"
+		"ArmorPhysical"	"10"
+		"MagicalResistance"	"40"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"1300"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"140"
+		"StatusManaRegen"	"1"
 		"StatusStartingMana"	"20"
 		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
 		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
@@ -1073,28 +1632,28 @@
 			{
 				"Wearable1"
 				{
-					"ItemDef"	"12687"//头部
+					"ItemDef"	"25716"//头部
 				}
 				
 				"Wearable2"
 				{
-					"ItemDef"	"12686"//肩部、护甲
+					"ItemDef"	"25718"//肩部、护甲
 				}
 
 				"Wearable3"
 				{
-					"ItemDef"	"12689"//武器
+					"ItemDef"	"25715"//武器
 				}
 				
 				"Wearable4"
 				{
-					"ItemDef"	"12688"//副手装备（箭袋、盾牌）
+					"ItemDef"	"25717"//副手装备（箭袋、盾牌）
 				}
 				
-				"Wearable5"
-				{
-					"ItemDef"	"12690"//背部（斗篷、翅膀）
-				}
+				//"Wearable5"
+				//{
+				//	"ItemDef"	"9037"//背部（斗篷、翅膀）
+				//}
 			}
 		}
 	}

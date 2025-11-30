@@ -36,6 +36,24 @@ export class CustomUIHandler {
         CustomGameEventManager.RegisterListener('custom_panel_action', (_, data) => {
             this.onCustomPanelAction(data);
         });
+
+        // 注册自走棋结算相关事件
+        CustomGameEventManager.RegisterListener('autochess_wave_continue', (_, data) => {
+            this.onWaveContinue(data);
+        });
+
+        CustomGameEventManager.RegisterListener('autochess_wave_claim_reward', (_, data) => {
+            this.onWaveClaimReward(data);
+        });
+
+        CustomGameEventManager.RegisterListener('autochess_wave_select_stage', (_, data) => {
+            this.onWaveSelectStage(data);
+        });
+
+        // 注册快速操作事件（用于测试结算等）
+        CustomGameEventManager.RegisterListener('quick_action', (_, data) => {
+            this.onQuickAction(data);
+        });
     }
 
     /**
@@ -99,6 +117,24 @@ export class CustomUIHandler {
     }
 
     /**
+     * 处理快速操作事件（来自 playing-hud）
+     */
+    private onQuickAction(data: any): void {
+        const playerId = data.PlayerID;
+        const action = data.action;
+
+        print(`[CustomUIHandler] Quick action received: ${action} from player ${playerId}`);
+
+        switch (action) {
+            case 'test_kill':
+                this.handleTestKillEnemies(playerId);
+                break;
+            default:
+                print(`[CustomUIHandler] Unknown quick action: ${action}`);
+        }
+    }
+
+    /**
      * 处理自定义面板操作
      */
     private onCustomPanelAction(data: any): void {
@@ -117,6 +153,9 @@ export class CustomUIHandler {
                 break;
             case 'show_message':
                 this.handleShowMessage(playerId, params);
+                break;
+            case 'test_kill':
+                this.handleTestKillEnemies(playerId);
                 break;
             default:
                 print(`[CustomUIHandler] Unknown action: ${action}`);
@@ -300,6 +339,120 @@ export class CustomUIHandler {
             default:
                 print(`[CustomUIHandler] Unknown debug UI command: ${command}`);
         }
+    }
+
+    /**
+     * 处理继续战斗事件
+     */
+    private onWaveContinue(data: any): void {
+        const playerId = data.playerId;
+        print(`[CustomUIHandler] Wave continue requested by player ${playerId}`);
+
+        if (GameRules.AutoChessMode) {
+            GameRules.AutoChessMode.handleWaveContinue(playerId);
+        } else {
+            print('[CustomUIHandler] AutoChessMode not available');
+        }
+    }
+
+    /**
+     * 处理领取奖励事件
+     */
+    private onWaveClaimReward(data: any): void {
+        const playerId = data.playerId;
+        print(`[CustomUIHandler] Wave reward claim requested by player ${playerId}`);
+
+        if (GameRules.AutoChessMode) {
+            GameRules.AutoChessMode.handleWaveRewardClaim(playerId);
+        } else {
+            print('[CustomUIHandler] AutoChessMode not available');
+        }
+    }
+
+    /**
+     * 处理选择关卡事件
+     */
+    private onWaveSelectStage(data: any): void {
+        const playerId = data.playerId;
+        const stageId = data.stageId;
+        print(`[CustomUIHandler] Wave stage selection by player ${playerId}: ${stageId}`);
+
+        if (GameRules.AutoChessMode) {
+            GameRules.AutoChessMode.handleWaveStageSelection(playerId, stageId);
+        } else {
+            print('[CustomUIHandler] AutoChessMode not available');
+        }
+    }
+
+    /**
+     * 处理测试击杀敌人（触发结算界面）
+     */
+    private handleTestKillEnemies(playerId: PlayerID): void {
+        print(`[CustomUIHandler] Test kill enemies requested by player ${playerId}`);
+
+        if (!GameRules.AutoChessMode) {
+            print('[CustomUIHandler] AutoChessMode not available');
+            return;
+        }
+
+        // 获取所有单位
+        const allUnits = Entities.FindAllByClassname('npc_dota_creature') as CDOTA_BaseNPC[];
+        const heroes = Entities.FindAllByClassname('npc_dota_hero') as CDOTA_BaseNPC[];
+        
+        let killedCount = 0;
+
+        // 击杀所有非玩家英雄的单位
+        for (const unit of allUnits) {
+            if (unit && !unit.IsNull() && unit.IsAlive()) {
+                // 检查是否是玩家控制的英雄
+                const isPlayerHero = heroes.some(hero => 
+                    hero === unit && hero.IsRealHero() && hero.GetPlayerOwnerID() >= 0
+                );
+
+                if (!isPlayerHero) {
+                    unit.ForceKill(false);
+                    killedCount++;
+                }
+            }
+        }
+
+        print(`[CustomUIHandler] Test killed ${killedCount} enemy units`);
+
+        // 触发结算界面（测试用）
+        // 注意：数据格式需要匹配 battleEndView 期望的格式
+        const settlementData = {
+            winner: 'player',  // 必须字段
+            round: 1,
+            duration: 10000,  // 10秒，单位毫秒
+            stats: {  // stats 应该是对象，不是数组
+                damageDealt: 12540,
+                damageTaken: 8320,
+                unitsKilled: killedCount,
+                unitsSurvived: 1
+            },
+            levelName: '测试关卡',
+            // 可选字段
+            rewardGold: 100,
+            availableStages: [
+                { id: 'stage_easy', name: '绿意平原', difficulty: '简单' },
+                { id: 'stage_medium', name: '霜冻峡谷', difficulty: '普通' },
+                { id: 'stage_hard', name: '灼炎堡垒', difficulty: '困难' }
+            ],
+            playerSummary: {
+                [playerId]: {
+                    health: 100,
+                    gold: 500,
+                    isAlive: true,
+                    winStreak: 0,
+                    lossStreak: 0
+                }
+            }
+        };
+
+        // 发送结算事件到客户端
+        (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_wave_settlement', settlementData);
+        print(`[CustomUIHandler] Sent settlement event to all clients`);
+        print(`[CustomUIHandler] Settlement data - round: ${settlementData.round}, winner: ${settlementData.winner}, duration: ${settlementData.duration}`);
     }
 }
 

@@ -4,19 +4,7 @@
 "DOTAAbilities"
 {
 	"Version"		"1"
-
-	// Rewrite of Gyrocopter Call Down
-	// Author: YOLOSPAGHETTI
-	// Date: March 28, 2016
-	// Version: 6.86
-	// Type: Datadriven
-	//
-	// ----- FILE REQUIREMENTS -----
-	// Script files:
-	// scripts/vscripts/heroes/hero_gyrocopter/call_down.lua
-	//
-	// Notes: Missing some particles and for the marker particle, the targeting array moves out instead of in
-	
+//全局机制部分
 	"universal_mana_restore_on_attack"
 	{
 		"BaseClass"	"ability_lua"
@@ -48,7 +36,9 @@
 		"AbilityCastAnimation"	"ACT_DOTA_CAST_ABILITY_1"
 		"IsHidden"	"1"
 	}
-	
+
+//单位技能部分
+
 	"windrunner_powershot"
 	{
 		"BaseClass"	"ability_lua"
@@ -62,6 +52,7 @@
 		"AbilityManaCost"	"80 80 80"
 		"AbilityCastRange"	"3000"
 		"AbilityCastPoint"	"0.0"
+		"AbilityCastAnimation"	"ACT_DOTA_IDLE"
 		
 		"AbilityValues"
 		{
@@ -128,6 +119,8 @@
 		"AbilityCooldown"	"0 0 0"
 		"AbilityManaCost"	"150 150 150"
 		"AbilityCastPoint"	"0.0"
+		"AbilityCastAnimation"	"ACT_DOTA_CAST_ABILITY_1"
+		"AbilityChannelTime"	"1.0"
 		"AbilitySound"	"Ability.Ravage"
 		"AbilityDamage"	"400 400 400"
 		
@@ -461,6 +454,1013 @@
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_enchantress.vsndevts"
 		}
 	}
+	
+	"ogre_magi_fireblast"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_ogre_magi/ogre_magi_fireblast.lua"
+		"AbilityTextureName"	"ogre_magi_fireblast"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0 0 0"
+		"AbilityManaCost"	"80 80 80"
+		"AbilityCastPoint"	"0.0"
+		"AbilityCastRange"	"9999"
+		"AbilitySound"	"Hero_OgreMagi.Fireblast.Cast"
+		"AbilityDamage"	"250 250 250"
+		
+		"AbilityValues"
+		{
+			"damage"	"250 250 250"
+			"stun_duration"	"1.0"
+			"auto_cast_range"	"9999"
+			"multicast_chance_self"	"25"
+			"multicast_chance_1"	"25"
+			"multicast_chance_2"	"25"
+			"multicast_chance_3"	"25"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/ogre_magi/ogre_magi_fireblast.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_ogre_magi.vsndevts"
+		}
+	}
 
+		"shadow_fiend_Shadowraze"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_shadow_fiend/shadow_fiend_Shadowraze.lua"
+		"AbilityTextureName"	"nevermore_shadowraze1"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_PHYSICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"MaxLevel"	"1"
+		"AbilityCooldown"	"0"
+		"AbilityManaCost"	"6"
+		"AbilityCastPoint"	"0.0"
+		"AbilityCastAnimation"	"ACT_DOTA_IDLE"
+		
+		"AbilityValues"
+		{
+			"base_damage"	"400"
+			"damage_per_cast"	"80"
+			"auto_cast_range"	"9999"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/shadow_fiend/nevermore_shadowraze.vpcf"
+			"particle"	"particles/heroes/shadow_fiend/nevermore_shadowraze_ground.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_nevermore.vsndevts"
+		}
+	}
+
+	"zeus_Thundergods_Wrath"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_zeus/zeus_thundergods_wrath.lua"
+		"AbilityTextureName"	"zuus_thundergods_wrath"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"MaxLevel"	"1"
+		"AbilityCooldown"	"0"
+		"AbilityManaCost"	"0"
+		"AbilityCastPoint"	"0.0"
+		"IsHidden"	"0"
+
+		"AbilityValues"
+		{
+			"resistance_reduction_armor"	"1"
+			"resistance_reduction_magic"	"1"
+			"resistance_reduction_duration"	"10"
+			"arc_lightning_damage"	"100"
+			"arc_lightning_bounces"	"3"
+			"thundergods_wrath_damage"	"300"
+			"arc_lightning_range"	"700"
+			"thundergods_wrath_range"	"9999"
+		}
+
+		"Precache"
+		{
+			"particle"	"particles/heroes/zeus/zuus_arc_lightning.vpcf"
+			"particle"	"particles/heroes/zeus/zuus_thundergods_wrath.vpcf"
+			"particle"	"particles/heroes/zeus/zuus_thundergods_wrath_start.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_zuus.vsndevts"
+		}
+	}
+
+
+	"anti_mage_counterspell"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_antimage/anti_mage_counterspell.lua"
+		"AbilityTextureName"	"antimage_counterspell"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"MaxLevel"	"1"
+		"AbilityCooldown"	"0"
+		"AbilityManaCost"	"80"
+		"AbilityCastPoint"	"0.0"
+		
+		"AbilityValues"
+		{
+			"passive_attack_speed"	"15"
+			"buff_duration"	"10.0"
+			"buff_multiplier"	"3"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/anti_mage/rune_shield_bubble.vpcf"
+		}
+	}
+
+	"underlord_pit_of_malice"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_underlord/underlord_pit_of_malice.lua"
+		"AbilityTextureName"	"abyssal_underlord_pit_of_malice"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"MaxLevel"	"1"
+		"AbilityCooldown"	"0"
+		"AbilityManaCost"	"130"
+		"AbilityCastPoint"	"0.0"
+		
+		"AbilityValues"
+		{
+			"auto_cast_range"	"9999"
+			"pit_radius"	"450"
+			"pit_duration"	"6.0"
+			"attack_damage_reduction_percent"	"10"
+			"damage_per_second"	"50"
+			"damage_interval"	"1.0"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/underlord/underlord_2021_immortal_darkrift_ambient.vpcf"
+		}
+	}
+
+	"razor_eye_of_the_storm"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_razor/razor_eye_of_the_storm.lua"
+		"AbilityTextureName"	"razor_eye_of_the_storm"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"MaxLevel"	"1"
+		"AbilityCooldown"	"0"
+		"AbilityManaCost"	"100"
+		"AbilityCastPoint"	"0.0"
+		
+		"AbilityValues"
+		{
+			"duration"	"3.0"
+			"damage_interval"	"0.5"
+			"damage"	"70"
+			"target_range"	"9999"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/razor/razor_rain_storm.vpcf"
+			"particle"	"particles/heroes/zeus/zuus_thundergods_wrath_start.vpcf"
+		}
+	}
+
+	"dawnbreaker1_solar_guardian_land"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_dawnbreaker/dawnbreaker1_solar_guardian_land.lua"
+		"AbilityTextureName"	"dawnbreaker_solar_guardian"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_CHANNELLED | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"MaxLevel"	"1"
+		"AbilityCooldown"	"0"
+		"AbilityManaCost"	"140"
+		"AbilityCastPoint"	"0.0"
+		"AbilityChannelTime"	"4.0"
+		
+		"AbilityValues"
+		{
+			"channel_duration"	"4.0"
+			"radius"	"1000"
+			"damage_share_percent"	"30"
+			"damage_reduction_percent"	"30"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/dawnbreaker/dawnbreaker_solar_guardian.vpcf"
+			"particle"	"particles/heroes/dawnbreaker/dawnbreaker_solar_guardian_landing.vpcf"
+		}
+	}
+
+
+	//Rogue技能部分
+
+	"vampiric_vitality"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/vampiric_vitality"
+		"AbilityTextureName"	"item_mask_of_madness"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"lifesteal_percent"	"10.0"
+		}
+	}
+
+	"staff_will"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/staff_will"
+		"AbilityTextureName"	"item_bfury"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"attack_speed_bonus"	"10.0"
+			"crit_chance"		"20.0"
+			"crit_damage_multiplier"	"1.5"
+		}
+	}
+
+	"clockwork_accelerator"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/clockwork_accelerator"
+		"AbilityTextureName"	"item_hyperstone"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"interval_time"		"3.0"
+			"attack_speed_increment"	"10.0"
+		}
+	}
+
+	"ascension"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/ascension"
+		"AbilityTextureName"	"item_ultimate_scepter"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"trigger_delay"		"40.0"
+			"damage_amplification"	"15.0"
+		}
+	}
+
+	"healing_orb"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/healing_orb"
+		"AbilityTextureName"	"item_healing_salve"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"heal_amount"		"400.0"
+		}
+	}
+
+	"blue_battery"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/blue_battery"
+		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"spell_damage_amp"	"5.0"
+			"mana_restore"		"5.0"
+		}
+	}
+
+	"titans_power"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/titans_power"
+		"AbilityTextureName"	"item_heart"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"damage_percent_per_hp"	"1.3"
+		}
+	}
+
+	"overheal"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/overheal"
+		"AbilityTextureName"	"item_bloodstone"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"attack_count"		"3"
+			"bonus_damage_percent"	"50.0"
+			"heal_percent"		"50.0"
+		}
+	}
+
+	"soul_link"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/soul_link"
+		"AbilityTextureName"	"item_soul_ring"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"heal_interval"		"5.0"
+			"heal_percent"		"5.0"
+		}
+	}
+
+	"ludens_echo"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/ludens_echo"
+		"AbilityTextureName"	"item_cyclone"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"damage_multiplier"	"1.0"
+		}
+	}
+
+	"double_cast"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/universal/double_cast.lua"
+		"AbilityTextureName"	"item_refresher"
+		"AbilityType"	"DOTA_ABILITY_TYPE_PASSIVE"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"	"1"
+		"AbilityCooldown"	"0"
+		"AbilityManaCost"	"0"
+		"AbilityCastPoint"	"0.0"
+		"AbilityCastAnimation"	"ACT_DOTA_CAST_ABILITY_1"
+		"IsHidden"	"1"
+		
+		"AbilityValues"
+		{
+			"double_cast_chance"	"15"
+		}
+	}
+
+	"living_bomb"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/universal/living_bomb.lua"
+		"AbilityTextureName"	"item_cyclone"
+		"AbilityType"	"DOTA_ABILITY_TYPE_PASSIVE"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"	"1"
+		"AbilityCooldown"	"0"
+		"AbilityManaCost"	"0"
+		"AbilityCastPoint"	"0.0"
+		"IsHidden"	"1"
+		
+		"AbilityValues"
+		{
+			"explosion_damage"	"200"
+			"explosion_radius"	"200"
+		}
+	}
+	//	羁绊技能部分
+
+	"sylph_1"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/sylph_1"
+		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"proc_chance"		"30.0"
+			"mana_burn"			"5.0"
+		}
+	}
+
+	"sylph_2"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/sylph_2"
+		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"proc_chance"		"30.0"
+			"mana_burn"			"10.0"
+		}
+	}
+
+	"sylph_3"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/sylph_3"
+		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"proc_chance"		"30.0"
+			"mana_burn"			"15.0"
+		}
+	}
+
+	"divine_general_1"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/divine_general_1"
+		"AbilityTextureName"	"item_heart"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"armor_bonus"		"3.0"
+			"magic_resistance_bonus"	"3.0"
+			"heal_per_attack"	"10.0"
+		}
+	}
+
+	"divine_general_2"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/divine_general_2"
+		"AbilityTextureName"	"item_heart"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"armor_bonus"		"6.0"
+			"magic_resistance_bonus"	"6.0"
+			"heal_per_attack"	"20.0"
+		}
+	}
+
+	"divine_general_3"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/divine_general_3"
+		"AbilityTextureName"	"item_heart"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"armor_bonus"		"10.0"
+			"magic_resistance_bonus"	"10.0"
+			"heal_per_attack"	"40.0"
+		}
+	}
+
+	"wild_1"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/wild_1"
+		"AbilityTextureName"	"item_hyperstone"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"trigger_interval"		"10.0"
+			"attack_speed_bonus_percent"	"10.0"
+		}
+	}
+
+	"wild_2"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/wild_2"
+		"AbilityTextureName"	"item_hyperstone"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"trigger_interval"		"10.0"
+			"attack_speed_bonus_percent"	"10.0"
+			"attack_damage_bonus"		"10.0"
+		}
+	}
+
+	"wild_3"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/wild_3"
+		"AbilityTextureName"	"item_hyperstone"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"trigger_interval"		"10.0"
+			"attack_speed_bonus_percent"	"10.0"
+			"attack_damage_bonus"		"10.0"
+			"execute_threshold"		"0.2"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/enchantress/enchantress_base_attack.vpcf"
+		}
+	}
+
+	"void_1"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/void_1"
+		"AbilityTextureName"	"faceless_void_time_lock"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"pure_damage_percent"		"5.0"
+		}
+	}
+
+	"void_2"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/void_2"
+		"AbilityTextureName"	"faceless_void_time_lock"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"pure_damage_percent"		"15.0"
+		}
+	}
+
+	"berserker_1"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/berserker_1"
+		"AbilityTextureName"	"item_bfury"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"attack_speed_bonus_percent"		"10.0"
+			"damage_amplification_percent"	"20.0"
+			"buff_duration_normal"			"5.0"
+			"buff_duration_low_health"		"10.0"
+			"low_health_threshold"			"0.5"
+		}
+	}
+
+	"berserker_2"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/berserker_2"
+		"AbilityTextureName"	"item_bfury"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"attack_speed_bonus_percent"		"30.0"
+			"damage_amplification_percent"	"50.0"
+			"buff_duration_normal"			"5.0"
+			"buff_duration_low_health"		"10.0"
+			"low_health_threshold"			"0.5"
+		}
+	}
+
+	"ranger_1"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/ranger_1"
+		"AbilityTextureName"	"item_hyperstone"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"trigger_interval"			"9.0"
+			"attack_speed_bonus_percent"	"50.0"
+			"buff_duration"				"3.0"
+		}
+	}
+
+	"ranger_2"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/ranger_2"
+		"AbilityTextureName"	"item_hyperstone"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"trigger_interval"			"9.0"
+			"attack_speed_bonus_percent"	"100.0"
+			"buff_duration"				"3.0"
+		}
+	}
+
+	"ranger_3"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/ranger_3"
+		"AbilityTextureName"	"item_hyperstone"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"trigger_interval"			"5.0"
+			"attack_speed_bonus_percent"	"150.0"
+			"buff_duration"				"3.0"
+		}
+	}
+
+	"knight_1"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/knight_1"
+		"AbilityTextureName"	"item_buckler"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"damage_block"		"10.0"
+		}
+	}
+
+	"knight_2"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/knight_2"
+		"AbilityTextureName"	"item_buckler"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"damage_block"		"20.0"
+		}
+	}
+
+	"knight_3"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/knight_3"
+		"AbilityTextureName"	"item_buckler"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"damage_block"		"40.0"
+		}
+	}
+
+	"warrior_1"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/warrior_1"
+		"AbilityTextureName"	"item_heart"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"health_bonus"			"100.0"
+			"warrior_health_bonus"	"200.0"
+		}
+	}
+
+	"warrior_2"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/warrior_2"
+		"AbilityTextureName"	"item_heart"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"health_bonus"			"250.0"
+			"warrior_health_bonus"	"500.0"
+		}
+	}
+
+	"mage_1"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/mage_1"
+		"AbilityTextureName"	"item_energy_booster"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"mana_regen"			"1.0"
+			"mage_mana_regen"		"2.0"
+		}
+	}
+
+	"mage_2"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/mage_2"
+		"AbilityTextureName"	"item_energy_booster"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"mana_regen"			"2.0"
+			"mage_mana_regen"		"4.0"
+		}
+	}
+
+	"warlock_1"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/warlock_1"
+		"AbilityTextureName"	"item_cloak"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"magic_resistance"		"10.0"
+			"warlock_magic_resistance"	"20.0"
+		}
+	}
+
+	"warlock_2"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/warlock_2"
+		"AbilityTextureName"	"item_cloak"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"magic_resistance"		"15.0"
+			"warlock_magic_resistance"	"30.0"
+		}
+	}
+
+	"destroyer_1"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/destroyer_1"
+		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"mana_restore_percent"		"50.0"
+		}
+	}
+
+	"destroyer_2"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/universal/destroyer_2"
+		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"mana_restore_percent"		"100.0"
+		}
+	}
 
 }

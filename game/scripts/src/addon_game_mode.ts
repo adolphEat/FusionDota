@@ -1,5 +1,6 @@
 import 'utils/index';
 import { ActivateModules } from './modules';
+// @ts-ignore - TSTL 编译器可以正确解析，但 TypeScript 类型检查器在某些情况下无法解析
 import Precache from './utils/precache';
 
 Object.assign(getfenv(), {

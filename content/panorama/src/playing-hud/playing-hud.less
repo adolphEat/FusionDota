@@ -1,0 +1,516 @@
+// 战斗中的HUD界面样式
+.playing_hud_root {
+    width: 100%;
+    height: 100%;
+    
+    .top_status_bar {
+        width: 100%;
+        height: 60px;
+        horizontal-align: center;
+        vertical-align: top;
+        background-color: gradient(linear, 0% 0%, 0% 100%, from(#0a0a0aee), to(#00000000));
+        flow-children: right;
+        padding: 10px 20px;
+        
+        .game_time {
+            width: 150px;
+            height: 100%;
+            margin-right: 20px;
+            
+            Label {
+                font-size: 24px;
+                color: #ffffff;
+                text-shadow: 2px 2px 4px #000000;
+                vertical-align: center;
+            }
+        }
+        
+        .wave_info {
+            width: 200px;
+            height: 100%;
+            margin-right: 20px;
+            
+            Label {
+                font-size: 20px;
+                color: #ffaa00;
+                text-shadow: 2px 2px 4px #000000;
+                vertical-align: center;
+            }
+        }
+        
+        .gold_display {
+            width: 150px;
+            height: 100%;
+            
+            Label {
+                font-size: 22px;
+                color: #ffd700;
+                text-shadow: 2px 2px 4px #000000;
+                vertical-align: center;
+            }
+        }
+    }
+    
+    .left_info_panel {
+        width: 300px;
+        height: 60%;
+        horizontal-align: left;
+        vertical-align: middle;
+        margin-left: 10px;
+        
+        .player_stats {
+            width: 100%;
+            height: 200px;
+            background-color: #1e1e2ecc;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            flow-children: down;
+            
+            .stat_row {
+                width: 100%;
+                height: 30px;
+                margin-bottom: 8px;
+                flow-children: right;
+                
+                .stat_icon {
+                    width: 24px;
+                    height: 24px;
+                    background-color: #4a4a6a;
+                    border-radius: 4px;
+                    margin-right: 8px;
+                }
+                
+                .stat_label {
+                    width: 120px;
+                    font-size: 18px;
+                    color: #cccccc;
+                    vertical-align: center;
+                }
+                
+                .stat_value {
+                    width: fill-parent-flow(1.0);
+                    font-size: 18px;
+                    color: #ffffff;
+                    vertical-align: center;
+                    text-align: right;
+                }
+            }
+        }
+        
+        .mini_map_container {
+            width: 100%;
+            height: 250px;
+            background-color: #1e1e2ecc;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+            padding: 10px;
+        }
+    }
+    
+    .right_control_panel {
+        width: 320px;
+        height: 70%;
+        horizontal-align: right;
+        vertical-align: middle;
+        margin-right: 10px;
+        
+        .team_status {
+            width: 100%;
+            height: 180px;
+            background-color: #1e1e2ecc;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            flow-children: down;
+            
+            .team_member {
+                width: 100%;
+                height: 40px;
+                margin-bottom: 8px;
+                flow-children: right;
+                
+                .member_avatar {
+                    width: 36px;
+                    height: 36px;
+                    background-color: #4a4a6a;
+                    border-radius: 50%;
+                    margin-right: 8px;
+                }
+                
+                .member_info {
+                    width: fill-parent-flow(1.0);
+                    height: 100%;
+                    flow-children: down;
+                    
+                    .member_name {
+                        font-size: 16px;
+                        color: #ffffff;
+                    }
+                    
+                    .member_hp_bar {
+                        width: 100%;
+                        height: 8px;
+                        background-color: #3a3a4a;
+                        border-radius: 4px;
+                        
+                        .hp_fill {
+                            height: 100%;
+                            background-color: #00ff00;
+                            border-radius: 4px;
+                        }
+                    }
+                }
+            }
+        }
+        
+        .buff_list {
+            width: 100%;
+            height: 150px;
+            background-color: #1e1e2ecc;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            flow-children: right;
+            
+            .buff_icon {
+                width: 40px;
+                height: 40px;
+                background-color: #4a4a6a;
+                border-radius: 4px;
+                margin-right: 8px;
+            }
+        }
+        
+        .objective_tracker {
+            width: 100%;
+            height: fill-parent-flow(1.0);
+            background-color: #1e1e2ecc;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+            padding: 15px;
+            flow-children: down;
+            
+            .objective_title {
+                width: 100%;
+                height: 30px;
+                font-size: 20px;
+                color: #ffd700;
+                margin-bottom: 10px;
+            }
+            
+            .objective_item {
+                width: 100%;
+                height: 30px;
+                margin-bottom: 8px;
+                flow-children: right;
+                
+                .objective_checkbox {
+                    width: 20px;
+                    height: 20px;
+                    background-color: #3a3a4a;
+                    border: 2px solid #4a4a6a;
+                    border-radius: 4px;
+                    margin-right: 8px;
+                    
+                    &.completed {
+                        background-color: #00aa00;
+                    }
+                }
+                
+                .objective_text {
+                    width: fill-parent-flow(1.0);
+                    font-size: 16px;
+                    color: #cccccc;
+                    vertical-align: center;
+                }
+            }
+        }
+    }
+    
+    .bottom_quick_bar {
+        width: 800px;
+        height: 120px;
+        horizontal-align: center;
+        vertical-align: bottom;
+        margin-bottom: 10px;
+        background-color: #1e1e2ecc;
+        border: 2px solid #4a4a6a;
+        border-radius: 8px;
+        padding: 10px;
+        flow-children: right;
+        
+        .ability_slot {
+            width: 70px;
+            height: 70px;
+            background-color: #2a2a3a;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+            margin-right: 10px;
+            
+            &:hover {
+                background-color: #3a3a4a;
+                box-shadow: 0px 0px 10px #4a4aaa;
+            }
+            
+            &.cooldown {
+                opacity: 0.5;
+            }
+        }
+        
+        .item_slot {
+            width: 60px;
+            height: 60px;
+            background-color: #2a2a3a;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+            margin-right: 8px;
+            
+            &:hover {
+                background-color: #3a3a4a;
+                box-shadow: 0px 0px 10px #aa4a4a;
+            }
+        }
+    }
+}
+
+/* 底部快捷栏 - 匹配 JavaScript 中的 #BottomQuickBar */
+#BottomQuickBar {
+    align: center bottom;
+    width: 500px;
+    height: 80px;
+    margin-bottom: 20px;
+    background-color: rgba(30, 30, 46, 0.9);
+    border: 3px solid rgba(74, 74, 106, 0.8);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.6);
+    flow-children: right;
+    z-index: 2000;
+}
+
+/* 快捷按钮样式 */
+.quick_action_btn {
+    width: 110px;
+    height: 60px;
+    margin-right: 10px;
+    background-color: rgba(59, 130, 246, 0.2);
+    border: 2px solid rgba(59, 130, 246, 0.5);
+    border-radius: 8px;
+    transition-property: background-color, border-color, transform;
+    transition-duration: 0.2s;
+    flow-children: down;
+    
+    &:hover {
+        background-color: rgba(59, 130, 246, 0.4);
+        border-color: rgba(59, 130, 246, 0.8);
+        box-shadow: 0px 0px 15px rgba(59, 130, 246, 0.6);
+        transform: translateY(-2px);
+    }
+    
+    &:active {
+        background-color: rgba(59, 130, 246, 0.6);
+        transform: translateY(0px);
+    }
+    
+    Label {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        vertical-align: center;
+        font-size: 18px;
+        color: #ffffff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        font-weight: bold;
+    }
+}
+
+/* ========================================
+   羁绊面板样式
+   ======================================== */
+
+/* 左侧羁绊面板容器 */
+#LeftSynergyPanel {
+    width: 280px;
+    max-height: 600px;
+    horizontal-align: left;
+    vertical-align: top;
+    margin-top: 100px;
+    margin-left: 20px;
+    background-color: rgba(33, 34, 31, 0.95);
+    border: 2px solid rgba(59, 130, 246, 0.4);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+    flow-children: down;
+    overflow: squish scroll;
+}
+
+/* 羁绊面板标题 */
+.synergy_panel_title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffc57a;
+    margin-bottom: 15px;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* 羁绊项容器 */
+.synergy_item {
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 8px;
+    border: 2px solid rgba(100, 116, 139, 0.5);
+    flow-children: down;
+    transition-property: border-color, box-shadow, opacity, transform;
+    transition-duration: 0.3s;
+    
+    /* 已激活状态 - 金色发光 */
+    &.active {
+        border: 2px solid rgba(255, 215, 0, 0.8);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+    
+    /* 部分激活状态 - 蓝色发光 */
+    &.partial {
+        border: 2px solid rgba(59, 130, 246, 0.8);
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* 未激活状态 - 半透明 */
+    &.inactive {
+        opacity: 0.6;
+    }
+    
+    /* 悬停效果 */
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+}
+
+/* 羁绊头部 */
+.synergy_header {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 5px;
+    flow-children: right;
+}
+
+/* 羁绊图标 */
+.synergy_icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+    vertical-align: center;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 羁绊信息区域 */
+.synergy_info {
+    width: fill-parent-flow(1.0);
+    height: 100%;
+    flow-children: down;
+}
+
+/* 羁绊名称 */
+.synergy_name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 2px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* 羁绊计数 */
+.synergy_count {
+    font-size: 12px;
+    color: #94a3b8;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* 效果列表容器 */
+.synergy_tiers {
+    width: 100%;
+    flow-children: down;
+    padding-left: 5px;
+}
+
+/* 单个效果条目 */
+.synergy_tier {
+    width: 100%;
+    height: 22px;
+    margin-bottom: 3px;
+    flow-children: right;
+    padding: 2px 5px;
+    border-radius: 4px;
+    transition-property: background-color;
+    transition-duration: 0.2s;
+    
+    /* 已激活效果 */
+    &.active {
+        background-color: rgba(255, 215, 0, 0.1);
+        
+        .tier_icon {
+            color: #ffd700;
+        }
+        
+        .tier_requirement {
+            color: #ffd700;
+        }
+        
+        .tier_effect {
+            color: #ffffff;
+        }
+    }
+    
+    /* 未激活效果 */
+    &.inactive {
+        .tier_icon {
+            color: #64748b;
+        }
+        
+        .tier_requirement {
+            color: #94a3b8;
+        }
+        
+        .tier_effect {
+            color: #94a3b8;
+        }
+    }
+}
+
+/* 状态图标 (✓ 或 ○) */
+.tier_icon {
+    width: 20px;
+    font-size: 14px;
+    vertical-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* 需求数量 */
+.tier_requirement {
+    width: 35px;
+    font-size: 11px;
+    font-weight: bold;
+    vertical-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* 效果描述 */
+.tier_effect {
+    width: fill-parent-flow(1.0);
+    font-size: 11px;
+    vertical-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Panorama CSS 不支持 @keyframes 动画，使用静态发光效果代替 */
+

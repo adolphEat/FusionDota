@@ -537,20 +537,11 @@ export class ChessBattleSystem {
             player2: battle.player2
         });
 
-        // 测试：5秒后重新创建敌人阵容并按原位置重新部署玩家阵容，验证血量继承
-        Timers.CreateTimer(5.0, () => {
-            // 重置玩家的已部署列表（清除无效引用）
-            this.playerDeployedPieces.set(playerIdForTest, []);
-
-            // 依据快照重新部署玩家棋子（deployPiece 会应用幸存血量）
-            for (const s of playerSnapshot) {
-                this.deployPiece(playerIdForTest, s.pieceId, s.position);
-            }
-
-            // 再次开启对AI战斗
-            this.startBattleVsAI(playerIdForTest);
-            return undefined;
-        });
+        // 通知 AutoChessMode 战斗已完成（让它处理结算逻辑）
+        if (GameRules.AutoChessMode) {
+            print('[ChessBattleSystem] Notifying AutoChessMode of battle completion');
+            // AutoChessMode 会在 calculateBattleResults 中处理，这里不再自动重启
+        }
     }
 
     /**

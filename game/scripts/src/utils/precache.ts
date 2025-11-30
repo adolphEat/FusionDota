@@ -4,9 +4,23 @@ export default function Precache(context: CScriptPrecacheContext) {
     // 需要预载的所有资源
     precacheResource(
         [
-            // '***.vpcf',
-            // 'soundevents/game_sounds_heroes/game_sounds_queenofpain.vsndevts',
-            // '***.vmdl',
+            // 粒子系统资源
+            'particles/units/heroes/hero_razor/razor_base_attack.vpcf',
+            'particles/heroes/razor/razor_base_attack.vpcf',
+            'particles/heroes/enchantress/enchantress_base_attack.vpcf',
+            'particles/heroes/oracle/oracle_base_attack.vpcf',
+            'particles/heroes/ember_spirit/huskar_inner_fire.vpcf',
+            'particles/heroes/oracle/oracle_fatesedict.vpcf',
+            'particles/heroes/enchantress/enchantress_natures_attendants_count8.vpcf',
+            
+            // 声音事件资源
+            'soundevents/game_sounds_heroes/game_sounds_razor.vsndevts',
+            'soundevents/game_sounds_heroes/game_sounds_enchantress.vsndevts',
+            'soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts',
+            'soundevents/game_sounds_heroes/game_sounds_ember_spirit.vsndevts',
+            
+            // 材质资源
+            'materials/vgui/hud/heroportraits/portraitbackground_oracle.vmat',
         ],
         context
     );
@@ -21,15 +35,43 @@ export default function Precache(context: CScriptPrecacheContext) {
     // 需要预载入的单位
     precacheUnits(
         [
-            // 自走棋模式使用的英雄
-            'npc_dota_hero_antimage',        // 敌法师
-            'npc_dota_hero_crystal_maiden',  // 水晶室女
-            'npc_dota_hero_axe',             // 斧王
-            'npc_dota_hero_drow_ranger',     // 卓尔游侠
-            'npc_dota_hero_bounty_hunter',   // 赏金猎人
+            // ========== 自走棋模式使用的英雄 ==========
+            
+            // 一费英雄 (Cost 1)
+            'npc_dota_hero_treant',          // 树精卫士
+            'npc_dota_hero_windrunner',     // 风行者
+            'npc_dota_hero_mars',           // 战争之矛
+            'npc_dota_hero_razor',          // 雷泽
+            'npc_dota_hero_lion',           // 恶魔巫师
+            'npc_dota_hero_enchantress',    // 魅惑魔女
+            
+            // 二费英雄 (Cost 2)
+            'npc_dota_hero_axe',            // 斧王
+            'npc_dota_hero_ursa',          // 熊战士
+            'npc_dota_hero_oracle',        // 神谕者
+            'npc_dota_hero_drow_ranger',   // 卓尔游侠
+            'npc_dota_hero_lina',          // 秀逗魔导师
+            
+            // 三费英雄 (Cost 3)
+            'npc_dota_hero_ember_spirit',  // 灰烬之灵
+            'npc_dota_hero_antimage',      // 敌法师
+            'npc_dota_hero_terrorblade',   // 恐怖利刃
+            'npc_dota_hero_viper',        // 冥界亚龙
+            'npc_dota_hero_death_prophet', // 死亡先知
+            
+            // 四费英雄 (Cost 4)
+            'npc_dota_hero_abyssal_underlord', // 孽主
+            'npc_dota_hero_nevermore',     // 影魔
+            'npc_dota_hero_crystal_maiden', // 水晶室女
+            'npc_dota_hero_ogre_magi',    // 食人魔法师
+            
+            // 五费英雄 (Cost 5)
+            'npc_dota_hero_enigma',       // 谜团
+            'npc_dota_hero_dawnbreaker',  // 破晓晨星
+            'npc_dota_hero_zuus',         // 宙斯
             
             // 玩家默认英雄
-            'npc_dota_hero_gyrocopter',      // 矮人直升机（GameConfig中的默认英雄）
+            'npc_dota_hero_gyrocopter',    // 矮人直升机（GameConfig中的默认英雄）
         ],
         context
     );

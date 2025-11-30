@@ -1,0 +1,283 @@
+// 结算界面样式
+.result_screen_root {
+    width: 100%;
+    height: 100%;
+    visibility: collapse;
+    
+    &.visible {
+        visibility: visible;
+    }
+    
+    .screen_overlay {
+        width: 100%;
+        height: 100%;
+        background-color: #00000099;
+        
+        .result_container {
+            width: 90%;
+            max-width: 1400px;
+            height: 85%;
+            horizontal-align: center;
+            vertical-align: middle;
+            background-color: gradient(linear, 0% 0%, 0% 100%, from(#0a0a0aee), to(#1a1a2eee));
+            border: 3px solid #4a4a6a;
+            border-radius: 12px;
+            padding: 30px;
+            flow-children: down;
+            
+            .result_header {
+                width: 100%;
+                height: 120px;
+                margin-bottom: 20px;
+                
+                .victory_status {
+                    width: 100%;
+                    height: 80px;
+                    
+                    &.victory {
+                        .status_text {
+                            color: #00ff00;
+                            text-shadow: 0px 0px 20px #00ff00;
+                        }
+                    }
+                    
+                    &.defeat {
+                        .status_text {
+                            color: #ff0000;
+                            text-shadow: 0px 0px 20px #ff0000;
+                        }
+                    }
+                    
+                    .status_text {
+                        font-size: 64px;
+                        text-align: center;
+                        font-weight: bold;
+                        vertical-align: center;
+                        horizontal-align: center;
+                    }
+                }
+                
+                .game_duration {
+                    width: 100%;
+                    height: 30px;
+                    
+                    Label {
+                        font-size: 24px;
+                        color: #cccccc;
+                        text-align: center;
+                        horizontal-align: center;
+                    }
+                }
+            }
+            
+            .statistics_section {
+                width: 100%;
+                height: 50%;
+                margin-bottom: 20px;
+                flow-children: right;
+                
+                .player_stats_panel {
+                    width: 60%;
+                    height: 100%;
+                    background-color: #1e1e2ecc;
+                    border: 2px solid #4a4a6a;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin-right: 15px;
+                    flow-children: down;
+                    
+                    .panel_title {
+                        width: 100%;
+                        height: 40px;
+                        font-size: 28px;
+                        color: #ffd700;
+                        margin-bottom: 15px;
+                        border-bottom: 2px solid #4a4a6a;
+                    }
+                    
+                    .stats_table {
+                        width: 100%;
+                        height: fill-parent-flow(1.0);
+                        flow-children: down;
+                        
+                        .stats_row {
+                            width: 100%;
+                            height: 45px;
+                            margin-bottom: 8px;
+                            background-color: #2a2a3aaa;
+                            border-radius: 4px;
+                            padding: 8px 15px;
+                            flow-children: right;
+                            
+                            .player_name {
+                                width: 30%;
+                                font-size: 18px;
+                                color: #ffffff;
+                                vertical-align: center;
+                            }
+                            
+                            .stat_value {
+                                width: 15%;
+                                font-size: 16px;
+                                color: #cccccc;
+                                text-align: center;
+                                vertical-align: center;
+                            }
+                        }
+                    }
+                }
+                
+                .game_stats_panel {
+                    width: 38%;
+                    height: 100%;
+                    background-color: #1e1e2ecc;
+                    border: 2px solid #4a4a6a;
+                    border-radius: 8px;
+                    padding: 20px;
+                    flow-children: down;
+                    
+                    .panel_title {
+                        width: 100%;
+                        height: 40px;
+                        font-size: 28px;
+                        color: #ffd700;
+                        margin-bottom: 15px;
+                        border-bottom: 2px solid #4a4a6a;
+                    }
+                    
+                    .stat_item {
+                        width: 100%;
+                        height: 40px;
+                        margin-bottom: 10px;
+                        flow-children: right;
+                        
+                        .stat_label {
+                            width: 60%;
+                            font-size: 18px;
+                            color: #cccccc;
+                            vertical-align: center;
+                        }
+                        
+                        .stat_value {
+                            width: 40%;
+                            font-size: 20px;
+                            color: #ffffff;
+                            text-align: right;
+                            vertical-align: center;
+                            font-weight: bold;
+                        }
+                    }
+                }
+            }
+            
+            .rewards_section {
+                width: 100%;
+                height: 200px;
+                background-color: #1e1e2ecc;
+                border: 2px solid #4a4a6a;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 20px;
+                flow-children: down;
+                
+                .section_title {
+                    width: 100%;
+                    height: 40px;
+                    font-size: 28px;
+                    color: #ffd700;
+                    margin-bottom: 15px;
+                    border-bottom: 2px solid #4a4a6a;
+                }
+                
+                .rewards_list {
+                    width: 100%;
+                    height: fill-parent-flow(1.0);
+                    flow-children: right;
+                    
+                    .reward_item {
+                        width: 150px;
+                        height: 120px;
+                        background-color: #2a2a3aaa;
+                        border: 2px solid #4a4a6a;
+                        border-radius: 8px;
+                        margin-right: 15px;
+                        padding: 10px;
+                        flow-children: down;
+                        
+                        &:hover {
+                            border-color: #ffd700;
+                            box-shadow: 0px 0px 15px #ffd700;
+                        }
+                        
+                        .reward_icon {
+                            width: 70px;
+                            height: 70px;
+                            horizontal-align: center;
+                            background-color: #4a4a6a;
+                            border-radius: 8px;
+                            margin-bottom: 8px;
+                        }
+                        
+                        .reward_name {
+                            width: 100%;
+                            font-size: 16px;
+                            color: #ffffff;
+                            text-align: center;
+                        }
+                    }
+                }
+            }
+            
+            .action_buttons {
+                width: 100%;
+                height: 80px;
+                horizontal-align: center;
+                flow-children: right;
+                
+                .action_button {
+                    width: 200px;
+                    height: 60px;
+                    margin-right: 20px;
+                    background-color: #2a4a8a;
+                    border: 2px solid #4a6aaa;
+                    border-radius: 8px;
+                    
+                    Label {
+                        font-size: 24px;
+                        color: #ffffff;
+                        text-align: center;
+                        vertical-align: center;
+                        horizontal-align: center;
+                        font-weight: bold;
+                    }
+                    
+                    &:hover {
+                        background-color: #3a5aaa;
+                        box-shadow: 0px 0px 15px #4a6aaa;
+                    }
+                    
+                    &.primary {
+                        background-color: #00aa00;
+                        border-color: #00cc00;
+                        
+                        &:hover {
+                            background-color: #00cc00;
+                            box-shadow: 0px 0px 15px #00ff00;
+                        }
+                    }
+                    
+                    &.danger {
+                        background-color: #aa0000;
+                        border-color: #cc0000;
+                        
+                        &:hover {
+                            background-color: #cc0000;
+                            box-shadow: 0px 0px 15px #ff0000;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

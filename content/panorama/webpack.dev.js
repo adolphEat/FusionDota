@@ -7,15 +7,18 @@ module.exports = {
     context: path.resolve(__dirname, 'src'),
     
     entry: {
-        hud: './hud/index.tsx',
+        // 'loading-screen': './loading-screen/index.tsx',  // 源文件不存在，已注释
         'end-screen': './end_screen/index.tsx',
-        'loading-screen': './loading-screen/index.tsx',
-        'training-panel': './training-panel/index.tsx',
-        'autochess-panel': './autochess-panel/index.tsx'
+        'preparation-screen': './preparation-screen/index.tsx',
+        'playing-hud': './playing-hud/index.tsx',
+        'result-screen': './result-screen/index.tsx',
+        'battleEndView': './battleEndView/index.tsx',
     },
     
     output: {
-        path: path.resolve(__dirname, '../../game/scripts/vscripts/panorama'),
+        // 输出到 Dota 2 的 content 目录，这样才能被正确加载
+        //path: path.resolve(__dirname, '../../../../../../SteamApp/steamapps/common/dota 2 beta/content/dota_addons/fusion/panorama/scripts/custom_game'),
+        path: path.resolve('D:/SteamApp/steamapps/common/dota 2 beta/content/dota_addons/fusion/panorama/scripts/custom_game'),
         filename: '[name].js',
         clean: false,
     },
