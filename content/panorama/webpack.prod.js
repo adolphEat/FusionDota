@@ -11,7 +11,7 @@ module.exports = {
         'preparation-screen': './preparation-screen/index.tsx',
         'playing-hud': './playing-hud/index.tsx',
         'result-screen': './result-screen/index.tsx',
-        'battleEndView': './battleEndView/index.tsx',
+        'battleendview': './battleendview/index.tsx',
     },
     
     output: {

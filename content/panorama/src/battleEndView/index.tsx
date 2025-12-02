@@ -50,8 +50,6 @@ function findChild(parent: Panel, id: string): Panel | null {
 
 // 创建结算容器（像 playing-hud 一样动态创建）
 function createBattleEndContainer(): Panel | null {
-    $.Msg('📦 Creating battle end container...');
-    
     const rootPanel = $.GetContextPanel();
     if (!rootPanel) {
         $.Msg('❌ Error: Root panel not found');
@@ -129,9 +127,7 @@ function createBattleEndContainer(): Panel | null {
 // 获取结算容器
 function getBattleEndContainer(): Panel | null {
     const root = getRoot();
-    // 优先从 layout 查找（布局文件中已定义）
     let container = root.FindChildInLayoutFile('BattleEndContainer');
-    // 如果找不到，尝试直接查找（动态创建的）
     if (!container) {
         container = root.FindChild('BattleEndContainer');
     }
@@ -162,15 +158,15 @@ function updateTitleSection(titleSection: Panel, result: BattleResult): void {
     resultTitle.style.textShadow = '0px 0px 20px rgba(0, 0, 0, 0.8)';
     
     if (result.winner === 'player') {
-        resultTitle.text = '🎉 胜利！';
+        resultTitle.text = '胜利！';
         resultTitle.style.color = BATTLE_END_THEME.success;
         resultTitle.style.textShadow = `0px 0px 20px ${BATTLE_END_THEME.victoryGlow}`;
     } else if (result.winner === 'enemy') {
-        resultTitle.text = '💀 失败';
+        resultTitle.text = '失败';
         resultTitle.style.color = BATTLE_END_THEME.danger;
         resultTitle.style.textShadow = `0px 0px 20px ${BATTLE_END_THEME.defeatGlow}`;
     } else {
-        resultTitle.text = '🤝 平局';
+        resultTitle.text = '平局';
         resultTitle.style.color = BATTLE_END_THEME.warning;
     }
     
@@ -204,7 +200,6 @@ function updateTitleSection(titleSection: Panel, result: BattleResult): void {
     }
 }
 
-// 创建标题区域（保留用于兼容）
 function createTitleSection(parent: Panel, result: BattleResult): Panel {
     const titleSection = $.CreatePanel('Panel', parent, 'BattleEndTitle');
     titleSection.style.width = '100%';
@@ -223,15 +218,15 @@ function createTitleSection(parent: Panel, result: BattleResult): Panel {
     resultTitle.style.textShadow = '0px 0px 20px rgba(0, 0, 0, 0.8)';
     
     if (result.winner === 'player') {
-        resultTitle.text = '🎉 胜利！';
+        resultTitle.text = '胜利！';
         resultTitle.style.color = BATTLE_END_THEME.success;
         resultTitle.style.textShadow = `0px 0px 20px ${BATTLE_END_THEME.victoryGlow}`;
     } else if (result.winner === 'enemy') {
-        resultTitle.text = '💀 失败';
+        resultTitle.text = '失败';
         resultTitle.style.color = BATTLE_END_THEME.danger;
         resultTitle.style.textShadow = `0px 0px 20px ${BATTLE_END_THEME.defeatGlow}`;
     } else {
-        resultTitle.text = '🤝 平局';
+        resultTitle.text = '平局';
         resultTitle.style.color = BATTLE_END_THEME.warning;
     }
     
@@ -374,31 +369,32 @@ function updateButtonsSection(buttonsSection: Panel, result: BattleResult): void
     buttonsSection.RemoveAndDeleteChildren();
     
     if (result.winner === 'player') {
-        // 胜利时显示两个按钮
+        // 胜利时显示两个按钮，水平排列，居中对齐
         buttonsSection.style.flowChildren = 'right';
         buttonsSection.style.horizontalAlign = 'center';
+        buttonsSection.style.verticalAlign = 'center';
+        buttonsSection.style.width = '100%';
         
         // 选择关卡按钮
-        const selectLevelBtn = createStyledButton(
+        const selectBtn = createStyledButton(
             buttonsSection, 
             'SelectLevelButton', 
-            '🗺️ 选择关卡',
+            '选择关卡',
             () => {
-                $.Msg('🗺️ Opening level selection...');
+                $.Msg('Opening level selection...');
                 Game.EmitSound('ui.button_click');
                 hideView();
                 GameEvents.SendCustomGameEventToServer('open_level_selection', {});
             }
         );
-        selectLevelBtn.style.marginRight = '20px';
+        selectBtn.style.marginRight = '40px';  // 按钮之间的间距
         
         // 退出游戏按钮
         createStyledButton(
             buttonsSection, 
             'QuitGameButton', 
-            '🚪 退出游戏',
+            '退出游戏',
             () => {
-                $.Msg('🚪 Quitting game...');
                 Game.EmitSound('ui.button_click');
                 GameEvents.SendCustomGameEventToServer('quit_to_menu', {});
             }
@@ -411,9 +407,8 @@ function updateButtonsSection(buttonsSection: Panel, result: BattleResult): void
         const quitBtn = createStyledButton(
             buttonsSection, 
             'QuitGameButton', 
-            '🚪 退出游戏',
+            '退出游戏',
             () => {
-                $.Msg('🚪 Quitting game after defeat...');
                 Game.EmitSound('ui.button_click');
                 GameEvents.SendCustomGameEventToServer('quit_to_menu', {});
             }
@@ -429,32 +424,33 @@ function createButtonsSection(parent: Panel, result: BattleResult): Panel {
     buttonsSection.style.height = '100px';
     buttonsSection.style.flowChildren = 'right';
     buttonsSection.style.horizontalAlign = 'center';
+    buttonsSection.style.paddingLeft = '40px';
+    buttonsSection.style.paddingRight = '40px';
     
     if (result.winner === 'player') {
-        // 胜利时显示两个按钮
+        // 胜利时显示两个按钮，水平排列，居中对齐
         
         // 选择关卡按钮
-        const selectLevelBtn = createStyledButton(
+        const selectBtn = createStyledButton(
             buttonsSection, 
             'SelectLevelButton', 
-            '🗺️ 选择关卡',
+            '选择关卡',
             () => {
-                $.Msg('🗺️ Opening level selection...');
+                $.Msg('[BattleEndView] Opening level selection...');
                 Game.EmitSound('ui.button_click');
                 hideView();
-                // TODO: 打开关卡选择界面
                 GameEvents.SendCustomGameEventToServer('open_level_selection', {});
             }
         );
-        selectLevelBtn.style.marginRight = '20px';
+        selectBtn.style.marginRight = '40px';  // 按钮之间的间距
         
         // 退出游戏按钮
         createStyledButton(
             buttonsSection, 
             'QuitGameButton', 
-            '🚪 退出游戏',
+            '退出游戏',
             () => {
-                $.Msg('🚪 Quitting game...');
+                $.Msg('[BattleEndView] Quitting game...');
                 Game.EmitSound('ui.button_click');
                 GameEvents.SendCustomGameEventToServer('quit_to_menu', {});
             }
@@ -462,19 +458,19 @@ function createButtonsSection(parent: Panel, result: BattleResult): Panel {
         
     } else {
         // 失败时只显示退出按钮（居中）
-        buttonsSection.style.flowChildren = 'none';
+        buttonsSection.style.flowChildren = 'right';
+        buttonsSection.style.horizontalAlign = 'center';
         
-        const quitBtn = createStyledButton(
+        createStyledButton(
             buttonsSection, 
             'QuitGameButton', 
-            '🚪 退出游戏',
+            '退出游戏',
             () => {
-                $.Msg('🚪 Quitting game after defeat...');
+                $.Msg('[BattleEndView] Quitting game after defeat...');
                 Game.EmitSound('ui.button_click');
                 GameEvents.SendCustomGameEventToServer('quit_to_menu', {});
             }
         );
-        quitBtn.style.horizontalAlign = 'center';
     }
     
     return buttonsSection;
@@ -498,11 +494,11 @@ function createStyledButton(parent: Panel, id: string, text: string, onClick: ()
     label.style.color = '#ffffff';
     label.style.fontWeight = 'bold';
     label.style.textAlign = 'center';
-    label.style.verticalAlign = 'center';
-    label.style.horizontalAlign = 'center';
     label.style.width = '100%';
     label.style.height = '100%';
     label.style.textShadow = '2px 2px 4px #000000';
+    // 使用 Panorama 的 align 属性让文字居中
+    (label.style as any).align = 'center center';
     label.hittest = false;
     
     button.SetPanelEvent('onactivate', () => {
@@ -649,11 +645,6 @@ function showView(result: BattleResult): void {
     
     // 最终验证
     const finalParent = container.GetParent();
-    $.Msg(`[BattleEndView] ✅ Container visibility: ${container.style.visibility}`);
-    $.Msg(`[BattleEndView] ✅ Container zIndex: ${container.style.zIndex}`);
-    $.Msg(`[BattleEndView] ✅ Container parent: ${finalParent ? (finalParent.id || 'root') : 'null'}`);
-    $.Msg(`[BattleEndView] ✅ Container valid: ${container.IsValid()}`);
-    $.Msg(`[BattleEndView] ✅ Container style width: ${container.style.width}, height: ${container.style.height}`);
     if (finalParent) {
         $.Msg(`[BattleEndView] ✅ Parent size: ${finalParent.actuallayoutwidth}x${finalParent.actuallayoutheight}`);
     }
@@ -663,8 +654,6 @@ function showView(result: BattleResult): void {
     $.Schedule(0.1, () => {
         const actualWidth = container.actuallayoutwidth;
         const actualHeight = container.actuallayoutheight;
-        $.Msg(`[BattleEndView] ✅ Container actual size (after 0.1s): ${actualWidth}x${actualHeight}`);
-        
         // 如果尺寸仍然为 0，使用屏幕分辨率
         if (actualWidth === 0 || actualHeight === 0) {
             $.Msg('[BattleEndView] ⚠️ Container size is still 0, using screen resolution...');
@@ -689,8 +678,6 @@ function showView(result: BattleResult): void {
     } else if (result.winner === 'enemy') {
         Game.EmitSound('ui.defeat');
     }
-    
-    $.Msg('✅ Battle end view shown successfully');
 }
 
 // 隐藏结算界面
@@ -829,8 +816,3 @@ function showDummy(): void {
 
 // 启动
 initializeBattleEndView();
-
-// 添加调试信息
-$.Msg('[BattleEndView] ✅ BattleEndView module loaded and exported to globalThis');
-$.Msg('[BattleEndView] ✅ BattleEndView object:', (globalThis as any).BattleEndView);
-$.Msg('[BattleEndView] ✅ BattleEndView.show function:', typeof (globalThis as any).BattleEndView?.show);

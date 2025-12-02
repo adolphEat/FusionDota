@@ -785,10 +785,6 @@ function showNativeUI(): void {
 
 // 初始化
 function initializePlayingHUD(): void {
-    $.Msg('🎮 ========================================');
-    $.Msg('🎮 INITIALIZING PLAYING HUD...');
-    $.Msg('🎮 ========================================');
-    
     // 隐藏原生 UI
     hideNativeUI();
     
@@ -908,15 +904,5 @@ startGameStateMonitor();
             $.Msg('[PlayingHUD] ❌ BattleEndView not loaded yet!');
         }
     }
-};
-
-$.Msg('🎮 ========================================');
-$.Msg('🎮 PLAYING HUD MODULE LOADED COMPLETELY!');
-$.Msg('🎮 Test commands available:');
-$.Msg('🎮 - TestPlayingHUD.show()');
-$.Msg('🎮 - TestPlayingHUD.hide()');
-$.Msg('🎮 - TestPlayingHUD.forceShow()');
-$.Msg('🎮 - TestPlayingHUD.hideNative() - 隐藏原生UI');
-$.Msg('🎮 - TestPlayingHUD.showNative() - 显示原生UI');
-$.Msg('🎮 ========================================');
+}
 

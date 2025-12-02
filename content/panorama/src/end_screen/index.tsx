@@ -1,8 +1,3 @@
-// @ts-nocheck
-// 游戏结束界面 - FusionDota
-
-$.Msg('=== End Screen Panel Loading ===');
-
 // 创建结束界面UI
 function createEndScreenUI(): void {
     $.Msg('Creating end screen UI...');
@@ -10,7 +5,6 @@ function createEndScreenUI(): void {
     // 获取根面板
     const rootPanel = $.GetContextPanel();
     if (!rootPanel) {
-        $.Msg('Error: Root panel not found');
         return;
     }
     
@@ -19,16 +13,14 @@ function createEndScreenUI(): void {
     if (existingContainer) {
         existingContainer.DeleteAsync(0);
     }
-    
-    // 创建主容器
+
     const container = $.CreatePanel('Panel', rootPanel, 'EndScreenContainer');
     container.style.position = 'absolute';
     container.style.width = '100%';
     container.style.height = '100%';
     container.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
     container.style.zIndex = '1000';
-    
-    // 创建内容面板
+
     const contentPanel = $.CreatePanel('Panel', container, 'EndScreenContent');
     contentPanel.style.position = 'absolute';
     contentPanel.style.width = '800px';
@@ -70,7 +62,7 @@ function createEndScreenUI(): void {
     
     // 统计标题
     const statsTitle = $.CreatePanel('Label', statsContainer, 'StatsTitle');
-    statsTitle.text = '📊 游戏统计';
+    statsTitle.text = '游戏统计';
     statsTitle.style.color = '#ffd700';
     statsTitle.style.fontSize = '20px';
     statsTitle.style.fontWeight = 'bold';
@@ -127,13 +119,12 @@ function createEndScreenUI(): void {
     restartButton.style.margin = '5px';
     
     restartButton.SetPanelEvent('onactivate', () => {
-        $.Msg('重新开始按钮被点击');
         GameEvents.SendCustomGameEventToServer('restart_game', {});
     });
     
     // 返回主菜单按钮
     const menuButton = $.CreatePanel('Button', buttonContainer, 'MenuButton');
-    menuButton.text = '🏠 返回主菜单';
+    menuButton.text = '返回主菜单';
     menuButton.style.width = '180px';
     menuButton.style.height = '50px';
     menuButton.style.backgroundColor = '#6c757d';
@@ -145,7 +136,6 @@ function createEndScreenUI(): void {
     menuButton.style.margin = '5px';
     
     menuButton.SetPanelEvent('onactivate', () => {
-        $.Msg('返回主菜单按钮被点击');
         GameEvents.SendCustomGameEventToServer('return_to_menu', {});
     });
     
@@ -200,9 +190,6 @@ GameEvents.Subscribe('stats_updated', (data: any) => {
 
 // 初始化
 function initializeEndScreen(): void {
-    $.Msg('=== Initializing End Screen ===');
-    
-    // 延迟创建UI，确保面板准备就绪
     $.Schedule(0.5, createEndScreenUI);
     
     // 设置快捷键
@@ -228,5 +215,3 @@ const EndScreenPanel = () => {
 };
 
 export default EndScreenPanel;
-
-$.Msg('=== End Screen module loaded completely ===');
