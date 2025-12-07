@@ -75,4 +75,73 @@ declare interface CustomGameEventDeclarations {
     // 系统事件
     show_custom_panel: { panelType: string };
     hide_all_panels: {};
+    
+    // 选关界面事件
+    open_level_selection: {};  // 客户端到服务端：请求打开选关界面
+    open_stage_select: {};     // 服务端到客户端：打开选关界面
+    close_stage_select: {};    // 服务端到客户端：关闭选关界面
+    update_stage_data: {        // 服务端到客户端：更新关卡数据
+        currentStage: number;
+        maxStages: number;
+        nodes: any[];
+    };
+    stage_selected: {           // 客户端到服务端：选择关卡
+        stageId: string;
+        stageType: string;
+    };
+    stage_select_closed: {};    // 客户端到服务端：关闭选关界面
+    
+    // 自走棋波次结算事件
+    autochess_wave_settlement: {        // 服务端到客户端：显示波次结算界面
+        round: number;
+        winner: 'player' | 'enemy' | 'draw';  // 胜负结果
+        rewardGold: number;
+        availableStages: string[];
+        playerSummary: any;
+        stats?: {                          // 战斗统计（可选）
+            damageDealt?: number;
+            damageTaken?: number;
+            unitsKilled?: number;
+            unitsSurvived?: number;
+        };
+        levelName?: string;                // 关卡名称（可选）
+    };
+    autochess_wave_settlement_dismiss: {};  // 服务端到客户端：关闭波次结算界面
+    autochess_wave_reward_granted: {        // 服务端到客户端：奖励已发放
+        amount: number;
+        newTotal: number;
+    };
+    autochess_stages_available: {           // 服务端到客户端：发送可选关卡列表
+        stages: Array<{
+            id: string;
+            name: string;
+            type: string;
+            nodeLevel: number;
+            description: string;
+        }>;
+        round: number;
+    };
+    autochess_wave_stage_ack: {             // 服务端到客户端：关卡选择确认
+        playerId: number;
+        stageId: string;
+        success: boolean;
+        stageName?: string;
+        stageType?: string;
+        message?: string;
+    };
+    
+    // 准备阶段事件
+    autochess_preparation_started: {        // 服务端到客户端：准备阶段开始
+        timeLeft: number;
+        stageId: number;
+    };
+    autochess_preparation_countdown: {      // 服务端到客户端：准备阶段倒计时
+        timeLeft: number;
+        stageId: number;
+    };
+    autochess_battle_started: {             // 服务端到客户端：战斗开始
+        stageId: number;
+        round: number;
+        timeLeft: number;
+    };
 }

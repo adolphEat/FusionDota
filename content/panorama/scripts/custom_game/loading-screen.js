@@ -1,1 +1,0 @@
-$.Msg("Loading screen panel loaded");

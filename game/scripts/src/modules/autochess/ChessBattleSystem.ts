@@ -371,6 +371,7 @@ export class ChessBattleSystem {
 
     /**
      * 开始战斗（玩家 vs AI）
+     * 注意：AI 棋子已经通过 AutoChessMode.createEnemyPieces() 部署（playerId=-1）
      */
     public startBattleVsAI(playerId: PlayerID, aiLevel: number = 1): string {
         const battleId = `battle_${playerId}_vs_ai_${getTimestampMs()}`;
@@ -378,15 +379,25 @@ export class ChessBattleSystem {
         // 获取玩家棋子
         const playerPieces = this.playerDeployedPieces.get(playerId) || [];
 
-        // 生成AI棋子
-        const aiPieces = this.generateAIPieces(aiLevel);
+        // 获取已部署的 AI 棋子（playerId=-1）
+        // AI 棋子已经在 AutoChessMode.createEnemyPieces() 中通过 deployPiece(-1, ...) 部署
+        const aiPieces = this.playerDeployedPieces.get(-1) || [];
+        
+        print(`[ChessBattleSystem] Player ${playerId} pieces: ${playerPieces.length}, AI pieces: ${aiPieces.length}`);
+
+        // 如果没有 AI 棋子，说明 createEnemyPieces 没有被调用，使用降级方案
+        let finalAiPieces = aiPieces;
+        if (aiPieces.length === 0) {
+            print(`[ChessBattleSystem] WARNING: No AI pieces deployed, generating fallback AI pieces`);
+            finalAiPieces = this.generateAIPieces(aiLevel);
+        }
 
         // 创建战斗记录
         const battle: BattleMatch = {
             player1: playerId,
             player2: -1,  // AI没有玩家ID
             player1Pieces: playerPieces,
-            player2Pieces: aiPieces,
+            player2Pieces: finalAiPieces,
             completed: false
         };
 
@@ -395,7 +406,7 @@ export class ChessBattleSystem {
         // 开始战斗逻辑
         this.executeBattle(battleId);
 
-        print(`[ChessBattleSystem] Started battle vs AI: ${battleId}`);
+        print(`[ChessBattleSystem] Started battle vs AI: ${battleId} (player: ${playerPieces.length} pieces, AI: ${finalAiPieces.length} pieces)`);
         return battleId;
     }
 
@@ -537,10 +548,18 @@ export class ChessBattleSystem {
             player2: battle.player2
         });
 
-        // 通知 AutoChessMode 战斗已完成（让它处理结算逻辑）
+        // 直接调用 AutoChessMode 的战斗完成处理方法
+        // 注意：不能使用 RegisterListener，因为 Send_ServerToAllClients 是发给客户端的
         if (GameRules.AutoChessMode) {
-            print('[ChessBattleSystem] Notifying AutoChessMode of battle completion');
-            // AutoChessMode 会在 calculateBattleResults 中处理，这里不再自动重启
+            print('[ChessBattleSystem] Calling AutoChessMode.handleBattleCompleted directly');
+            (GameRules.AutoChessMode as any).handleBattleCompleted({
+                battleId: battleId,
+                winnerId: battle.winnerId,
+                player1: battle.player1,
+                player2: battle.player2
+            });
+        } else {
+            print('[ChessBattleSystem] WARNING: AutoChessMode not available!');
         }
     }
 
@@ -613,7 +632,11 @@ export class ChessBattleSystem {
      * 获取玩家队伍
      */
     private getPlayerTeam(playerId: PlayerID): DotaTeam {
-        // 玩家1-4 = GOODGUYS, 5-8 = BADGUYS
+        // AI敌人 (playerId=-1) = BADGUYS
+        // 玩家0-3 = GOODGUYS, 玩家4-7 = BADGUYS
+        if (playerId < 0) {
+            return DotaTeam.BADGUYS;  // AI敌人
+        }
         return playerId < 4 ? DotaTeam.GOODGUYS : DotaTeam.BADGUYS;
     }
 

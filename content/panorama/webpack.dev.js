@@ -13,6 +13,7 @@ module.exports = {
         'playing-hud': './playing-hud/index.tsx',
         'result-screen': './result-screen/index.tsx',
         'battleendview': './battleendview/index.tsx',
+        'stageselect': './stageselect/index.tsx',
     },
     
     output: {

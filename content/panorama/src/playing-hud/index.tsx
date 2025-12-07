@@ -539,7 +539,7 @@ function createBottomQuickBar(parent: Panel): void {
     const quickActions = [
         { id: 'inventory', name: '背包', icon: '🎒' },
         { id: 'skills', name: '技能', icon: '✨' },
-        { id: 'stats', name: '统计', icon: '📊' },
+        { id: 'stage_select', name: '选关', icon: '🗺️' },
         { id: 'test_kill', name: '测试结算', icon: '💀' },
     ];
     
@@ -566,8 +566,15 @@ function createBottomQuickBar(parent: Panel): void {
             $.Msg(`[PlayingHUD] ✅✅✅ CLICKED: ${action.name}`);
             Game.EmitSound('General.ButtonClick');
             
-            // 统一通过服务器事件处理，不直接调用 BattleEndView
-            // 服务器会发送 autochess_wave_settlement 事件，由 battleEndView 监听并显示
+            // 特殊处理：选关按钮 - 通过事件触发（不同UI组件有独立的JS上下文，无法共享globalThis）
+            if (action.id === 'stage_select') {
+                $.Msg('[PlayingHUD] Opening StageSelect via event...');
+                // 发送事件到服务端，服务端会广播给所有客户端
+                GameEvents.SendCustomGameEventToServer('open_level_selection', {});
+                return;
+            }
+            
+            // 其他按钮通过服务器事件处理
             GameEvents.SendCustomGameEventToServer('quick_action', { 
                 action: action.id 
             });

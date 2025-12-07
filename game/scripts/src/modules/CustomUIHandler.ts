@@ -54,6 +54,11 @@ export class CustomUIHandler {
         CustomGameEventManager.RegisterListener('quick_action', (_, data) => {
             this.onQuickAction(data);
         });
+
+        // 注册打开选关界面事件（从 playing-hud 或 battleendview 触发）
+        CustomGameEventManager.RegisterListener('open_level_selection', (_, data) => {
+            this.onOpenLevelSelection(data);
+        });
     }
 
     /**
@@ -114,6 +119,19 @@ export class CustomUIHandler {
         } catch (error) {
             print(`[CustomUIHandler] Error granting gold: ${error}`);
         }
+    }
+
+    /**
+     * 处理打开选关界面事件
+     * 从客户端收到请求后，广播给所有客户端打开选关界面
+     */
+    private onOpenLevelSelection(data: any): void {
+        const playerId = data.PlayerID;
+        print(`[CustomUIHandler] Open level selection requested by player ${playerId}`);
+        
+        // 广播给所有客户端打开选关界面
+        CustomGameEventManager.Send_ServerToAllClients('open_level_selection', {});
+        print('[CustomUIHandler] Broadcasted open_level_selection to all clients');
     }
 
     /**

@@ -165,30 +165,45 @@ export class AutoChessMode {
     }
 
     /**
-     * 开始游戏
+     * 开始游戏（单机模式）
+     * 单机模式流程：直接开始第一关 → 战斗 → 结算 → 选关界面 → 战斗 → 循环
      */
     public startGame(): void {
+        print(`[AutoChessMode] ========== startGame CALLED (单机模式) ==========`);
+        print(`[AutoChessMode] isActive: ${this.isActive}`);
+        
         if (!this.isActive) {
-            print('[AutoChessMode] Mode not active');
+            print('[AutoChessMode] Mode not active, cannot start game');
             return;
         }
 
         this.gameState.isGameActive = true;
-        this.gameState.currentRound = 1;
+        this.gameState.currentRound = 0;  // 从0开始，战斗开始时+1
         this.gameState.currentPhase = RoundPhase.PREPARATION;
+        
+        print(`[AutoChessMode] Game state initialized: round=${this.gameState.currentRound}`);
         
         // 初始化所有玩家状态
         this.initializePlayerStates();
+        print(`[AutoChessMode] Player states initialized, count: ${this.gameState.playerStates.size}`);
+
+        // 为玩家创建初始棋子（第一回合的3个固定棋子）
+        this.createPlayerInitialPieces();
         
-        // 开始第一回合
-        this.startPreparationPhase();
+        print('[AutoChessMode] ✅ 单机模式游戏已初始化');
         
-        print('[AutoChessMode] Game started');
-        
-        // 通知客户端
+        // 通知客户端游戏开始
         (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_game_started', {
             round: this.gameState.currentRound,
-            phase: this.gameState.currentPhase
+            phase: 'battle'
+        });
+
+        // 延迟一点直接开始第一关战斗（关卡1）
+        Timers.CreateTimer(1.0, () => {
+            print('[AutoChessMode] 📍 直接开始第一关战斗...');
+            const playerId = 0;  // 单机模式默认玩家0
+            this.startBattleWithStage(playerId, 1);  // 第一关
+            return undefined;
         });
     }
 
@@ -306,13 +321,8 @@ export class AutoChessMode {
       
                 this.battleSystem.clearPlayerPieces(playerId);
                 
-                // 为第一回合创建初始棋子
-                if (this.gameState.currentRound === 1) {
-                    this.createFirstRoundPieces(playerId);
-                } else {
-                    // 后续回合，棋子已经在备战席中
-                    this.deployPiecesFromBench(playerId);
-                }
+                // 单机模式：创建初始棋子（第一次游戏开始）
+                this.createFirstRoundPieces(playerId);
                 
                 print(`[AutoChessMode] 玩家 ${playerId} 初始棋子创建完成`);
             }
@@ -522,10 +532,11 @@ export class AutoChessMode {
                 const piece = this.chessPieceDatabase.get(pieceId);
                 
                 if (piece) {
-                    // 创建敌人棋子（在敌方棋盘上）
+                    // 创建敌人棋子（在敌方半场，随机位置）
+                    // 与之前 generateAIPieces 保持一致：x: 0-7, y: 4-7
                     const position = {
-                        x: 1 + i,
-                        y: 7 // 敌方棋盘位置（假设玩家在y=1，敌人在y=7）
+                        x: RandomInt(0, 7),
+                        y: RandomInt(4, 7)  // 敌方半场
                     };
                     
                     print(`[AutoChessMode] 创建敌人棋子: ${piece.displayName}(${pieceId}) 在位置 (${position.x}, ${position.y})`);
@@ -537,7 +548,7 @@ export class AutoChessMode {
                     if (heroConfig) {
                         const fallbackPiece = this.getRandomPieceByCost(heroConfig.cost);
                         if (fallbackPiece) {
-                            const position = { x: 1 + i, y: 7 };
+                            const position = { x: RandomInt(0, 7), y: RandomInt(4, 7) };
                             this.battleSystem.deployPiece(-1, fallbackPiece.id, position);
                         }
                     }
@@ -555,9 +566,10 @@ export class AutoChessMode {
                     const piece = this.chessPieceDatabase.get(pieceId);
                     
                     if (piece) {
+                        // Boss 放在敌方半场中央位置
                         const position = {
-                            x: 1 + monsterCount.normalCount + i,
-                            y: 7
+                            x: RandomInt(2, 5),  // 中间区域
+                            y: RandomInt(5, 7)   // 敌方半场靠后
                         };
                         
                         print(`[AutoChessMode] 创建特殊敌人: ${piece.displayName}(${pieceId}) [${monsterCount.specialType}] 在位置 (${position.x}, ${position.y})`);
@@ -574,12 +586,19 @@ export class AutoChessMode {
      * 阶段计时器
      */
     private startPhaseTimer(): void {
+        print(`[AutoChessMode] 🕐 Starting phase timer for ${this.gameState.currentPhase}, timeLeft: ${this.gameState.phaseTimeLeft}`);
+        
         if (this.phaseTimer) {
             Timers.RemoveTimer(this.phaseTimer);
         }
 
         this.phaseTimer = Timers.CreateTimer(1.0, () => {
             this.gameState.phaseTimeLeft--;
+            
+            // 每5秒输出一次日志（减少日志量）
+            if (this.gameState.phaseTimeLeft % 5 === 0) {
+                print(`[AutoChessMode] ⏱️ Phase: ${this.gameState.currentPhase}, Time left: ${this.gameState.phaseTimeLeft}s`);
+            }
             
             // 准备阶段刷新一次网格，避免Debug线消失
             if (this.gameState.currentPhase === RoundPhase.PREPARATION) {
@@ -594,6 +613,7 @@ export class AutoChessMode {
             
             // 检查是否需要切换阶段
             if (this.gameState.phaseTimeLeft <= 0) {
+                print(`[AutoChessMode] ⏱️ Phase time ended! Switching from ${this.gameState.currentPhase}...`);
                 this.onPhaseTimeEnd();
                 return null; // 停止计时器
             }
@@ -606,11 +626,15 @@ export class AutoChessMode {
      * 阶段时间结束处理
      */
     private onPhaseTimeEnd(): void {
+        print(`[AutoChessMode] 📍 onPhaseTimeEnd called, current phase: ${this.gameState.currentPhase}`);
+        
         switch (this.gameState.currentPhase) {
             case RoundPhase.PREPARATION:
+                print(`[AutoChessMode] 📍 Preparation phase ended, starting battle phase...`);
                 this.startBattlePhase();
                 break;
             case RoundPhase.BATTLE:
+                print(`[AutoChessMode] 📍 Battle phase ended, calling endBattlePhase...`);
                 this.endBattlePhase();
                 break;
         }
@@ -620,28 +644,33 @@ export class AutoChessMode {
      * 结束战斗阶段
      */
     private endBattlePhase(): void {
+        print(`[AutoChessMode] ========== endBattlePhase CALLED ==========`);
+        
         if (this.phaseTimer) {
             Timers.RemoveTimer(this.phaseTimer);
             this.phaseTimer = undefined;
+            print(`[AutoChessMode] Phase timer removed`);
         }
 
         // 停止所有战斗
+        print(`[AutoChessMode] Stopping all battles...`);
         this.stopAllBattles();
         
         // 计算战斗结果（如果还没有通过 onBattleCompleted 处理）
+        print(`[AutoChessMode] Calculating battle results...`);
         this.calculateBattleResults();
         
         // 检查游戏是否结束
         if (this.checkGameEnd()) {
+            print(`[AutoChessMode] Game end condition met, ending game...`);
             this.endGame();
             return;
         }
         
-        // 触发结算界面（延迟一点确保战场清理完成）
-        Timers.CreateTimer(0.5, () => {
+        print(`[AutoChessMode] Triggering wave settlement...`);
         this.triggerWaveSettlement();
-            return undefined;
-        });
+        
+        print(`[AutoChessMode] ========== endBattlePhase COMPLETE ==========`);
     }
 
     /**
@@ -1716,10 +1745,37 @@ export class AutoChessMode {
      * 检查游戏是否结束
      */
     private checkGameEnd(): boolean {
-        const aliveCount = Array.from(this.gameState.playerStates.values())
-            .filter(state => state.isAlive).length;
+        // 检查玩家棋子是否全部死亡
+        // 玩家没有生命值，只要有棋子活着就继续游戏
+        const activeBattles = this.battleSystem.getActiveBattles();
         
-        return aliveCount <= 1 || this.gameState.currentRound >= 50;
+        print(`[AutoChessMode] checkGameEnd: activeBattles=${activeBattles.length}, round=${this.gameState.currentRound}`);
+        
+        // 检查最近完成的战斗结果
+        for (const battle of activeBattles) {
+            if (battle.completed && battle.player1 >= 0) {
+                // 检查玩家棋子是否全部死亡
+                const playerPiecesAlive = battle.player1Pieces?.filter(p => 
+                    p.unit && !p.unit.IsNull() && p.unit.IsAlive()
+                ).length || 0;
+                
+                print(`[AutoChessMode] Player ${battle.player1} pieces alive: ${playerPiecesAlive}`);
+                
+                // 如果玩家棋子全部死亡，游戏结束
+                if (playerPiecesAlive === 0 && battle.winnerId !== battle.player1) {
+                    print(`[AutoChessMode] Player ${battle.player1} lost all pieces, game over`);
+                    return true;
+                }
+            }
+        }
+        
+        // 达到最大回合数也结束（胜利）
+        if (this.gameState.currentRound >= 50) {
+            print(`[AutoChessMode] Reached max rounds (50), game over (victory)`);
+            return true;
+        }
+        
+        return false; // 继续游戏
     }
 
     /**
@@ -1729,14 +1785,37 @@ export class AutoChessMode {
         this.gameState.isGameActive = false;
         
         // 确定获胜者
+        let gameWinner: 'player' | 'enemy' = 'enemy'; // 默认玩家输了
         for (const [playerId, playerState] of this.gameState.playerStates) {
-            if (playerState.isAlive) {
+            if (playerState.isAlive && playerState.health > 0) {
                 this.gameState.winnerPlayerId = playerId;
+                gameWinner = 'player';
                 break;
             }
         }
         
-        print(`[AutoChessMode] Game ended. Winner: Player ${this.gameState.winnerPlayerId}`);
+        print(`[AutoChessMode] Game ended. Winner: ${gameWinner}, Round: ${this.gameState.currentRound}`);
+        
+        // 为每个玩家发送游戏结束结算界面
+        for (const [playerId, playerState] of this.gameState.playerStates) {
+            const settlementData = {
+                round: this.gameState.currentRound,
+                winner: playerState.isAlive && playerState.health > 0 ? 'player' : 'enemy',
+                rewardGold: 0,
+                availableStages: [],
+                playerSummary: this.buildPlayerSummary(),
+                stats: {},
+                levelName: undefined,
+                isGameOver: true  // 标记这是游戏结束
+            };
+            
+            print(`[AutoChessMode] 📤 Sending game over settlement to player ${playerId}`);
+            const player = PlayerResource.GetPlayer(playerId);
+            if (player) {
+                (CustomGameEventManager.Send_ServerToPlayer as any)(player, 'autochess_wave_settlement', settlementData);
+                print(`[AutoChessMode] ✅ Game over settlement sent to player ${playerId}`);
+            }
+        }
         
         // 通知客户端游戏结束
         (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_game_ended', {
@@ -1770,33 +1849,64 @@ export class AutoChessMode {
      * 注册事件监听
      */
     private registerEvents(): void {
-        print('[AutoChessMode] Registering battle_completed event listener...');
+        print('[AutoChessMode] Registering events...');
         
-        // 监听战斗完成事件
+        // 注意：battle_completed 事件现在通过 ChessBattleSystem 直接调用 handleBattleCompleted
+        // RegisterListener 只能监听客户端发送的事件，不能监听 Send_ServerToAllClients
+        // 这里保留监听以备客户端需要发送此事件
         CustomGameEventManager.RegisterListener('battle_completed', (userId, data) => {
-            print(`[AutoChessMode] ===== battle_completed event triggered! userId: ${userId} =====`);
-            this.onBattleCompleted(data);
+            print(`[AutoChessMode] battle_completed from client! userId: ${userId}`);
+            this.handleBattleCompleted(data);
         });
         
-        print('[AutoChessMode] Event listener registered successfully');
+        print('[AutoChessMode] Events registered successfully');
     }
     
     /**
-     * 战斗完成事件处理
+     * 战斗完成事件处理（公开方法，供 ChessBattleSystem 直接调用）
+     * 玩家没有生命值，胜负完全基于棋子存活情况
      */
-    private onBattleCompleted(data: any): void {
+    public handleBattleCompleted(data: any): void {
         const battleId = data.battleId || `battle_${data.player1}_${Date.now()}`;
         const player1 = data.player1;
         const player2 = data.player2 || -1; // AI对战时 player2 是 -1
+        const winnerId = data.winnerId;
         
-        // 使用 player1 和 player2 的组合作为唯一标识（与 calculateBattleResults 保持一致）
+        // 使用 player1 和 player2 的组合作为唯一标识
         const battleKey = `${player1}_vs_${player2}`;
         
-        print(`[AutoChessMode] Battle completed event received: ${battleId} (key: ${battleKey})`);
+        // 判断胜负：玩家赢 = winnerId 等于玩家ID
+        const playerWon = winnerId === player1;
+        const winner: 'player' | 'enemy' = playerWon ? 'player' : 'enemy';
         
-        // 如果当前不在战斗阶段或游戏未激活，忽略
-        if (!this.isActive || this.gameState.currentPhase !== RoundPhase.BATTLE) {
-            print(`[AutoChessMode] Ignoring battle_completed: not in battle phase or not active`);
+        print(`[AutoChessMode] ========== handleBattleCompleted CALLED ==========`);
+        print(`[AutoChessMode] battleId: ${battleId}, battleKey: ${battleKey}`);
+        print(`[AutoChessMode] player1: ${player1}, player2: ${player2}, winnerId: ${winnerId}`);
+        print(`[AutoChessMode] playerWon: ${playerWon}, winner: ${winner}`);
+        print(`[AutoChessMode] isActive: ${this.isActive}, currentPhase: ${this.gameState.currentPhase}`);
+        
+        // 如果当前不在战斗阶段，直接触发结算（适用于 normal 模式）
+        if (this.gameState.currentPhase !== RoundPhase.BATTLE) {
+            print(`[AutoChessMode] Not in battle phase, triggering settlement directly`);
+            
+            // 构建结算数据
+            const settlementData = {
+                round: this.gameState.currentRound || 1,
+                winner: winner,
+                rewardGold: 0,
+                availableStages: [],
+                playerSummary: {},
+                stats: {},
+                levelName: undefined,
+                isGameOver: !playerWon  // 玩家输了就是游戏结束
+            };
+            
+            print(`[AutoChessMode] 📤 Sending settlement to player ${player1} (winner: ${winner}, gameOver: ${!playerWon})`);
+            const player = PlayerResource.GetPlayer(player1);
+            if (player) {
+                (CustomGameEventManager.Send_ServerToPlayer as any)(player, 'autochess_wave_settlement', settlementData);
+                print(`[AutoChessMode] ✅ Settlement event sent to player ${player1}`);
+            }
             return;
         }
         
@@ -1809,28 +1919,21 @@ export class AutoChessMode {
         // 标记为已处理
         this.battleResultsProcessed.add(battleKey);
         
-        // 记录战斗结果
+        // 记录战斗结果（不再扣血，只记录连胜/连败）
         const playerId = player1;
-        const winnerId = data.winnerId;
         const playerState = this.gameState.playerStates.get(playerId);
         
         if (playerState) {
-            if (winnerId === playerId) {
+            if (playerWon) {
                 playerState.winStreak++;
                 playerState.lossStreak = 0;
-                print(`[AutoChessMode] Player ${playerId} won the battle!`);
+                print(`[AutoChessMode] Player ${playerId} won the battle! (winStreak: ${playerState.winStreak})`);
             } else {
-                const damage = Math.min(10, this.gameState.currentRound);
-                playerState.health -= damage;
                 playerState.lossStreak++;
                 playerState.winStreak = 0;
-                print(`[AutoChessMode] Player ${playerId} lost (${damage} damage, health: ${playerState.health})`);
-                
-                if (playerState.health <= 0) {
-                    playerState.isAlive = false;
-                    playerState.health = 0;
-                    print(`[AutoChessMode] Player ${playerId} eliminated!`);
-                }
+                // 玩家输了（棋子全死），标记为游戏结束
+                playerState.isAlive = false;
+                print(`[AutoChessMode] Player ${playerId} lost all pieces! Game over for this player.`);
             }
         }
         
@@ -1841,9 +1944,11 @@ export class AutoChessMode {
             print(`[AutoChessMode] All battles completed, ending battle phase`);
             // 立即结束战斗阶段（会触发结算）
             this.endBattlePhase();
-            } else {
+        } else {
             print(`[AutoChessMode] Waiting for other battles to complete...`);
         }
+        
+        print(`[AutoChessMode] ========== handleBattleCompleted COMPLETE ==========`);
     }
     
     /**
@@ -1882,7 +1987,7 @@ export class AutoChessMode {
      * 初始化自走棋模式 - 监听游戏状态事件
      */
     private initializeAutoChessMode(): void {
-        print("[AutoChessMode] ========== 监听游戏状态事件 ==========");
+        print("[AutoChessMode] ========== 初始化自走棋模式 ==========");
         
         // 监听游戏状态变化
         ListenToGameEvent('game_rules_state_change', () => {
@@ -1890,6 +1995,22 @@ export class AutoChessMode {
         }, this);
         
         print("[AutoChessMode] ✅ 游戏状态事件监听已注册");
+        
+        // 立即检查当前状态（可能已经在游戏中）
+        const currentState = GameRules.State_Get();
+        print(`[AutoChessMode] 当前游戏状态: ${currentState}`);
+        
+        // 如果已经在游戏中（state >= 5），立即尝试激活
+        if (currentState >= 5) {
+            print(`[AutoChessMode] 游戏已在进行中，立即尝试激活...`);
+            Timers.CreateTimer(1.0, () => {
+                if (!this.isActive) {
+                    print(`[AutoChessMode] 延迟激活自走棋模式...`);
+                    this.onPreGame();
+                }
+                return undefined;
+            });
+        }
     }
     
     /**
@@ -1943,10 +2064,16 @@ export class AutoChessMode {
      */
     private onPreGame(): void {
         const gameModeManager = GameModeManager.getInstance();
+        const currentMode = gameModeManager.getCurrentMode();
         
+        print(`[AutoChessMode] onPreGame called, current mode: ${currentMode}`);
+        print(`[AutoChessMode] isAutoChessMode: ${gameModeManager.isAutoChessMode()}`);
+        
+        // 无论什么模式都激活自走棋（因为战斗系统需要它）
+        // 原先的检查导致 normal 模式下无法显示结算界面
         if (!gameModeManager.isAutoChessMode()) {
-            print('[AutoChessMode] ⚠️ 不是自走棋模式，跳过激活');
-            return;
+            print('[AutoChessMode] ⚠️ 不是自走棋模式，但仍然激活以支持战斗系统');
+            // 不再 return，继续激活
         }
         
         print('[AutoChessMode] ✅ 激活自走棋模式...');
@@ -2097,18 +2224,51 @@ export class AutoChessMode {
         this.currentWaveSettlementShown = true;
         this.currentWaveSettlementPending = true;
 
-        // 构造结算数据
-        const settlementData = {
-            round: this.gameState.currentRound,
-            rewardGold: this.currentWaveRewardAmount,
-            availableStages: ['stage_1', 'stage_2', 'stage_3'], // 占位数据
-            playerSummary: this.buildPlayerSummary()
-        };
+        print('[AutoChessMode] ========== Triggering wave settlement ==========');
+        print(`[AutoChessMode] Current round: ${this.gameState.currentRound}`);
 
-        print(`[AutoChessMode] Triggering wave settlement for round ${this.gameState.currentRound}`);
+        // 为所有玩家发送结算事件（不管胜负，都要显示界面）
+        for (const [playerId, playerState] of this.gameState.playerStates) {
+            // 判断胜负：isAlive 为 true 表示玩家赢了（还有棋子活着）
+            // isAlive 为 false 表示玩家输了（棋子全死了）
+            const playerWon = playerState.isAlive;
+            const winner: 'player' | 'enemy' = playerWon ? 'player' : 'enemy';
+            const isGameOver = !playerWon;  // 玩家输了就是游戏结束
+            
+            print(`[AutoChessMode] Player ${playerId}: isAlive=${playerState.isAlive}, winner=${winner}, isGameOver=${isGameOver}`);
 
-        // 发送结算事件到客户端
-        (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_wave_settlement', settlementData);
+            const settlementData = {
+                round: this.gameState.currentRound,
+                winner: winner,
+                rewardGold: playerWon ? this.currentWaveRewardAmount : 0,
+                availableStages: playerWon ? ['stage_1', 'stage_2', 'stage_3'] : [],
+                playerSummary: this.buildPlayerSummary(),
+                stats: {},
+                levelName: undefined as string | undefined,
+                isGameOver: isGameOver  // 玩家输了就是游戏结束
+            };
+
+            // 如果有选择的关卡，添加关卡名称
+            if (this.currentWaveStageSelection) {
+                const stageId = parseInt(this.currentWaveStageSelection);
+                settlementData.levelName = `关卡${stageId}`;
+            }
+
+            print(`[AutoChessMode] 📤 Sending wave settlement to player ${playerId} (winner: ${winner}, gameOver: ${isGameOver})`);
+            const player = PlayerResource.GetPlayer(playerId);
+            if (player) {
+                (CustomGameEventManager.Send_ServerToPlayer as any)(player, 'autochess_wave_settlement', settlementData);
+                print(`[AutoChessMode] ✅ Event sent successfully to player ${playerId}`);
+            } else {
+                print(`[AutoChessMode] ❌ Player ${playerId} not found!`);
+            }
+        }
+
+        // 同时发送可选关卡列表（用于选关界面）
+        // 在结算时总是发送，让玩家可以在结算界面选择下一关
+        this.sendAvailableStages();
+
+        print('[AutoChessMode] ========== Wave settlement triggered ==========');
     }
 
     /**
@@ -2233,6 +2393,7 @@ export class AutoChessMode {
 
     /**
      * 处理选择关卡按钮
+     * 点击选关后：5秒准备阶段 -> 生成怪物 -> 开始战斗
      */
     public handleWaveStageSelection(playerId: PlayerID, stageId: string): void {
         // 验证关卡ID是否有效
@@ -2254,12 +2415,13 @@ export class AutoChessMode {
             return;
         }
         
+        print(`[AutoChessMode] ========== 玩家选择关卡 ==========`);
         print(`[AutoChessMode] Player ${playerId} selected stage: ${stageId} (${stageConfig.primaryNodeType})`);
 
-        // 记录选择（用于下一波战斗）
+        // 记录选择
         this.currentWaveStageSelection = stageId;
 
-        // 通知客户端确认
+        // 通知客户端确认，进入准备阶段
         (CustomGameEventManager.Send_ServerToAllClients as any)(
             'autochess_wave_stage_ack',
             {
@@ -2268,10 +2430,104 @@ export class AutoChessMode {
                 success: true,
                 stageName: `关卡${stageId}`,
                 stageType: stageConfig.primaryNodeType,
-                message: `已选择关卡${stageId}，将在战斗阶段生成怪物`
+                message: `已选择关卡${stageId}，准备开始...`
             }
         );
+
+        // 开始5秒准备阶段
+        print(`[AutoChessMode] 开始5秒准备阶段...`);
+        this.startPreparationCountdown(playerId, stageIdNum);
+    }
+
+    /**
+     * 开始准备阶段倒计时（5秒）
+     */
+    private startPreparationCountdown(playerId: PlayerID, stageId: number): void {
+        const PREP_TIME = 5;
+        let timeLeft = PREP_TIME;
+
+        // 通知客户端准备阶段开始
+        (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_preparation_started', {
+            timeLeft: timeLeft,
+            stageId: stageId
+        });
+
+        // 创建倒计时计时器
+        const countdownTimer = Timers.CreateTimer(1.0, () => {
+            timeLeft--;
+            
+            print(`[AutoChessMode] 准备阶段倒计时: ${timeLeft}秒`);
+            
+            // 同步倒计时到客户端
+            (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_preparation_countdown', {
+                timeLeft: timeLeft,
+                stageId: stageId
+            });
+
+            if (timeLeft <= 0) {
+                // 准备阶段结束，开始战斗
+                print(`[AutoChessMode] 准备阶段结束，开始生成怪物并战斗`);
+                this.startBattleWithStage(playerId, stageId);
+                return undefined; // 停止计时器
+            }
+
+            return 1.0; // 继续倒计时
+        });
+    }
+
+    /**
+     * 使用选定的关卡开始战斗（单机模式）
+     */
+    private startBattleWithStage(playerId: PlayerID, stageId: number): void {
+        print(`[AutoChessMode] ========== 单机模式 - 开始战斗 ==========`);
+        print(`[AutoChessMode] 使用关卡: ${stageId}`);
+
+        // 设置游戏状态
+        this.gameState.currentPhase = RoundPhase.BATTLE;
+        this.gameState.phaseTimeLeft = 45;
+        this.gameState.currentRound++;
         
-        print(`[AutoChessMode] 关卡选择已记录，将在战斗阶段使用关卡${stageId}生成怪物`);
+        print(`[AutoChessMode] 当前回合: ${this.gameState.currentRound}`);
+
+        // 清理之前的AI棋子（保留玩家棋子）
+        this.battleSystem.clearPlayerPieces(-1);
+        
+        // 重置玩家存活状态
+        for (const [pid, playerState] of this.gameState.playerStates) {
+            playerState.isAlive = true;
+        }
+
+        // 激活玩家棋子进入战斗模式（不重新创建，使用已有棋子）
+        for (const [pid, playerState] of this.gameState.playerStates) {
+            if (playerState.isAlive) {
+                this.battleSystem.setPlayerAsProtected(pid);
+                // 激活已部署的棋子
+                this.battleSystem.activatePlayerPieces(pid);
+                print(`[AutoChessMode] 玩家 ${pid} 棋子已激活`);
+            }
+        }
+
+        // 根据关卡配置生成敌人
+        print(`[AutoChessMode] 根据关卡 ${stageId} 配置生成敌人...`);
+        for (const [pid, playerState] of this.gameState.playerStates) {
+            if (playerState.isAlive) {
+                this.createEnemyForPlayer(pid, stageId);
+            }
+        }
+
+        // 开始战斗
+        this.startAllBattles();
+
+        // 启动战斗计时器
+        this.startPhaseTimer();
+
+        // 通知客户端战斗开始
+        (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_battle_started', {
+            stageId: stageId,
+            round: this.gameState.currentRound,
+            timeLeft: this.gameState.phaseTimeLeft
+        });
+
+        print(`[AutoChessMode] ========== 战斗已开始 ==========`);
     }
 }
