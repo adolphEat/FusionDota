@@ -526,7 +526,13 @@ export class ChessBattleSystem {
             return;
         }
 
-        // 记录双方幸存棋子的当前血量，供下一场作为初始血量
+        // 单机模式：先恢复胜利方棋子的血量（20%），然后再记录
+        if (battle.winnerId !== undefined) {
+            this.restorePlayerPiecesHealth(battle.winnerId, 0.2);
+            print(`[ChessBattleSystem] 胜利方 ${battle.winnerId} 的棋子血量已恢复 20%`);
+        }
+
+        // 记录双方幸存棋子的当前血量（恢复后的血量），供下一场作为初始血量
         this.recordSurvivorHealth(battle);
 
         print(`[ChessBattleSystem] Battle ${battleId} completed. Winner: ${battle.winnerId}`);
@@ -811,6 +817,47 @@ export class ChessBattleSystem {
             pts.push(Vector(x, y, center.z));
         }
         return pts;
+    }
+
+    /**
+     * 恢复玩家棋子的血量
+     * @param playerId 玩家ID
+     * @param percentage 恢复百分比 (0.0 - 1.0)，例如 0.2 表示恢复20%
+     */
+    public restorePlayerPiecesHealth(playerId: PlayerID, percentage: number): void {
+        const pieces = this.playerDeployedPieces.get(playerId);
+        if (!pieces) {
+            print(`[ChessBattleSystem] No pieces found for player ${playerId}`);
+            return;
+        }
+
+        let restoredCount = 0;
+        for (const piece of pieces) {
+            if (piece.unit && !piece.unit.IsNull() && piece.unit.IsAlive()) {
+                const currentHealth = piece.unit.GetHealth();
+                const maxHealth = piece.unit.GetMaxHealth();
+                const restoreAmount = maxHealth * percentage;
+                const newHealth = Math.min(currentHealth + restoreAmount, maxHealth);
+                
+                piece.unit.SetHealth(newHealth);
+                restoredCount++;
+                print(`[ChessBattleSystem] 💚 ${piece.pieceId}: ${currentHealth.toFixed(0)} + ${restoreAmount.toFixed(0)} = ${newHealth.toFixed(0)} / ${maxHealth}`);
+            }
+        }
+        
+        print(`[ChessBattleSystem] ✅ 恢复了 ${restoredCount} 个棋子的血量 (+${(percentage * 100).toFixed(0)}%)`);
+        
+        // 更新保存的幸存者血量（使用当前恢复后的血量）
+        const survivors: Array<{ pieceId: string; health: number }> = [];
+        for (const p of pieces) {
+            if (p.unit && !p.unit.IsNull() && p.unit.IsAlive()) {
+                survivors.push({ pieceId: p.pieceId, health: p.unit.GetHealth() });
+            }
+        }
+        if (survivors.length > 0) {
+            this.playerSurvivorHealth.set(playerId, survivors);
+            print(`[ChessBattleSystem] 📝 已更新 ${survivors.length} 个幸存棋子的血量记录`);
+        }
     }
 
     /** 记录幸存棋子的血量 */

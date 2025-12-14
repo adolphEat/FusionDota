@@ -93,6 +93,10 @@ export class AutoChessMode {
     private currentWaveRewardClaimed: Set<PlayerID> = new Set();
     private currentWaveStageSelection?: string;
     private battleResultsProcessed: Set<string> = new Set(); // 已处理的战斗ID
+    
+    // 关卡解锁系统
+    private completedStages: Set<string> = new Set(); // 已完成的关卡ID
+    private availableStages: Set<string> = new Set(); // 可用的关卡ID（初始为第一层）
 
     private constructor() {
         // 初始化关卡配置和英雄费用配置
@@ -101,7 +105,28 @@ export class AutoChessMode {
         this.chessPieceDatabase = this.initializeChessDatabase();
         this.gameState = this.initializeGameState();
         this.battleSystem = ChessBattleSystem.getInstance();
+        
+        // 初始化关卡解锁系统：第一层关卡（n2, n3）初始可用
+        this.initializeStageUnlock();
+        
         this.initializeAutoChessMode();
+    }
+
+    /**
+     * 初始化关卡解锁系统
+     * 第一层关卡（n2, n3）初始可用，起始点（n1）已完成
+     */
+    private initializeStageUnlock(): void {
+        // 起始点已完成
+        this.completedStages.add('n1');
+        
+        // 第一层关卡初始可用（从起始点连接的关卡）
+        this.availableStages.add('n2'); // 森林小径
+        this.availableStages.add('n3'); // 危险矿洞
+        
+        print(`[AutoChessMode] 关卡解锁系统初始化完成`);
+        print(`[AutoChessMode] 已完成关卡: n1`);
+        print(`[AutoChessMode] 可用关卡: n2, n3`);
     }
 
     public static getInstance(): AutoChessMode {
@@ -186,11 +211,14 @@ export class AutoChessMode {
         // 初始化所有玩家状态
         this.initializePlayerStates();
         print(`[AutoChessMode] Player states initialized, count: ${this.gameState.playerStates.size}`);
-
+        
         // 为玩家创建初始棋子（第一回合的3个固定棋子）
         this.createPlayerInitialPieces();
         
         print('[AutoChessMode] ✅ 单机模式游戏已初始化');
+        
+        // 发送初始关卡解锁状态到客户端
+        this.sendStageUnlockUpdate();
         
         // 通知客户端游戏开始
         (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_game_started', {
@@ -322,7 +350,7 @@ export class AutoChessMode {
                 this.battleSystem.clearPlayerPieces(playerId);
                 
                 // 单机模式：创建初始棋子（第一次游戏开始）
-                this.createFirstRoundPieces(playerId);
+                    this.createFirstRoundPieces(playerId);
                 
                 print(`[AutoChessMode] 玩家 ${playerId} 初始棋子创建完成`);
             }
@@ -455,6 +483,52 @@ export class AutoChessMode {
             print(`[AutoChessMode] 部署备战席棋子: ${piece.id} 到位置 (${position.x}, ${position.y})`);
             this.battleSystem.deployPiece(playerId, piece.id, position);
         }
+    }
+
+    /**
+     * 重新创建玩家棋子（新关卡开始时调用）
+     * 从备战席和棋盘位置恢复棋子
+     */
+    private recreatePlayerPieces(playerId: PlayerID): void {
+        const playerState = this.gameState.playerStates.get(playerId);
+        if (!playerState) {
+            print(`[AutoChessMode] 警告: 玩家 ${playerId} 状态不存在`);
+            return;
+        }
+
+        print(`[AutoChessMode] ========== 重新创建玩家 ${playerId} 的棋子 ==========`);
+        
+        // 先清理该玩家的所有棋子（确保干净状态）
+        this.battleSystem.clearPlayerPieces(playerId);
+        
+        // 优先从棋盘位置恢复棋子（如果有保存的位置信息）
+        const boardPieces = playerState.boardPieces || [];
+        if (boardPieces.length > 0) {
+            print(`[AutoChessMode] 从棋盘位置恢复 ${boardPieces.length} 个棋子`);
+            for (let i = 0; i < boardPieces.length; i++) {
+                const piece = boardPieces[i];
+                const position = {
+                    x: 1 + (i % 7),
+                    y: 1 + Math.floor(i / 7)
+                };
+                
+                print(`[AutoChessMode] 恢复棋盘棋子: ${piece.displayName}(${piece.id}) 到位置 (${position.x}, ${position.y})`);
+                this.battleSystem.deployPiece(playerId, piece.id, position);
+            }
+        } else {
+            // 如果没有棋盘棋子，从备战席恢复
+            const benchPieces = playerState.benchPieces || [];
+            if (benchPieces.length > 0) {
+                print(`[AutoChessMode] 从备战席恢复 ${benchPieces.length} 个棋子`);
+                this.deployPiecesFromBench(playerId);
+            } else {
+                // 如果都没有，创建默认初始棋子（降级方案）
+                print(`[AutoChessMode] 警告: 玩家 ${playerId} 没有棋子，创建默认棋子`);
+                this.createDefaultInitialPieces(playerId);
+            }
+        }
+        
+        print(`[AutoChessMode] ========== 玩家 ${playerId} 棋子重新创建完成 ==========`);
     }
 
     /**
@@ -1928,11 +2002,22 @@ export class AutoChessMode {
                 playerState.winStreak++;
                 playerState.lossStreak = 0;
                 print(`[AutoChessMode] Player ${playerId} won the battle! (winStreak: ${playerState.winStreak})`);
+                
+                // 注意：棋子血量恢复已在 ChessBattleSystem.onBattleComplete 中完成
+                
+                // 战斗胜利后，解锁下一层关卡
+                print(`[AutoChessMode] 🔍 检查关卡解锁: currentWaveStageSelection = ${this.currentWaveStageSelection}`);
+                if (this.currentWaveStageSelection) {
+                    print(`[AutoChessMode] ✅ 将解锁关卡: ${this.currentWaveStageSelection}`);
+                    this.unlockNextStages(this.currentWaveStageSelection);
+                } else {
+                    print(`[AutoChessMode] ⚠️ currentWaveStageSelection 为空，无法解锁下一层关卡`);
+                }
             } else {
                 playerState.lossStreak++;
                 playerState.winStreak = 0;
                 // 玩家输了（棋子全死），标记为游戏结束
-                playerState.isAlive = false;
+                    playerState.isAlive = false;
                 print(`[AutoChessMode] Player ${playerId} lost all pieces! Game over for this player.`);
             }
         }
@@ -1944,7 +2029,7 @@ export class AutoChessMode {
             print(`[AutoChessMode] All battles completed, ending battle phase`);
             // 立即结束战斗阶段（会触发结算）
             this.endBattlePhase();
-        } else {
+            } else {
             print(`[AutoChessMode] Waiting for other battles to complete...`);
         }
         
@@ -2237,8 +2322,8 @@ export class AutoChessMode {
             
             print(`[AutoChessMode] Player ${playerId}: isAlive=${playerState.isAlive}, winner=${winner}, isGameOver=${isGameOver}`);
 
-            const settlementData = {
-                round: this.gameState.currentRound,
+        const settlementData = {
+            round: this.gameState.currentRound,
                 winner: winner,
                 rewardGold: playerWon ? this.currentWaveRewardAmount : 0,
                 availableStages: playerWon ? ['stage_1', 'stage_2', 'stage_3'] : [],
@@ -2267,6 +2352,9 @@ export class AutoChessMode {
         // 同时发送可选关卡列表（用于选关界面）
         // 在结算时总是发送，让玩家可以在结算界面选择下一关
         this.sendAvailableStages();
+        
+        // 单机模式：立即发送关卡解锁状态更新（确保客户端显示正确的解锁状态）
+        this.sendStageUnlockUpdate();
 
         print('[AutoChessMode] ========== Wave settlement triggered ==========');
     }
@@ -2373,6 +2461,168 @@ export class AutoChessMode {
     }
 
     /**
+     * 解锁下一层关卡
+     * 根据节点连接关系，将已完成关卡的连接关卡标记为可用
+     */
+    private unlockNextStages(completedStageId: string): void {
+        print(`[AutoChessMode] 🔓 ========== 开始解锁关卡流程 ==========`);
+        print(`[AutoChessMode] 🔓 输入的关卡ID: ${completedStageId}`);
+        
+        // 将节点ID转换为关卡节点ID（例如 "2" -> "n2"）
+        const nodeId = this.stageIdToNodeId(completedStageId);
+        
+        if (!nodeId) {
+            print(`[AutoChessMode] ❌ 警告: 无法将关卡ID ${completedStageId} 转换为节点ID`);
+            return;
+        }
+        
+        print(`[AutoChessMode] 🔓 转换后的节点ID: ${nodeId}`);
+        print(`[AutoChessMode] 🔓 解锁前状态:`);
+        print(`[AutoChessMode] 🔓   - 已完成: ${this.getSetAsString(this.completedStages)}`);
+        print(`[AutoChessMode] 🔓   - 可用: ${this.getSetAsString(this.availableStages)}`);
+        
+        // 标记为已完成
+        this.completedStages.add(nodeId);
+        this.availableStages.delete(nodeId); // 从可用列表中移除（已完成）
+        
+        // 获取节点连接关系（从客户端节点数据）
+        const nextNodes = this.getConnectedNodes(nodeId);
+        print(`[AutoChessMode] 🔓 节点 ${nodeId} 连接的下一层: ${nextNodes.join(', ')}`);
+        
+        // 解锁连接的下一层关卡
+        for (const nextNodeId of nextNodes) {
+            if (!this.completedStages.has(nextNodeId)) {
+                this.availableStages.add(nextNodeId);
+                print(`[AutoChessMode] ✅ 解锁关卡: ${nextNodeId}`);
+            } else {
+                print(`[AutoChessMode] ⏭️ 关卡 ${nextNodeId} 已完成，跳过`);
+            }
+        }
+        
+        print(`[AutoChessMode] 🔓 解锁后状态:`);
+        print(`[AutoChessMode] 🔓   - 已完成: ${this.getSetAsString(this.completedStages)}`);
+        print(`[AutoChessMode] 🔓   - 可用: ${this.getSetAsString(this.availableStages)}`);
+        
+        // 发送更新到客户端
+        print(`[AutoChessMode] 🔓 准备发送更新到客户端...`);
+        this.sendStageUnlockUpdate();
+        print(`[AutoChessMode] 🔓 ========== 解锁关卡流程完成 ==========`);
+    }
+    
+    /** 辅助方法：将Set转换为字符串用于日志 */
+    private getSetAsString(set: Set<string>): string {
+        const arr: string[] = [];
+        set.forEach(item => arr.push(item));
+        return arr.length > 0 ? arr.join(', ') : '(空)';
+    }
+
+    /**
+     * 将关卡ID转换为节点ID
+     * 例如: "2" -> "n2", "1" -> "n1"
+     */
+    private stageIdToNodeId(stageId: string): string | null {
+        // 如果已经是节点ID格式（n开头），直接返回
+        if (stageId.startsWith('n')) {
+            return stageId;
+        }
+        
+        // 否则转换为节点ID格式
+        const num = parseInt(stageId);
+        if (isNaN(num)) {
+            return null;
+        }
+        
+        return `n${num}`;
+    }
+
+    /**
+     * 获取节点连接的下一层节点
+     * 根据节点连接关系返回
+     */
+    private getConnectedNodes(nodeId: string): string[] {
+        // 节点连接关系（与客户端保持一致）
+        const nodeConnections: { [key: string]: string[] } = {
+            'n1': ['n2', 'n3'],      // 起始点 -> 森林小径, 危险矿洞
+            'n2': ['n4', 'n5'],      // 森林小径 -> 神秘商人, 野兽巢穴
+            'n3': ['n5', 'n6'],      // 危险矿洞 -> 野兽巢穴, 精英守卫
+            'n4': ['n7'],            // 神秘商人 -> 休息营地
+            'n5': ['n7', 'n8'],      // 野兽巢穴 -> 休息营地, 古老遗迹
+            'n6': ['n8'],            // 精英守卫 -> 古老遗迹
+            'n7': ['n9'],            // 休息营地 -> 黑暗前厅
+            'n8': ['n9', 'n10'],     // 古老遗迹 -> 黑暗前厅, 远古巨龙
+            'n9': ['n10'],           // 黑暗前厅 -> 远古巨龙
+            'n10': []                // 远古巨龙（Boss，无后续）
+        };
+        
+        return nodeConnections[nodeId] || [];
+    }
+
+    /**
+     * 发送关卡解锁更新到客户端（公开方法，供外部调用）
+     */
+    public sendStageUnlockUpdate(): void {
+        print(`[AutoChessMode] ========== 开始发送关卡解锁更新 ==========`);
+        
+        // 构建节点状态数据
+        const nodes: any[] = [];
+        
+        // 获取所有节点（与客户端节点数据保持一致）
+        const allNodeIds = ['n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9', 'n10'];
+        
+        for (const nodeId of allNodeIds) {
+            let status: 'locked' | 'available' | 'current' | 'completed' = 'locked';
+            
+            if (this.completedStages.has(nodeId)) {
+                status = 'completed';
+            } else if (this.availableStages.has(nodeId)) {
+                status = 'available';
+            }
+            
+            nodes.push({
+                id: nodeId,
+                status: status
+            });
+        }
+        
+        // 手动构建数组（避免 Array.from 的序列化问题）
+        const completedArray: string[] = [];
+        this.completedStages.forEach((value) => {
+            completedArray.push(value);
+        });
+        
+        const availableArray: string[] = [];
+        this.availableStages.forEach((value) => {
+            availableArray.push(value);
+        });
+        
+        print(`[AutoChessMode] 已完成关卡数量: ${this.completedStages.size}, 数组长度: ${completedArray.length}`);
+        print(`[AutoChessMode] 可用关卡数量: ${this.availableStages.size}, 数组长度: ${availableArray.length}`);
+        print(`[AutoChessMode] 节点数量: ${nodes.length}`);
+        
+        // 输出详细状态
+        print(`[AutoChessMode] 节点状态详情:`);
+        for (const node of nodes) {
+            print(`[AutoChessMode]   - ${node.id}: ${node.status}`);
+        }
+        
+        print(`[AutoChessMode] 已完成关卡列表: ${completedArray.join(', ')}`);
+        print(`[AutoChessMode] 可用关卡列表: ${availableArray.join(', ')}`);
+        
+        // 发送更新事件到客户端
+        const updateData = {
+            currentStage: this.completedStages.size,
+            maxStages: 10,
+            nodes: nodes,
+            completedStages: completedArray,
+            availableStages: availableArray
+        };
+        
+        print(`[AutoChessMode] 📤 准备发送数据...`);
+        (CustomGameEventManager.Send_ServerToAllClients as any)('update_stage_data', updateData);
+        print(`[AutoChessMode] ✅ 数据已发送`);
+    }
+
+    /**
      * 获取关卡描述
      */
     private getStageDescription(config: any): string {
@@ -2396,6 +2646,26 @@ export class AutoChessMode {
      * 点击选关后：5秒准备阶段 -> 生成怪物 -> 开始战斗
      */
     public handleWaveStageSelection(playerId: PlayerID, stageId: string): void {
+        // 将关卡ID转换为节点ID
+        const nodeId = this.stageIdToNodeId(stageId);
+        
+        // 验证关卡是否已解锁
+        if (!nodeId || !this.availableStages.has(nodeId)) {
+            print(`[AutoChessMode] ERROR: 关卡未解锁或无效 - stageId: ${stageId}, nodeId: ${nodeId}`);
+            print(`[AutoChessMode] 可用关卡: ${Array.from(this.availableStages).join(', ')}`);
+            // 通知客户端选择失败
+            (CustomGameEventManager.Send_ServerToPlayer as any)(
+                PlayerResource.GetPlayer(playerId),
+                'autochess_wave_stage_ack',
+                {
+                    stageId: stageId,
+                    success: false,
+                    message: '关卡未解锁，请先完成前置关卡'
+                }
+            );
+            return;
+        }
+        
         // 验证关卡ID是否有效
         const stageIdNum = parseInt(stageId);
         const stageConfig = StageConfigManager.getStageConfig(stageIdNum);
@@ -2418,8 +2688,23 @@ export class AutoChessMode {
         print(`[AutoChessMode] ========== 玩家选择关卡 ==========`);
         print(`[AutoChessMode] Player ${playerId} selected stage: ${stageId} (${stageConfig.primaryNodeType})`);
 
+        // 清理当前状态（如果有正在进行的战斗阶段，先停止）
+        if (this.phaseTimer) {
+            Timers.RemoveTimer(this.phaseTimer);
+            this.phaseTimer = undefined;
+            print(`[AutoChessMode] 已停止当前阶段计时器`);
+        }
+
+        // 清理所有棋子（包括玩家棋子），新关卡时会重新创建
+        this.stopAllBattles();
+        print(`[AutoChessMode] 已清理所有棋子（包括玩家棋子），新关卡时会重新创建`);
+
+        // 重置结算状态
+        this.resetWaveSettlementState();
+
         // 记录选择
         this.currentWaveStageSelection = stageId;
+        print(`[AutoChessMode] 📝 已设置 currentWaveStageSelection = ${this.currentWaveStageSelection}`);
 
         // 通知客户端确认，进入准备阶段
         (CustomGameEventManager.Send_ServerToAllClients as any)(
@@ -2453,10 +2738,11 @@ export class AutoChessMode {
         });
 
         // 创建倒计时计时器
+        print(`[AutoChessMode] 创建准备阶段倒计时计时器，初始时间: ${timeLeft}秒`);
         const countdownTimer = Timers.CreateTimer(1.0, () => {
             timeLeft--;
             
-            print(`[AutoChessMode] 准备阶段倒计时: ${timeLeft}秒`);
+            print(`[AutoChessMode] 准备阶段倒计时: ${timeLeft}秒 (stageId: ${stageId}, playerId: ${playerId})`);
             
             // 同步倒计时到客户端
             (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_preparation_countdown', {
@@ -2466,13 +2752,20 @@ export class AutoChessMode {
 
             if (timeLeft <= 0) {
                 // 准备阶段结束，开始战斗
-                print(`[AutoChessMode] 准备阶段结束，开始生成怪物并战斗`);
+                print(`[AutoChessMode] ========== 准备阶段结束，开始生成怪物并战斗 ==========`);
+                print(`[AutoChessMode] 调用 startBattleWithStage(playerId: ${playerId}, stageId: ${stageId})`);
                 this.startBattleWithStage(playerId, stageId);
                 return undefined; // 停止计时器
             }
 
             return 1.0; // 继续倒计时
         });
+        
+        if (!countdownTimer) {
+            print(`[AutoChessMode] ❌ 错误：倒计时计时器创建失败！`);
+        } else {
+            print(`[AutoChessMode] ✅ 倒计时计时器创建成功`);
+        }
     }
 
     /**
@@ -2481,29 +2774,36 @@ export class AutoChessMode {
     private startBattleWithStage(playerId: PlayerID, stageId: number): void {
         print(`[AutoChessMode] ========== 单机模式 - 开始战斗 ==========`);
         print(`[AutoChessMode] 使用关卡: ${stageId}`);
+        print(`[AutoChessMode] 选关前回合: ${this.gameState.currentRound}`);
 
-        // 设置游戏状态
+        // 设置游戏状态 - 先增加回合数，再设置阶段
+        this.gameState.currentRound++;
         this.gameState.currentPhase = RoundPhase.BATTLE;
         this.gameState.phaseTimeLeft = 45;
-        this.gameState.currentRound++;
+        this.gameState.isGameActive = true;  // 确保游戏处于激活状态
         
-        print(`[AutoChessMode] 当前回合: ${this.gameState.currentRound}`);
+        print(`[AutoChessMode] 选关后回合: ${this.gameState.currentRound}`);
+        print(`[AutoChessMode] 当前阶段: ${this.gameState.currentPhase}`);
 
-        // 清理之前的AI棋子（保留玩家棋子）
+        // 清理之前的AI棋子
         this.battleSystem.clearPlayerPieces(-1);
         
         // 重置玩家存活状态
         for (const [pid, playerState] of this.gameState.playerStates) {
             playerState.isAlive = true;
+            // 棋子血量已在上一关结束时恢复并保存，重新创建时会自动应用
+            print(`[AutoChessMode] 玩家 ${pid} 进入新关卡，准备重新创建棋子`);
         }
 
-        // 激活玩家棋子进入战斗模式（不重新创建，使用已有棋子）
+        // 重新创建玩家棋子（从备战席或棋盘位置恢复）
+        print(`[AutoChessMode] 重新创建玩家棋子...`);
         for (const [pid, playerState] of this.gameState.playerStates) {
             if (playerState.isAlive) {
                 this.battleSystem.setPlayerAsProtected(pid);
-                // 激活已部署的棋子
-                this.battleSystem.activatePlayerPieces(pid);
-                print(`[AutoChessMode] 玩家 ${pid} 棋子已激活`);
+                
+                // 从备战席和棋盘位置恢复棋子
+                this.recreatePlayerPieces(pid);
+                print(`[AutoChessMode] 玩家 ${pid} 棋子已重新创建`);
             }
         }
 
@@ -2520,6 +2820,9 @@ export class AutoChessMode {
 
         // 启动战斗计时器
         this.startPhaseTimer();
+
+        // 同步状态到网络表
+        this.syncStateToNetTable();
 
         // 通知客户端战斗开始
         (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_battle_started', {

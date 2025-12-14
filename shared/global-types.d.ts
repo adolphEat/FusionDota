@@ -46,6 +46,7 @@ declare namespace CDOTAGameRules {
         handleWaveContinue(playerId: PlayerID): void;
         handleWaveRewardClaim(playerId: PlayerID): void;
         handleWaveStageSelection(playerId: PlayerID, stageId: string): void;
+        sendStageUnlockUpdate(): void;
         activate(): void;
         deactivate(): void;
         startGame(): void;

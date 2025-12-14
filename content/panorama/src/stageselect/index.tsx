@@ -437,9 +437,23 @@ function createStageNodes(data: StageData): void {
 }
 
 function createStageNode(parent: Panel, node: StageNode): Panel {
+    // 检查是否已存在节点，如果存在先删除
+    const existingNode = parent.FindChild(`Node_${node.id}`);
+    if (existingNode) {
+        existingNode.DeleteAsync(0);
+    }
+    
     const nodePanel = $.CreatePanel('Panel', parent, `Node_${node.id}`);
     nodePanel.AddClass('stage_node');
+    
+    // 清除所有状态类，然后添加当前状态类
+    nodePanel.RemoveClass('stage_node_locked');
+    nodePanel.RemoveClass('stage_node_available');
+    nodePanel.RemoveClass('stage_node_current');
+    nodePanel.RemoveClass('stage_node_completed');
     nodePanel.AddClass(`stage_node_${node.status}`);
+    
+    $.Msg(`[StageSelect] 创建节点 ${node.id}，状态: ${node.status}`);
     
     // Calculate position
     const mapWidth = 1200;
@@ -488,10 +502,23 @@ function createStageNode(parent: Panel, node: StageNode): Panel {
         nodePanel.AddClass('stage_node_current');
     }
     
-    // Click handler
+    // 设置节点可点击性
     if (node.status === 'available' || node.status === 'current') {
+        // 确保节点可以接收点击事件
+        nodePanel.hittest = true;
+        nodePanel.enabled = true;
+        
+        // 单机模式：点击节点直接开始，不需要再点"开始战斗"按钮
         nodePanel.SetPanelEvent('onactivate', () => {
+            $.Msg(`[StageSelect] 节点 ${node.id} 被点击，状态: ${node.status}`);
             selectNode(node);
+            // 直接开始关卡（单机模式优化）
+            if (node.status === 'available' || node.status === 'current') {
+                $.Msg(`[StageSelect] 单机模式：点击节点直接开始关卡`);
+                startStage(node);
+            } else {
+                $.Msg(`[StageSelect] 警告: 节点状态不是 available 或 current，无法开始`);
+            }
         });
         
         nodePanel.SetPanelEvent('onmouseover', () => {
@@ -501,6 +528,10 @@ function createStageNode(parent: Panel, node: StageNode): Panel {
         nodePanel.SetPanelEvent('onmouseout', () => {
             hideNodeTooltip();
         });
+    } else {
+        // 锁定或已完成的节点不可点击
+        nodePanel.hittest = false;
+        nodePanel.enabled = false;
     }
     
     return nodePanel;
@@ -608,19 +639,65 @@ function startStage(node: StageNode): void {
     const stageIdMatch = node.id.match(/\d+/);
     const stageId = stageIdMatch ? stageIdMatch[0] : node.id;
     
-    $.Msg(`[StageSelect] Sending stage selection to server: stageId=${stageId}`);
+    const localPlayerId = Players.GetLocalPlayer();
+    $.Msg(`[StageSelect] ========== 发送选关事件到服务端 ==========`);
+    $.Msg(`[StageSelect] 节点ID: ${node.id}`);
+    $.Msg(`[StageSelect] 提取的 stageId: ${stageId}`);
+    $.Msg(`[StageSelect] 玩家ID: ${localPlayerId}`);
+    
+    // 验证数据
+    if (localPlayerId === -1 || localPlayerId === undefined) {
+        $.Msg(`[StageSelect] ❌ 错误: 无效的玩家ID: ${localPlayerId}`);
+        return;
+    }
+    
+    if (!stageId) {
+        $.Msg(`[StageSelect] ❌ 错误: 无效的关卡ID: ${stageId}`);
+        return;
+    }
     
     // 发送关卡选择事件到服务端
-    GameEvents.SendCustomGameEventToServer('autochess_wave_select_stage', {
-        playerId: Players.GetLocalPlayer(),
-        stageId: stageId
-    });
+    const eventData = {
+        playerId: localPlayerId,
+        stageId: stageId.toString()  // 确保是字符串
+    };
+    $.Msg(`[StageSelect] 事件数据: ${JSON.stringify(eventData)}`);
+    $.Msg(`[StageSelect] 事件名称: autochess_wave_select_stage`);
     
-    // Hide selection UI
-    hideStageSelect();
+    // 单机模式优化：直接发送事件，添加重试机制
+    let retryCount = 0;
+    const maxRetries = 3;
     
-    // 显示准备中提示
-    $.Msg(`[StageSelect] Stage selected, preparing...`);
+    function sendEvent(): void {
+        try {
+            $.Msg(`[StageSelect] 尝试发送事件 (第 ${retryCount + 1} 次)...`);
+            GameEvents.SendCustomGameEventToServer('autochess_wave_select_stage', eventData);
+            $.Msg(`[StageSelect] ✅ 事件发送成功 (尝试 ${retryCount + 1}/${maxRetries})`);
+            
+            // 隐藏选关界面
+            hideStageSelect();
+            
+            // 显示准备中提示
+            $.Msg(`[StageSelect] Stage selected, preparing...`);
+        } catch (error) {
+            retryCount++;
+            $.Msg(`[StageSelect] ❌ 事件发送失败 (尝试 ${retryCount}/${maxRetries}): ${error}`);
+            
+            if (retryCount < maxRetries) {
+                // 延迟重试（单机模式下可能需要等待连接建立）
+                $.Schedule(0.5, () => {
+                    sendEvent();
+                });
+            } else {
+                $.Msg(`[StageSelect] ❌ 事件发送最终失败，已重试 ${maxRetries} 次`);
+                // 即使失败也隐藏界面，避免卡住
+                hideStageSelect();
+            }
+        }
+    }
+    
+    // 立即发送
+    sendEvent();
 }
 
 // ============================================================================
@@ -726,9 +803,27 @@ function showStageSelect(stageData?: StageData): void {
         }
     }
     
-    currentStageData = stageData || getMockStageData();
+    // 如果提供了新数据，使用新数据；否则使用现有数据或默认数据
+    if (stageData) {
+        currentStageData = stageData;
+        $.Msg(`[StageSelect] 使用提供的新数据`);
+    } else if (!currentStageData) {
+        currentStageData = getMockStageData();
+        $.Msg(`[StageSelect] 使用默认数据`);
+    } else {
+        $.Msg(`[StageSelect] 使用现有数据`);
+    }
     
-    // Create nodes
+    // 输出当前节点状态用于调试
+    if (currentStageData && currentStageData.nodes) {
+        $.Msg(`[StageSelect] 当前节点状态:`);
+        for (const node of currentStageData.nodes) {
+            $.Msg(`[StageSelect]   - ${node.id}: ${node.status}`);
+        }
+    }
+    
+    // 确保使用最新的节点数据重新创建节点
+    $.Msg(`[StageSelect] 使用当前数据创建节点，节点数量: ${currentStageData.nodes.length}`);
     createStageNodes(currentStageData);
     
     // Show container - 确保所有样式正确
@@ -788,17 +883,100 @@ function registerEvents(): void {
         hideStageSelect();
     });
     
-    GameEvents.Subscribe('update_stage_data', (data: StageData) => {
-        $.Msg('[StageSelect] Received stage data update');
-        if (isVisible && currentStageData) {
-            currentStageData = data;
-            createStageNodes(currentStageData);
+    GameEvents.Subscribe('update_stage_data', (data: any) => {
+        $.Msg('[StageSelect] ========== 收到关卡状态更新 ==========');
+        $.Msg(`[StageSelect] 数据对象键: ${Object.keys(data).join(', ')}`);
+        $.Msg(`[StageSelect] data.nodes 类型: ${typeof data.nodes}, 是数组: ${Array.isArray(data.nodes)}`);
+        $.Msg(`[StageSelect] data.completedStages 类型: ${typeof data.completedStages}, 是数组: ${Array.isArray(data.completedStages)}`);
+        $.Msg(`[StageSelect] data.availableStages 类型: ${typeof data.availableStages}, 是数组: ${Array.isArray(data.availableStages)}`);
+        
+        // 🔧 修复：将 Lua 表（对象）转换为 JavaScript 数组
+        const convertToArray = (obj: any): any[] => {
+            if (Array.isArray(obj)) {
+                return obj;
+            }
+            if (typeof obj === 'object' && obj !== null) {
+                // Lua 表会被序列化为对象，需要手动转换
+                const arr: any[] = [];
+                for (const key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        arr.push(obj[key]);
+                    }
+                }
+                $.Msg(`[StageSelect] 🔧 转换对象为数组，长度: ${arr.length}`);
+                return arr;
+            }
+            return [];
+        };
+        
+        // 转换 nodes
+        const nodesArray = convertToArray(data.nodes);
+        $.Msg(`[StageSelect] nodes 转换后数组长度: ${nodesArray.length}`);
+        
+        // 转换 completedStages
+        const completedArray = convertToArray(data.completedStages);
+        const completedStagesStr = completedArray.length > 0 ? completedArray.join(', ') : '无';
+        $.Msg(`[StageSelect] 已完成关卡: ${completedStagesStr}`);
+        
+        // 转换 availableStages
+        const availableArray = convertToArray(data.availableStages);
+        const availableStagesStr = availableArray.length > 0 ? availableArray.join(', ') : '无';
+        $.Msg(`[StageSelect] 可用关卡: ${availableStagesStr}`);
+        
+        // 更新节点状态
+        if (nodesArray.length > 0) {
+            $.Msg(`[StageSelect] nodes 数组长度: ${nodesArray.length}`);
+            // 确保 currentStageData 存在
+            if (!currentStageData) {
+                currentStageData = getMockStageData();
+            }
+            
+            // 更新节点状态
+            if (currentStageData.nodes) {
+                let updatedCount = 0;
+                for (const updateNode of nodesArray) {
+                    const existingNode = currentStageData.nodes.find(n => n.id === updateNode.id);
+                    if (existingNode && updateNode.status) {
+                        const oldStatus = existingNode.status;
+                        existingNode.status = updateNode.status;
+                        updatedCount++;
+                        $.Msg(`[StageSelect] 更新节点 ${updateNode.id} 状态: ${oldStatus} -> ${updateNode.status}`);
+                    } else if (!existingNode) {
+                        $.Msg(`[StageSelect] 警告: 节点 ${updateNode.id} 不存在于当前数据中`);
+                    } else if (!updateNode.status) {
+                        $.Msg(`[StageSelect] 警告: 节点 ${updateNode.id} 没有状态信息`);
+                    }
+                }
+                $.Msg(`[StageSelect] 共更新了 ${updatedCount} 个节点的状态`);
+            } else {
+                $.Msg(`[StageSelect] 警告: currentStageData.nodes 不存在`);
+            }
+            
+            // 更新进度
+            if (data.currentStage !== undefined) {
+                currentStageData.currentStage = data.currentStage;
+            }
+            if (data.maxStages !== undefined) {
+                currentStageData.maxStages = data.maxStages;
+            }
+            
+            // 如果界面可见，立即重新创建所有节点以应用新状态
+            if (isVisible && currentStageData) {
+                $.Msg(`[StageSelect] 界面可见，立即重新创建节点以应用新状态...`);
+                createStageNodes(currentStageData);
+            } else {
+                $.Msg(`[StageSelect] 界面不可见，已更新数据，下次打开时会显示新状态`);
+            }
+        } else {
+            $.Msg(`[StageSelect] ❌ 警告: 收到更新但 nodes 数据无效`);
         }
     });
     
     GameEvents.Subscribe('open_level_selection', () => {
         $.Msg('[StageSelect] ✅ Received open_level_selection event');
+        // 请求最新的关卡状态（通过显示界面触发服务端发送更新）
         showStageSelect();
+        // 如果界面已打开，服务端应该会发送 update_stage_data 事件
     });
     
     $.Msg('[StageSelect] ✅ Event handlers registered');
@@ -839,4 +1017,6 @@ $.Msg('[StageSelect] ========================================');
 
 // 立即初始化
 initStageSelect();
+
+
 

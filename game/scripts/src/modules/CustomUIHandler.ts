@@ -46,7 +46,10 @@ export class CustomUIHandler {
             this.onWaveClaimReward(data);
         });
 
-        CustomGameEventManager.RegisterListener('autochess_wave_select_stage', (_, data) => {
+        CustomGameEventManager.RegisterListener('autochess_wave_select_stage', (userId, data: any) => {
+            print(`[CustomUIHandler] ========== 收到 autochess_wave_select_stage 事件 ==========`);
+            print(`[CustomUIHandler] userId: ${userId}`);
+            print(`[CustomUIHandler] data.playerId: ${(data as any).playerId}, data.stageId: ${(data as any).stageId}`);
             this.onWaveSelectStage(data);
         });
 
@@ -132,6 +135,11 @@ export class CustomUIHandler {
         // 广播给所有客户端打开选关界面
         CustomGameEventManager.Send_ServerToAllClients('open_level_selection', {});
         print('[CustomUIHandler] Broadcasted open_level_selection to all clients');
+        
+        // 单机模式：立即发送最新的关卡解锁状态（确保客户端显示正确的解锁状态）
+        if (GameRules.AutoChessMode) {
+            GameRules.AutoChessMode.sendStageUnlockUpdate();
+        }
     }
 
     /**
@@ -391,14 +399,33 @@ export class CustomUIHandler {
      * 处理选择关卡事件
      */
     private onWaveSelectStage(data: any): void {
-        const playerId = data.playerId;
+        print(`[CustomUIHandler] ========== onWaveSelectStage 被调用 ==========`);
+        print(`[CustomUIHandler] 原始数据 - playerId: ${data.playerId}, PlayerID: ${data.PlayerID}, stageId: ${data.stageId}`);
+        
+        // 尝试多种方式获取 playerId
+        const playerId = data.playerId !== undefined ? data.playerId : data.PlayerID;
         const stageId = data.stageId;
-        print(`[CustomUIHandler] Wave stage selection by player ${playerId}: ${stageId}`);
+        
+        print(`[CustomUIHandler] 解析后的 playerId: ${playerId}, stageId: ${stageId}`);
+        print(`[CustomUIHandler] GameRules.AutoChessMode 存在: ${!!GameRules.AutoChessMode}`);
+
+        if (!playerId && playerId !== 0) {
+            print(`[CustomUIHandler] ❌ 错误: playerId 无效 (${playerId})`);
+            return;
+        }
+
+        if (!stageId) {
+            print(`[CustomUIHandler] ❌ 错误: stageId 无效 (${stageId})`);
+            return;
+        }
 
         if (GameRules.AutoChessMode) {
+            print(`[CustomUIHandler] ✅ 调用 AutoChessMode.handleWaveStageSelection(${playerId}, ${stageId})`);
             GameRules.AutoChessMode.handleWaveStageSelection(playerId, stageId);
         } else {
-            print('[CustomUIHandler] AutoChessMode not available');
+            print('[CustomUIHandler] ❌ AutoChessMode not available');
+            print(`[CustomUIHandler] GameRules 对象: ${GameRules ? '存在' : '不存在'}`);
+            print(`[CustomUIHandler] GameRules.AutoChessMode 类型: ${typeof (GameRules as any).AutoChessMode}`);
         }
     }
 
