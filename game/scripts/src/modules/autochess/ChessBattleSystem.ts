@@ -255,6 +255,18 @@ export class ChessBattleSystem {
         // 应用棋子属性
         this.applyChessPieceStats(unit, chessPiece);
 
+        // 默认创建即禁止攻击，等待战斗阶段再统一启用
+        if (!unit.HasModifier('modifier_disarmed')) {
+            unit.AddNewModifier(
+                unit,               // caster: 自身
+                undefined,          // ability: 无关联技能
+                'modifier_disarmed',// Dota2 内置缴械修饰符，完全禁用普攻
+                {}                  // 永久，直到手动移除
+            );
+        }
+        // 双重保险：直接将攻击能力设为 0（无攻击）
+        (unit as any).SetAttackCapability(0);
+
         // 若存在上一场的剩余血量，设置为初始血量（按 pieceId 顺序消费）
         const survivorList = this.playerSurvivorHealth.get(playerId);
         if (survivorList && survivorList.length > 0) {
@@ -694,6 +706,104 @@ export class ChessBattleSystem {
      */
     public getPlayerPieces(playerId: PlayerID): DeployedPiece[] {
         return this.playerDeployedPieces.get(playerId) || [];
+    }
+
+    /**
+     * 禁用所有单位攻击（准备阶段）
+     * 禁用所有玩家（包括玩家和敌人）的攻击能力
+     * 
+     * 使用 Dota 2 内置的 modifier_disarmed 修饰符来禁用攻击
+     * 这是最可靠的方法，因为：
+     * 1. modifier_disarmed 是 Dota 2 内置修饰符，设置 MODIFIER_STATE_DISARMED 状态
+     * 2. 它会完全禁用单位的攻击能力，包括自动攻击和手动攻击
+     * 3. 可以通过 RemoveModifierByName 轻松移除
+     */
+    public disableAllAttacks(): void {
+        print(`[ChessBattleSystem] ========== 禁用所有单位攻击（准备阶段） ==========`);
+        
+        let disabledCount = 0;
+        
+        // 遍历所有玩家的棋子
+        for (const [playerId, pieces] of this.playerDeployedPieces) {
+            for (const piece of pieces) {
+                if (piece.unit && IsValidEntity(piece.unit) && !piece.unit.IsNull()) {
+                    // 检查是否已经有 modifier_disarmed（避免重复添加）
+                    if (!piece.unit.HasModifier('modifier_disarmed')) {
+                        // 添加缴械修饰符（禁用攻击）
+                        // 参数：caster, ability, modifier_name, modifier_table
+                        piece.unit.AddNewModifier(
+                            piece.unit,      // caster: 施法者（单位自己）
+                            undefined,        // ability: 无关联技能
+                            'modifier_disarmed', // modifier_name: Dota 2 内置的缴械修饰符
+                            {}               // modifier_table: 空表，表示永久持续直到手动移除
+                        );
+                        
+                        // 同时设置攻击能力为无（双重保险）
+                        (piece.unit as any).SetAttackCapability(0);
+                        
+                        disabledCount++;
+                        print(`[ChessBattleSystem] ✅ 已禁用 ${piece.pieceId} (player ${playerId}) 的攻击能力`);
+                    } else {
+                        print(`[ChessBattleSystem] ⚠️ ${piece.pieceId} (player ${playerId}) 已有 modifier_disarmed，跳过`);
+                    }
+                }
+            }
+        }
+        
+        print(`[ChessBattleSystem] ========== 已禁用 ${disabledCount} 个单位的攻击 ==========`);
+    }
+
+    /**
+     * 启用所有单位攻击（战斗阶段）
+     * 启用所有玩家（包括玩家和敌人）的攻击能力
+     * 
+     * 移除 modifier_disarmed 修饰符并恢复攻击能力
+     */
+    public enableAllAttacks(): void {
+        print(`[ChessBattleSystem] ========== 启用所有单位攻击（战斗阶段） ==========`);
+        
+        let enabledCount = 0;
+        
+        // 遍历所有玩家的棋子
+        for (const [playerId, pieces] of this.playerDeployedPieces) {
+            for (const piece of pieces) {
+                if (piece.unit && IsValidEntity(piece.unit) && !piece.unit.IsNull()) {
+                    // 移除缴械修饰符
+                    if (piece.unit.HasModifier('modifier_disarmed')) {
+                        piece.unit.RemoveModifierByName('modifier_disarmed');
+                    }
+                    
+                    // 根据攻击范围恢复攻击能力
+                    const chessPiece = this.getChessPieceDefinition(piece.pieceId);
+                    if (chessPiece) {
+                        // 使用数字值：1 = ATTACK_MELEE, 2 = ATTACK_RANGED
+                        const attackCapability = chessPiece.attackRange > 200 ? 2 : 1;
+                        (piece.unit as any).SetAttackCapability(attackCapability);
+                        
+                        enabledCount++;
+                        print(`[ChessBattleSystem] ✅ 已启用 ${piece.pieceId} (player ${playerId}) 的攻击能力 (${attackCapability === 2 ? '远程' : '近战'})`);
+                    } else {
+                        print(`[ChessBattleSystem] ⚠️ 无法找到棋子定义: ${piece.pieceId}`);
+                    }
+                }
+            }
+        }
+        
+        print(`[ChessBattleSystem] ========== 已启用 ${enabledCount} 个单位的攻击 ==========`);
+    }
+
+    /**
+     * 禁用敌人攻击（准备阶段）- 已废弃，使用 disableAllAttacks
+     */
+    public disableEnemyAttack(playerId: PlayerID): void {
+        this.disableAllAttacks();
+    }
+
+    /**
+     * 启用敌人攻击（战斗阶段）- 已废弃，使用 enableAllAttacks
+     */
+    public enableEnemyAttack(playerId: PlayerID): void {
+        this.enableAllAttacks();
     }
 
     /**

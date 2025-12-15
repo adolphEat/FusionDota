@@ -3,12 +3,16 @@
  * 处理来自客户端UI的事件
  */
 
+import { inventoryHandler } from './InventoryHandler';
+
 export class CustomUIHandler {
     private static instance: CustomUIHandler;
 
     private constructor() {
         this.registerEventHandlers();
-        print('[CustomUIHandler] Initialized');
+        // 初始化背包处理器
+        inventoryHandler;
+        print('[CustomUIHandler] Initialized (with InventoryHandler)');
     }
 
     public static getInstance(): CustomUIHandler {
@@ -61,6 +65,11 @@ export class CustomUIHandler {
         // 注册打开选关界面事件（从 playing-hud 或 battleendview 触发）
         CustomGameEventManager.RegisterListener('open_level_selection', (_, data) => {
             this.onOpenLevelSelection(data);
+        });
+
+        // 注册切换背包请求事件（从 playing-hud 触发）
+        CustomGameEventManager.RegisterListener('toggle_inventory_request', (_, data) => {
+            this.onToggleInventoryRequest(data);
         });
     }
 
@@ -140,6 +149,19 @@ export class CustomUIHandler {
         if (GameRules.AutoChessMode) {
             GameRules.AutoChessMode.sendStageUnlockUpdate();
         }
+    }
+
+    /**
+     * 处理切换背包请求
+     * 从客户端收到请求后，广播给所有客户端切换背包显示
+     */
+    private onToggleInventoryRequest(data: any): void {
+        const playerId = data.PlayerID || data.playerId;
+        print(`[CustomUIHandler] Toggle inventory requested by player ${playerId}`);
+        
+        // 广播给所有客户端切换背包
+        (CustomGameEventManager.Send_ServerToAllClients as any)('toggle_inventory', {});
+        print('[CustomUIHandler] Broadcasted toggle_inventory to all clients');
     }
 
     /**

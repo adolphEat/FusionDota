@@ -14,6 +14,7 @@ module.exports = {
         'result-screen': './result-screen/index.tsx',
         'battleendview': './battleendview/index.tsx',
         'stageselect': './stageselect/index.tsx',
+        'inventory': './inventory/index.tsx',
     },
     
     output: {

@@ -1,0 +1,129 @@
+// Inventory UI Styles
+// 棋子背包界面样式
+
+.inventory_root {
+    width: 100%;
+    height: 100%;
+    visibility: collapse;
+    z-index: 8000;
+    flow-children: down;
+}
+
+.inventory_container {
+    width: 100%;
+    height: 150px;
+    horizontal-align: center;
+    vertical-align: bottom;
+    background-color: rgba(15, 23, 42, 0.95);
+    border-top: 2px solid rgba(59, 130, 246, 0.6);
+    padding: 10px;
+    flow-children: down;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.inventory_slot {
+    width: 90px;
+    height: 90px;
+    margin: 5px;
+    background-color: rgba(50, 50, 50, 0.8);
+    border: 2px solid rgba(59, 130, 246, 0.6);
+    border-radius: 8px;
+    flow-children: down;
+    horizontal-align: center;
+    vertical-align: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.inventory_slot:hover {
+    background-color: rgba(70, 70, 70, 0.9);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
+}
+
+.inventory_slot_dragging {
+    opacity: 0.5;
+    background-color: rgba(100, 149, 237, 0.5);
+    border: 2px dashed rgba(255, 215, 0, 0.8);
+}
+
+// 空槽位样式
+.inventory_slot_empty {
+    border-style: dashed;
+    opacity: 0.6;
+}
+
+// 稀有度样式
+.rarity_common {
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.rarity_uncommon {
+    border-color: rgba(76, 175, 80, 0.8);
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+.rarity_rare {
+    border-color: rgba(33, 150, 243, 0.8);
+    box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
+}
+
+.rarity_epic {
+    border-color: rgba(156, 39, 176, 0.8);
+    box-shadow: 0 0 10px rgba(156, 39, 176, 0.5);
+}
+
+.rarity_legendary {
+    border-color: rgba(255, 152, 0, 0.9);
+    box-shadow: 0 0 15px rgba(255, 152, 0, 0.7);
+    animation-name: legendary-glow;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes 'legendary-glow' {
+    0% { box-shadow: 0 0 15px rgba(255, 152, 0, 0.7); }
+    50% { box-shadow: 0 0 25px rgba(255, 215, 0, 1); }
+    100% { box-shadow: 0 0 15px rgba(255, 152, 0, 0.7); }
+}
+
+// 拖拽相关
+#DragOverlay {
+    width: 100%;
+    height: 100%;
+    horizontal-align: center;
+    vertical-align: center;
+    z-index: 10000;
+}
+
+#DragHint {
+    font-size: 24px;
+    color: #ffd700;
+    horizontal-align: center;
+    vertical-align: center;
+    text-shadow: 2px 2px 4px #000000;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px 20px;
+    border-radius: 8px;
+    animation-name: pulse-hint;
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes 'pulse-hint' {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+#DragDisplay {
+    width: 80px;
+    height: 80px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(255, 215, 0, 0.8);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+

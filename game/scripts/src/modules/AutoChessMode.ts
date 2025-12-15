@@ -93,7 +93,7 @@ export class AutoChessMode {
     private currentWaveRewardClaimed: Set<PlayerID> = new Set();
     private currentWaveStageSelection?: string;
     private battleResultsProcessed: Set<string> = new Set(); // 已处理的战斗ID
-    
+
     // 关卡解锁系统
     private completedStages: Set<string> = new Set(); // 已完成的关卡ID
     private availableStages: Set<string> = new Set(); // 可用的关卡ID（初始为第一层）
@@ -226,11 +226,19 @@ export class AutoChessMode {
             phase: 'battle'
         });
 
-        // 延迟一点直接开始第一关战斗（关卡1）
+        // 延迟一点开始第一回合准备阶段（关卡1）
         Timers.CreateTimer(1.0, () => {
-            print('[AutoChessMode] 📍 直接开始第一关战斗...');
+            print('[AutoChessMode] 📍 第一回合：开始准备阶段...');
             const playerId = 0;  // 单机模式默认玩家0
-            this.startBattleWithStage(playerId, 1);  // 第一关
+            
+            // 第一回合也进入准备阶段，而不是直接战斗
+            // 设置当前关卡选择
+            this.currentWaveStageSelection = 'n1';
+            print(`[AutoChessMode] 📝 第一关自动设置: currentWaveStageSelection = n1`);
+            
+            // 开始准备阶段倒计时（5秒）
+            this.startPreparationCountdown(playerId, 1);
+            
             return undefined;
         });
     }
@@ -267,13 +275,18 @@ export class AutoChessMode {
             // 发送可用的关卡列表到客户端（让玩家选择）
             this.sendAvailableStages();
         } else {
-            this.currentWaveStageSelection = '1';
+            // 第一关使用 n1 格式，与关卡解锁系统保持一致
+            this.currentWaveStageSelection = 'n1';
+            print(`[AutoChessMode] 📝 第一关自动设置: currentWaveStageSelection = n1`);
         }
         
         // 启动计时器
         this.startPhaseTimer();
         
         print(`[AutoChessMode] Started preparation phase for round ${this.gameState.currentRound}`);
+        
+        // 单机模式：准备阶段显示背包
+        (CustomGameEventManager.Send_ServerToAllClients as any)('show_inventory', {});
         
         // 通知客户端
         (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_phase_started', {
@@ -287,6 +300,9 @@ export class AutoChessMode {
      * 开始战斗阶段
      */
     private startBattlePhase(): void {
+        // 单机模式：战斗阶段隐藏背包
+        (CustomGameEventManager.Send_ServerToAllClients as any)('hide_inventory', {});
+        
         this.gameState.currentPhase = RoundPhase.BATTLE;
         this.gameState.phaseTimeLeft = 45; // 45秒战斗时间
         
@@ -397,6 +413,29 @@ export class AutoChessMode {
         
         print(`[AutoChessMode] ========== 玩家 ${playerId} 第一回合初始棋子创建完成 ==========`);
         print(`[AutoChessMode] 总计生成 ${fixedPieces.length} 个我方棋子 (固定配置)`);
+        
+        // 🎒 测试背包：添加额外的棋子到备战席（不部署到棋盘）
+        // 使用正确的棋子ID格式（与 chessPieceDatabase 匹配）
+        // 选择一些不同费用和类型的棋子用于测试
+        const testBenchPieces = [
+            'crystal_maiden',  // 水晶室女 - 法师
+            'drow_ranger',     // 卓尔游侠 - 射手
+            'lina',            // 莉娜 - 法师
+            'mars',            // 战争之矛 - 战士
+            'enchantress'      // 魅惑魔女 - 射手
+        ];
+        print(`[AutoChessMode] 🎒 ========== 开始添加测试棋子到备战席 ==========`);
+        for (const pieceId of testBenchPieces) {
+            const piece = this.chessPieceDatabase.get(pieceId);
+            if (piece) {
+                playerState.benchPieces.push(piece);
+                print(`[AutoChessMode] 🎒 ✅ 添加测试棋子: ${piece.displayName} (${pieceId})`);
+            } else {
+                print(`[AutoChessMode] 🎒 ❌ 棋子不存在: ${pieceId}`);
+            }
+        }
+        print(`[AutoChessMode] 🎒 备战席总计: ${playerState.benchPieces.length} 个棋子`);
+        print(`[AutoChessMode] 🎒 ========== 测试棋子添加完成 ==========`);
     }
 
     /**
@@ -532,6 +571,37 @@ export class AutoChessMode {
     }
 
     /**
+     * 在准备阶段创建敌人棋子（禁用攻击）
+     */
+    private createEnemyPiecesForPreparation(stageId: number): void {
+        print(`[AutoChessMode] ========== 准备阶段：创建敌人棋子（禁用攻击） ==========`);
+        print(`[AutoChessMode] 使用关卡: ${stageId}`);
+        
+        const stageConfig = StageConfigManager.getStageConfig(stageId);
+        if (!stageConfig) {
+            print(`[AutoChessMode] ERROR: 关卡${stageId}配置不存在，使用关卡1`);
+            stageId = 1;
+        }
+        
+        // 为每个玩家创建对应的敌人
+        for (const [playerId, playerState] of this.gameState.playerStates) {
+            if (playerState.isAlive) {
+                print(`[AutoChessMode] 为玩家 ${playerId} 创建敌人棋子（准备阶段）...`);
+                this.createEnemyForPlayer(playerId, stageId, true); // true = 准备阶段，禁用攻击
+            }
+        }
+        
+        // 延迟一点禁用所有单位攻击，确保所有单位都已创建
+        Timers.CreateTimer(0.3, () => {
+            this.battleSystem.disableAllAttacks();
+            print(`[AutoChessMode] ✅ 所有棋子已创建，攻击已禁用（准备阶段）`);
+            return undefined;
+        });
+        
+        print(`[AutoChessMode] ========== 准备阶段敌人棋子创建完成 ==========`);
+    }
+
+    /**
      * 创建敌人棋子（战斗阶段）
      */
     private createEnemyPieces(): void {
@@ -577,8 +647,9 @@ export class AutoChessMode {
 
     /**
      * 为特定玩家创建敌人棋子（根据关卡配置）
+     * @param isPreparationPhase 是否为准备阶段（准备阶段禁用攻击）
      */
-    private createEnemyForPlayer(playerId: PlayerID, stageId: number): void {
+    private createEnemyForPlayer(playerId: PlayerID, stageId: number, isPreparationPhase: boolean = false): void {
         const stageConfig = StageConfigManager.getStageConfig(stageId);
         if (!stageConfig) {
             print(`[AutoChessMode] ERROR: 关卡${stageId}配置不存在`);
@@ -2006,13 +2077,10 @@ export class AutoChessMode {
                 // 注意：棋子血量恢复已在 ChessBattleSystem.onBattleComplete 中完成
                 
                 // 战斗胜利后，解锁下一层关卡
-                print(`[AutoChessMode] 🔍 检查关卡解锁: currentWaveStageSelection = ${this.currentWaveStageSelection}`);
-                if (this.currentWaveStageSelection) {
-                    print(`[AutoChessMode] ✅ 将解锁关卡: ${this.currentWaveStageSelection}`);
-                    this.unlockNextStages(this.currentWaveStageSelection);
-                } else {
-                    print(`[AutoChessMode] ⚠️ currentWaveStageSelection 为空，无法解锁下一层关卡`);
-                }
+                const currentSelection = this.currentWaveStageSelection || 'n1'; // 如果为空，默认使用 n1
+                print(`[AutoChessMode] 🔍 检查关卡解锁: currentWaveStageSelection = ${currentSelection}`);
+                print(`[AutoChessMode] ✅ 将解锁关卡: ${currentSelection}`);
+                this.unlockNextStages(currentSelection);
             } else {
                 playerState.lossStreak++;
                 playerState.winStreak = 0;
@@ -2730,6 +2798,38 @@ export class AutoChessMode {
     private startPreparationCountdown(playerId: PlayerID, stageId: number): void {
         const PREP_TIME = 5;
         let timeLeft = PREP_TIME;
+        
+        // 如果是第一回合，先进入准备阶段状态并创建初始棋子
+        if (this.gameState.currentRound === 0 || this.gameState.currentRound === 1) {
+            print(`[AutoChessMode] 第一回合：设置准备阶段状态`);
+            this.gameState.currentPhase = RoundPhase.PREPARATION;
+            this.gameState.phaseTimeLeft = PREP_TIME;
+            
+            // 将玩家移动到观战区域（靠近棋盘）
+            for (const [pid, playerState] of this.gameState.playerStates) {
+                if (playerState.isAlive) {
+                    this.battleSystem.movePlayerToSpectatorArea(pid);
+                }
+            }
+            
+            // 绘制蓝色六边形网格
+            this.battleSystem.recreateHexBoard();
+            
+            // 为玩家创建初始棋子（准备阶段）
+            this.createPlayerInitialPieces();
+            
+            // 在准备阶段创建敌人棋子（但禁用攻击）
+            print(`[AutoChessMode] 准备阶段：创建敌人棋子（禁用攻击）...`);
+            this.createEnemyPiecesForPreparation(stageId);
+            
+            // 单机模式：准备阶段显示背包
+            (CustomGameEventManager.Send_ServerToAllClients as any)('show_inventory', {});
+            print(`[AutoChessMode] ✅ 第一回合准备阶段状态已设置，棋子已创建`);
+        } else {
+            // 后续回合：在准备阶段也创建敌人棋子（但禁用攻击）
+            print(`[AutoChessMode] 准备阶段：创建敌人棋子（禁用攻击）...`);
+            this.createEnemyPiecesForPreparation(stageId);
+        }
 
         // 通知客户端准备阶段开始
         (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_preparation_started', {
@@ -2785,8 +2885,26 @@ export class AutoChessMode {
         print(`[AutoChessMode] 选关后回合: ${this.gameState.currentRound}`);
         print(`[AutoChessMode] 当前阶段: ${this.gameState.currentPhase}`);
 
-        // 清理之前的AI棋子
+        // 检查敌人是否已在准备阶段创建
+        const enemyPieces = this.battleSystem.getPlayerPieces(-1);
+        const enemiesAlreadyCreated = enemyPieces && enemyPieces.length > 0;
+        
+        if (enemiesAlreadyCreated) {
+            print(`[AutoChessMode] 敌人已在准备阶段创建，启用所有单位攻击能力...`);
+            // 启用所有单位攻击
+            this.battleSystem.enableAllAttacks();
+        } else {
+            // 清理之前的AI棋子（如果存在）
         this.battleSystem.clearPlayerPieces(-1);
+            
+            // 根据关卡配置生成敌人
+            print(`[AutoChessMode] 根据关卡 ${stageId} 配置生成敌人...`);
+            for (const [pid, playerState] of this.gameState.playerStates) {
+                if (playerState.isAlive) {
+                    this.createEnemyForPlayer(pid, stageId, false); // false = 战斗阶段，启用攻击
+                }
+            }
+        }
         
         // 重置玩家存活状态
         for (const [pid, playerState] of this.gameState.playerStates) {
@@ -2807,13 +2925,9 @@ export class AutoChessMode {
             }
         }
 
-        // 根据关卡配置生成敌人
-        print(`[AutoChessMode] 根据关卡 ${stageId} 配置生成敌人...`);
-        for (const [pid, playerState] of this.gameState.playerStates) {
-            if (playerState.isAlive) {
-                this.createEnemyForPlayer(pid, stageId);
-            }
-        }
+        // 启用所有单位攻击（战斗阶段）
+        print(`[AutoChessMode] 启用所有单位攻击能力...`);
+        this.battleSystem.enableAllAttacks();
 
         // 开始战斗
         this.startAllBattles();

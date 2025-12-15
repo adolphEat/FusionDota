@@ -537,10 +537,10 @@ function createBottomQuickBar(parent: Panel): void {
     const bottomBar = $.CreatePanel('Panel', parent, 'BottomQuickBar');
     
     const quickActions = [
-        { id: 'inventory', name: '背包', icon: '🎒' },
-        { id: 'skills', name: '技能', icon: '✨' },
-        { id: 'stage_select', name: '选关', icon: '🗺️' },
-        { id: 'test_kill', name: '测试结算', icon: '💀' },
+        { id: 'inventory', name: '背包' },
+        { id: 'skills', name: '技能' },
+        { id: 'stage_select', name: '选关' },
+        { id: 'test_kill', name: '测试结算' },
     ];
     
     quickActions.forEach((action, index) => {
@@ -552,7 +552,7 @@ function createBottomQuickBar(parent: Panel): void {
         
         // 创建一个单独的 Label 显示所有内容
         const contentLabel = $.CreatePanel('Label', btn, `${action.id}_content`);
-        contentLabel.text = `${action.icon}\n${action.name}`;
+        contentLabel.text = action.name;
         contentLabel.style.width = '100%';
         contentLabel.style.height = '100%';
         contentLabel.style.textAlign = 'center';
@@ -574,6 +574,16 @@ function createBottomQuickBar(parent: Panel): void {
                 return;
             }
             
+            // 特殊处理：背包按钮 - 切换显示/隐藏
+            if (action.id === 'inventory') {
+                $.Msg('[PlayingHUD] Toggling inventory...');
+                // 通过服务端转发事件（像选关按钮一样）
+                GameEvents.SendCustomGameEventToServer('toggle_inventory_request', {
+                    playerId: Players.GetLocalPlayer()
+                });
+                return;
+            }
+            
             // 其他按钮通过服务器事件处理
             GameEvents.SendCustomGameEventToServer('quick_action', { 
                 action: action.id 
@@ -585,7 +595,7 @@ function createBottomQuickBar(parent: Panel): void {
             $.Msg(`[PlayingHUD] 👆 Mouse over: ${action.name}`);
         });
         
-        $.Msg(`🎮 Created button: ${action.name} (${action.icon})`);
+        $.Msg(`🎮 Created button: ${action.name}`);
     });
     
     $.Msg(`🎮 Bottom quick bar created with ${quickActions.length} buttons`);
