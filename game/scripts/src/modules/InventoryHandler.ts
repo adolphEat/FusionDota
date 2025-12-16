@@ -74,44 +74,75 @@ export class InventoryHandler {
             return;
         }
 
-        const playerState = (GameRules.AutoChessMode as any).gameState.playerStates.get(playerId);
-        if (!playerState) {
-            print(`[InventoryHandler] ⚠️ Player ${playerId} state not found`);
-            return;
-        }
-
-        print(`[InventoryHandler] playerState found: ${playerState != null}`);
-        print(`[InventoryHandler] playerState.benchPieces 类型: ${typeof playerState.benchPieces}`);
+        // 单机模式：直接获取备战席棋子
+        const benchPieces = GameRules.AutoChessMode.getBenchPieces();
+        print(`[InventoryHandler] 获取备战席棋子，类型: ${typeof benchPieces}`);
         
-        const benchPieces = playerState.benchPieces || [];
-        const pieceCount = benchPieces.length || 0;
+        // 计算数组长度（兼容数组和 Lua 表）
+        let pieceCount = 0;
+        if (benchPieces) {
+            if (Array.isArray(benchPieces)) {
+                pieceCount = benchPieces.length;
+            } else {
+                // 如果不是数组，可能是 Lua 表，使用 Object.keys 计算长度
+                pieceCount = Object.keys(benchPieces).length;
+            }
+        }
         print(`[InventoryHandler] Sending ${pieceCount} pieces to player ${playerId}`);
 
-        // 手动构建数组，避免使用 Lua 不支持的 map 方法
+        // 构建数组数据
         const piecesData: any[] = [];
         if (benchPieces && pieceCount > 0) {
-            for (let i = 0; i < pieceCount; i++) {
-                const piece = benchPieces[i];
-                if (piece) {
-                    piecesData.push({
-                        id: piece.id,
-                        unitName: piece.unitName,
-                        displayName: piece.displayName,
-                        rarity: piece.rarity,
-                        cost: piece.cost,
-                        race: piece.race,
-                        class: piece.class,
-                        health: piece.health,
-                        damage: piece.damage,
-                        armor: piece.armor,
-                        attackRange: piece.attackRange
-                    });
-                    print(`[InventoryHandler] 添加棋子 ${i}: ${piece.displayName}`);
+            if (Array.isArray(benchPieces)) {
+                // 标准数组遍历
+                for (let i = 0; i < benchPieces.length; i++) {
+                    const piece = benchPieces[i];
+                    if (piece && piece.id) {
+                        piecesData.push({
+                            id: piece.id,
+                            unitName: piece.unitName,
+                            displayName: piece.displayName,
+                            rarity: piece.rarity,
+                            cost: piece.cost,
+                            race: piece.race,
+                            class: piece.class,
+                            health: piece.health,
+                            damage: piece.damage,
+                            armor: piece.armor,
+                            attackRange: piece.attackRange
+                        });
+                        print(`[InventoryHandler] 添加棋子 ${i}: ${piece.displayName}`);
+                    }
+                }
+            } else {
+                // Lua 表：使用 Object.keys 遍历
+                const keys = Object.keys(benchPieces);
+                for (let i = 0; i < keys.length; i++) {
+                    const key = keys[i] as string;
+                    const piece = (benchPieces as any)[key];
+                    if (piece && piece.id) {
+                        piecesData.push({
+                            id: piece.id,
+                            unitName: piece.unitName,
+                            displayName: piece.displayName,
+                            rarity: piece.rarity,
+                            cost: piece.cost,
+                            race: piece.race,
+                            class: piece.class,
+                            health: piece.health,
+                            damage: piece.damage,
+                            armor: piece.armor,
+                            attackRange: piece.attackRange
+                        });
+                        print(`[InventoryHandler] 添加棋子 ${i}: ${piece.displayName}`);
+                    }
                 }
             }
         }
         
-        print(`[InventoryHandler] piecesData 长度: ${piecesData.length}`);
+        // 获取 piecesData 长度（标准数组）
+        const piecesDataLength = piecesData.length;
+        print(`[InventoryHandler] piecesData 长度: ${piecesDataLength}`);
         print(`[InventoryHandler] piecesData 类型: ${typeof piecesData}`);
         
         // 打印 piecesData 的每个元素用于调试
@@ -120,19 +151,16 @@ export class InventoryHandler {
             print(`[InventoryHandler] piecesData[${i}]: ${p.displayName || 'unknown'}`);
         }
 
-        const player = PlayerResource.GetPlayer(playerId);
-        print(`[InventoryHandler] player 对象: ${player != null}`);
+        // 构建发送的数据对象
+        const sendData = {
+            pieces: piecesData
+        };
         
+        print(`[InventoryHandler] 准备发送数据，棋子数量: ${piecesDataLength}`);
+        
+        // 发送给指定玩家
+        const player = PlayerResource.GetPlayer(playerId);
         if (player) {
-            // 构建发送的数据对象
-            const sendData = {
-                pieces: piecesData
-            };
-            
-            print(`[InventoryHandler] 准备发送数据...`);
-            print(`[InventoryHandler] sendData.pieces 类型: ${typeof sendData.pieces}`);
-            print(`[InventoryHandler] sendData.pieces 长度: ${sendData.pieces.length}`);
-            
             (CustomGameEventManager.Send_ServerToPlayer as any)(player, 'update_inventory_data', sendData);
             print(`[InventoryHandler] ✅ Inventory data sent to player ${playerId}`);
         }
@@ -147,53 +175,78 @@ export class InventoryHandler {
             return;
         }
 
-        const autoChessMode = GameRules.AutoChessMode as any;
-        const playerState = autoChessMode.gameState.playerStates.get(playerId);
-        
+        // 单机模式：直接获取玩家状态和备战席
+        const playerState = GameRules.AutoChessMode.getPlayerState();
         if (!playerState) {
-            print(`[InventoryHandler] ⚠️ Player ${playerId} state not found`);
+            print('[InventoryHandler] ⚠️ Player state not found');
             return;
         }
 
         const slotIndex = data.slotIndex;
-        const benchPieces = playerState.benchPieces || [];
+        const benchPieces = playerState.benchPieces;
         
-        if (slotIndex < 0 || slotIndex >= benchPieces.length) {
-            print(`[InventoryHandler] ⚠️ Invalid slot index: ${slotIndex}`);
+        // 兼容 Lua：计算数组长度
+        let benchPiecesLength = 0;
+        if (benchPieces) {
+            if (Array.isArray(benchPieces)) {
+                benchPiecesLength = benchPieces.length;
+            } else {
+                benchPiecesLength = Object.keys(benchPieces).length;
+            }
+        }
+        
+        if (slotIndex < 0 || slotIndex >= benchPiecesLength) {
+            print(`[InventoryHandler] ⚠️ Invalid slot index: ${slotIndex}, benchPiecesLength: ${benchPiecesLength}`);
             return;
         }
 
-        const piece = benchPieces[slotIndex];
+        // 兼容 Lua 1-based 索引：在 Lua 中数组从 1 开始
+        // slotIndex 来自客户端，是 0-based，需要转换
+        const luaIndex = slotIndex + 1;
+        const piece = benchPieces[luaIndex] || benchPieces[slotIndex];
         if (!piece) {
-            print(`[InventoryHandler] ⚠️ No piece in slot ${slotIndex}`);
+            print(`[InventoryHandler] ⚠️ No piece in slot ${slotIndex} (luaIndex: ${luaIndex})`);
             return;
         }
 
-        // 获取鼠标位置对应的棋盘格子
-        const boardPosition = this.cursorToBoardPosition(data.cursorX, data.cursorY);
+        // 获取世界坐标对应的棋盘格子
+        const worldX = data.worldX as number;
+        const worldY = data.worldY as number;
+        
+        if (worldX === undefined || worldY === undefined) {
+            print(`[InventoryHandler] ⚠️ Missing world coordinates`);
+            this.sendDeploymentFeedback(playerId, false, '坐标无效');
+            return;
+        }
+        
+        const boardPosition = this.worldToBoardPosition(worldX, worldY, playerId);
         
         if (!boardPosition) {
-            print(`[InventoryHandler] ⚠️ Invalid board position from cursor`);
-            this.sendDeploymentFeedback(playerId, false, '无效位置');
+            print(`[InventoryHandler] ⚠️ Position outside player's half`);
+            this.sendDeploymentFeedback(playerId, false, '只能放置在己方半场（下半区）');
             return;
         }
 
         print(`[InventoryHandler] Deploying ${piece.displayName} to board position (${boardPosition.x}, ${boardPosition.y})`);
 
-        // 检查当前游戏阶段
-        const currentPhase = autoChessMode.currentPhase;
-        if (currentPhase !== 'preparation' && currentPhase !== 'planning') {
-            print(`[InventoryHandler] ⚠️ Cannot deploy during ${currentPhase} phase`);
-            this.sendDeploymentFeedback(playerId, false, '只能在准备阶段部署');
-            return;
-        }
+        // 单机模式：获取当前游戏阶段
+        const currentPhase = GameRules.AutoChessMode.getCurrentPhase();
+        // 单机模式：暂时允许任何阶段部署（方便测试）
+        // 如果需要限制，可以取消下面的注释
+        // if (currentPhase !== 'preparation' && currentPhase !== 'planning') {
+        //     print(`[InventoryHandler] ⚠️ Cannot deploy during ${currentPhase} phase`);
+        //     this.sendDeploymentFeedback(playerId, false, '只能在准备阶段部署');
+        //     return;
+        // }
+        print(`[InventoryHandler] 当前阶段: ${currentPhase}，允许部署`);
 
         // 部署棋子
         const success = this.deployPieceToBoard(playerId, piece, boardPosition, slotIndex);
         
         if (success) {
-            // 从备战席移除
-            benchPieces.splice(slotIndex, 1);
+            // 从备战席移除 - 使用兼容 Lua 的方式
+            // 不使用 splice，而是重建数组
+            this.removePieceFromBench(playerState, slotIndex);
             print(`[InventoryHandler] ✅ Piece deployed successfully`);
             
             // 更新客户端背包
@@ -206,33 +259,96 @@ export class InventoryHandler {
             this.sendDeploymentFeedback(playerId, false, '部署失败');
         }
     }
+    
+    /**
+     * 从备战席移除棋子（兼容 Lua）
+     * 不使用 splice，而是使用 table.remove 或重建数组
+     */
+    private removePieceFromBench(playerState: any, slotIndex: number): void {
+        const benchPieces = playerState.benchPieces;
+        if (!benchPieces) return;
+        
+        // 方法1：使用 Lua 的 table.remove（如果可用）
+        // 在 TSTL 中，我们可以直接调用 Lua 的 table.remove
+        const tableRemove = (globalThis as any).table?.remove;
+        if (tableRemove) {
+            // Lua 的 table.remove 使用 1-based 索引
+            tableRemove(benchPieces, slotIndex + 1);
+            print(`[InventoryHandler] 使用 table.remove 移除棋子，索引: ${slotIndex + 1}`);
+        } else {
+            // 方法2：重建数组（作为回退方案）
+            const newBenchPieces: any[] = [];
+            if (Array.isArray(benchPieces)) {
+                for (let i = 0; i < benchPieces.length; i++) {
+                    if (i !== slotIndex) {
+                        newBenchPieces.push(benchPieces[i]);
+                    }
+                }
+            } else {
+                // Lua 表：使用 Object.keys 遍历
+                const keys = Object.keys(benchPieces);
+            let currentIndex = 0;
+                for (let i = 0; i < keys.length; i++) {
+                    const key = keys[i] as string;
+                    if (currentIndex !== slotIndex) {
+                        newBenchPieces.push((benchPieces as any)[key]);
+                    }
+                    currentIndex++;
+                }
+            }
+            playerState.benchPieces = newBenchPieces;
+            print(`[InventoryHandler] 重建数组移除棋子，索引: ${slotIndex}`);
+        }
+    }
+
+    // 棋盘配置（与 ChessBattleSystem 保持一致）
+    private readonly BOARD_SIZE = 8;
+    private readonly CELL_SIZE = 128;
+    private readonly BOARD_OFFSET_X = 1058;  // 棋盘中心X
+    private readonly BOARD_OFFSET_Y = 978;   // 棋盘中心Y
+
+    // 玩家半场：Y = 0-3，敌方半场：Y = 4-7
+    private readonly PLAYER_HALF_MAX_Y = 3;
 
     /**
-     * 将鼠标屏幕坐标转换为棋盘坐标
+     * 将世界坐标转换为棋盘格子坐标
+     * 注意：玩家只能在自己的半场（Y=0-3）部署棋子
      */
-    private cursorToBoardPosition(screenX: number, screenY: number): BoardPosition | null {
-        // 这里需要根据实际棋盘布局实现坐标转换
-        // 简化实现：根据屏幕位置估算棋盘格子
+    private worldToBoardPosition(worldX: number, worldY: number, playerId: PlayerID): BoardPosition | null {
+        // 计算棋盘的总尺寸和中心偏移
+        const boardTotalSize = this.BOARD_SIZE * this.CELL_SIZE; // 8 * 128 = 1024
+        const centerOffset = boardTotalSize / 2; // 512
         
-        // 棋盘范围（需要根据实际地图调整）
-        const BOARD_START_X = 500;  // 棋盘起始世界X坐标
-        const BOARD_START_Y = 500;  // 棋盘起始世界Y坐标
-        const CELL_SIZE = 128;      // 每个格子的大小
+        // 计算玩家棋盘偏移（多玩家时每个玩家有独立棋盘）
+        const playerOffset = playerId >= 0 ? playerId * 2000 : 0;
         
-        // 简单的屏幕到世界坐标转换（实际应该使用 GameUI.GetScreenWorldPosition）
-        // 这里使用简化算法
-        const worldX = BOARD_START_X + (screenX / 1920) * 1024;
-        const worldY = BOARD_START_Y + (screenY / 1080) * 768;
+        // 棋盘左下角的世界坐标
+        const boardStartX = this.BOARD_OFFSET_X - centerOffset + playerOffset;
+        const boardStartY = this.BOARD_OFFSET_Y - centerOffset;
         
-        const gridX = Math.floor((worldX - BOARD_START_X) / CELL_SIZE);
-        const gridY = Math.floor((worldY - BOARD_START_Y) / CELL_SIZE);
+        // 计算点击位置相对于棋盘的偏移
+        const relativeX = worldX - boardStartX;
+        const relativeY = worldY - boardStartY;
         
-        // 验证范围（8x8棋盘）
-        if (gridX >= 0 && gridX < 8 && gridY >= 0 && gridY < 8) {
-            return { x: gridX, y: gridY };
+        // 转换为格子坐标
+        const gridX = Math.floor(relativeX / this.CELL_SIZE);
+        const gridY = Math.floor(relativeY / this.CELL_SIZE);
+        
+        print(`[InventoryHandler] 🎯 世界坐标(${worldX.toFixed(1)}, ${worldY.toFixed(1)}) → 棋盘格子(${gridX}, ${gridY})`);
+        
+        // 验证X范围（0-7）
+        if (gridX < 0 || gridX >= this.BOARD_SIZE) {
+            print(`[InventoryHandler] ⚠️ X坐标超出棋盘范围: ${gridX}`);
+            return null;
         }
         
-        return null;
+        // 验证Y范围：玩家只能在自己的半场（Y=0-3）部署
+        if (gridY < 0 || gridY > this.PLAYER_HALF_MAX_Y) {
+            print(`[InventoryHandler] ⚠️ Y坐标超出玩家半场范围: ${gridY} (允许范围: 0-${this.PLAYER_HALF_MAX_Y})`);
+            return null;
+        }
+        
+        return { x: gridX, y: gridY };
     }
 
     /**
@@ -256,9 +372,10 @@ export class InventoryHandler {
 
         try {
             // 调用 ChessBattleSystem 的部署方法
-            (battleSystem as any).deployPiece(playerId, piece.unitName, position);
+            // 使用 piece.id (如 'axe') 而不是 piece.unitName (如 'npc_dota_hero_axe')
+            (battleSystem as any).deployPiece(playerId, piece.id, position);
             
-            print(`[InventoryHandler] ✅ Deployed ${piece.unitName} at (${position.x}, ${position.y})`);
+            print(`[InventoryHandler] ✅ Deployed ${piece.id} (${piece.displayName}) at (${position.x}, ${position.y})`);
             return true;
         } catch (error) {
             print(`[InventoryHandler] ❌ Deploy error: ${error}`);
@@ -276,6 +393,7 @@ export class InventoryHandler {
                 success: success,
                 message: message
             });
+            print(`[InventoryHandler] 📤 Feedback: ${success ? '✅' : '❌'} ${message}`);
         }
     }
 }

@@ -53,6 +53,27 @@ declare global {
         function GetHUDElement(elementName: string): any;
     }
     
+    // DOTA2 英雄头像面板类型
+    // DOTAHeroImage 是 Panorama 内置的英雄头像显示组件
+    interface DOTAHeroImage extends Panel {
+        /** 英雄内部名称 (如 'npc_dota_hero_axe') */
+        heroname: string;
+        /** 英雄ID */
+        heroid: number;
+        /** 头像样式: 'portrait'(71x94), 'icon'(32x32), 'landscape'(128x72) */
+        heroimagestyle: 'portrait' | 'icon' | 'landscape';
+    }
+    
+    // DOTA2 GameUI 系统
+    namespace GameUI {
+        /** 获取当前鼠标光标的屏幕坐标 [screenX, screenY] */
+        function GetCursorPosition(): [number, number];
+        /** 将屏幕坐标转换为世界坐标（地面位置），如果无法转换返回 null */
+        function GetScreenWorldPosition(screenX: number, screenY: number): [number, number, number] | null;
+        function SetDefaultUIEnabled(elementType: number, enabled: boolean): void;
+        function SetMouseCallback(callback: (eventName: string, arg: number) => boolean): void;
+    }
+    
     // DOTA2 音效系统
     namespace GameSounds {
         function PlaySound(soundName: string): void;

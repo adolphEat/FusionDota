@@ -214,16 +214,14 @@ function createSlotPanel(index: number): Panel {
     const slot = $.CreatePanel('Panel', slotsContainer!, `InventorySlot_${index}`);
     slot.AddClass('inventory_slot');
     
-    // 设置样式
+    // 设置样式 - 不使用 flowChildren，让子元素可以叠加定位
     slot.style.width = '90px';
     slot.style.height = '90px';
     slot.style.margin = '5px';
     slot.style.backgroundColor = INVENTORY_THEME.slotBg;
     slot.style.border = `2px solid ${INVENTORY_THEME.borderColor}`;
     slot.style.borderRadius = '8px';
-    slot.style.flowChildren = 'down';
-    slot.style.horizontalAlign = 'center';
-    slot.style.verticalAlign = 'center';
+    // 不设置 flowChildren，使用绝对定位叠加子元素
     
     // 创建空槽提示
     const emptyLabel = $.CreatePanel('Label', slot, `EmptyLabel_${index}`);
@@ -236,6 +234,36 @@ function createSlotPanel(index: number): Panel {
     emptyLabel.hittest = false;
     
     return slot;
+}
+
+// ============================================================================
+// 辅助函数
+// ============================================================================
+
+/**
+ * 获取完整的英雄名称（npc_dota_hero_xxx 格式）
+ * DOTAHeroImage 面板需要完整的英雄名称
+ * @param unitName DOTA2 单位名 (npc_dota_hero_xxx)
+ * @param pieceId 棋子ID (通常是短名称如 axe)
+ */
+function getFullHeroName(unitName: string, pieceId: string): string {
+    // 如果 unitName 已经是完整格式，直接返回
+    if (unitName && unitName.startsWith('npc_dota_hero_')) {
+        return unitName;
+    }
+    
+    // 如果 pieceId 是短名称，添加前缀
+    if (pieceId && !pieceId.startsWith('npc_')) {
+        return `npc_dota_hero_${pieceId}`;
+    }
+    
+    // 如果 pieceId 已经是完整格式
+    if (pieceId && pieceId.startsWith('npc_dota_hero_')) {
+        return pieceId;
+    }
+    
+    // 回退：尝试使用 unitName 或 pieceId
+    return unitName || `npc_dota_hero_${pieceId}` || 'npc_dota_hero_axe';
 }
 
 // ============================================================================
@@ -270,19 +298,22 @@ function updateSlot(slotIndex: number, piece: ChessPiece | null): void {
 }
 
 function renderPieceInSlot(slotPanel: Panel, piece: ChessPiece, slotIndex: number): void {
-    // 创建图标容器
-    const iconContainer = $.CreatePanel('Panel', slotPanel, `IconContainer_${slotIndex}`);
-    iconContainer.style.width = '70px';
-    iconContainer.style.height = '70px';
-    iconContainer.style.horizontalAlign = 'center';
-    iconContainer.style.verticalAlign = 'center';
-    iconContainer.style.backgroundSize = 'contain';
-    iconContainer.style.backgroundPosition = 'center';
-    iconContainer.style.backgroundRepeat = 'no-repeat';
+    // 使用 DOTA2 内置的 DOTAHeroImage 面板显示英雄头像
+    const heroImage = $.CreatePanel('DOTAHeroImage', slotPanel, `HeroImage_${slotIndex}`) as DOTAHeroImage;
+    // 头像填满整个槽位
+    heroImage.style.width = '100%';
+    heroImage.style.height = '100%';
+    heroImage.style.horizontalAlign = 'center';
+    heroImage.style.verticalAlign = 'center';
     
-    // 设置英雄图标
-    const heroIconPath = `file://{images}/heroes/${piece.unitName}.png`;
-    iconContainer.style.backgroundImage = `url("${heroIconPath}")`;
+    // 获取完整的英雄名称（npc_dota_hero_xxx 格式）
+    const heroName = getFullHeroName(piece.unitName, piece.id);
+    $.Msg(`[Inventory] 设置英雄图标: ${heroName}`);
+    
+    // 设置英雄名称和图像样式
+    // DOTAHeroImage 属性: heroname, heroid, heroimagestyle
+    heroImage.heroname = heroName;
+    heroImage.heroimagestyle = 'portrait'; // portrait: 71x94, icon: 32x32, landscape: 128x72
     
     // 稀有度边框
     const rarityColor = RARITY_COLORS[piece.rarity.toString()] || INVENTORY_THEME.textRarity.common;
@@ -413,15 +444,19 @@ function createDragDisplayPanel(piece: ChessPiece): Panel {
     const display = $.CreatePanel('Panel', $.GetContextPanel(), 'DragDisplay');
     display.style.width = '80px';
     display.style.height = '80px';
-    display.style.backgroundSize = 'contain';
-    display.style.backgroundPosition = 'center';
-    display.style.backgroundRepeat = 'no-repeat';
     display.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
     display.style.border = `2px solid ${INVENTORY_THEME.borderGold}`;
     display.style.borderRadius = '8px';
+    display.style.overflow = 'clip';
     
-    const heroIconPath = `file://{images}/heroes/${piece.unitName}.png`;
-    display.style.backgroundImage = `url("${heroIconPath}")`;
+    // 使用 DOTAHeroImage 显示英雄头像
+    const heroImage = $.CreatePanel('DOTAHeroImage', display, 'DragHeroImage') as DOTAHeroImage;
+    heroImage.style.width = '100%';
+    heroImage.style.height = '100%';
+    
+    const heroName = getFullHeroName(piece.unitName, piece.id);
+    heroImage.heroname = heroName;
+    heroImage.heroimagestyle = 'portrait';
     
     return display;
 }
@@ -429,21 +464,33 @@ function createDragDisplayPanel(piece: ChessPiece): Panel {
 function deployPieceAtCursor(piece: ChessPiece, slotIndex: number): void {
     $.Msg(`[Inventory] 🎯 Deploying piece: ${piece.displayName} from slot ${slotIndex}`);
     
-    // 获取鼠标在游戏世界中的位置
-    const cursorPos = GameUI.GetCursorPosition();
-    $.Msg(`[Inventory] Cursor position: (${cursorPos[0]}, ${cursorPos[1]})`);
+    // 获取鼠标屏幕位置
+    const screenPos = GameUI.GetCursorPosition();
+    
+    // 将屏幕坐标转换为世界坐标（地面位置）
+    // 注意：GetScreenWorldPosition 需要两个单独的参数
+    const worldPos = GameUI.GetScreenWorldPosition(screenPos[0], screenPos[1]);
+    
+    if (!worldPos) {
+        $.Msg(`[Inventory] ❌ Cannot get world position from screen (${screenPos[0]}, ${screenPos[1]})`);
+        Game.EmitSound('General.Cancel');
+        return;
+    }
+    
+    $.Msg(`[Inventory] Screen: (${screenPos[0]}, ${screenPos[1]}) → World: (${worldPos[0].toFixed(1)}, ${worldPos[1].toFixed(1)}, ${worldPos[2].toFixed(1)})`);
     
     // 获取本地玩家ID（单机模式下通常是0）
     const localPlayerId = Players.GetLocalPlayer();
     
-    // 发送部署请求到服务端
+    // 发送部署请求到服务端（使用世界坐标）
     GameEvents.SendCustomGameEventToServer('inventory_deploy_piece', {
         playerId: localPlayerId,
         pieceId: piece.id,
         unitName: piece.unitName,
         slotIndex: slotIndex,
-        cursorX: cursorPos[0],
-        cursorY: cursorPos[1]
+        worldX: worldPos[0],
+        worldY: worldPos[1],
+        worldZ: worldPos[2]
     });
     
     // 播放音效

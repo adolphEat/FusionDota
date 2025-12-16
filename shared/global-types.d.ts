@@ -52,6 +52,12 @@ declare namespace CDOTAGameRules {
         startGame(): void;
         getStatus(): any;
         buyChessPiece(playerId: PlayerID, pieceId: string): boolean;
+        // 单机模式简化 API
+        getPlayerState(playerId?: PlayerID): any | undefined;
+        getCurrentPhase(): string;
+        getCurrentRound(): number;
+        getBenchPieces(): any[];
+        getBoardPieces(): any[];
     }
     
     // 错误追踪器

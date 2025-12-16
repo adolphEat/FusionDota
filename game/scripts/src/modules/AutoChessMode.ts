@@ -2363,6 +2363,46 @@ export class AutoChessMode {
     public getAllChessPieces(): ChessPiece[] {
         return Array.from(this.chessPieceDatabase.values());
     }
+    
+    /**
+     * 获取玩家状态（公开方法）
+     * 单机模式：默认返回玩家 0 的状态
+     */
+    public getPlayerState(playerId?: PlayerID): PlayerState | undefined {
+        // 单机模式默认使用玩家 0
+        const pid = playerId ?? 0 as PlayerID;
+        return this.gameState.playerStates.get(pid);
+    }
+    
+    /**
+     * 获取当前游戏阶段（公开方法）
+     */
+    public getCurrentPhase(): RoundPhase {
+        return this.gameState.currentPhase;
+    }
+    
+    /**
+     * 获取当前回合数（公开方法）
+     */
+    public getCurrentRound(): number {
+        return this.gameState.currentRound;
+    }
+    
+    /**
+     * 获取玩家备战席棋子（单机模式简化 API）
+     */
+    public getBenchPieces(): ChessPiece[] {
+        const playerState = this.getPlayerState();
+        return playerState?.benchPieces || [];
+    }
+    
+    /**
+     * 获取玩家棋盘上的棋子（单机模式简化 API）
+     */
+    public getBoardPieces(): ChessPiece[] {
+        const playerState = this.getPlayerState();
+        return playerState?.boardPieces || [];
+    }
 
     /**
      * 触发波次结算
