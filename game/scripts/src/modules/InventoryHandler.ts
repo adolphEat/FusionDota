@@ -74,9 +74,10 @@ export class InventoryHandler {
             return;
         }
 
-        // 单机模式：直接获取备战席棋子
+        // 单机模式：获取玩家0的备战席棋子（单机模式只有一个玩家）
+        // 注意：getBenchPieces() 不传参数时默认使用玩家0
         const benchPieces = GameRules.AutoChessMode.getBenchPieces();
-        print(`[InventoryHandler] 获取备战席棋子，类型: ${typeof benchPieces}`);
+        print(`[InventoryHandler] 获取玩家 0 的备战席棋子，类型: ${typeof benchPieces}, 数量: ${benchPieces ? (Array.isArray(benchPieces) ? benchPieces.length : Object.keys(benchPieces).length) : 0}`);
         
         // 计算数组长度（兼容数组和 Lua 表）
         let pieceCount = 0;

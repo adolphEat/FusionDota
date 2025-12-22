@@ -12,6 +12,7 @@ export default function Precache(context: CScriptPrecacheContext) {
             'particles/heroes/ember_spirit/huskar_inner_fire.vpcf',
             'particles/heroes/oracle/oracle_fatesedict.vpcf',
             'particles/heroes/enchantress/enchantress_natures_attendants_count8.vpcf',
+            'particles/heroes/crystal_maiden/maiden_base_attack.vpcf',  // 水晶室女基础攻击
             
             // 声音事件资源
             'soundevents/game_sounds_heroes/game_sounds_razor.vsndevts',

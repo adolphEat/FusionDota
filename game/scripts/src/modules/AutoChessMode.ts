@@ -249,7 +249,7 @@ export class AutoChessMode {
     private startPreparationPhase(): void {
         this.resetWaveSettlementState();
         this.gameState.currentPhase = RoundPhase.PREPARATION;
-        this.gameState.phaseTimeLeft = 10; // 10秒准备时间
+        this.gameState.phaseTimeLeft = 100; // 🧪 测试用：100秒准备时间（方便测试背包拖拽）
         
         // 将玩家移动到观战区域（靠近棋盘）
         for (const [playerId, playerState] of this.gameState.playerStates) {
@@ -383,6 +383,12 @@ export class AutoChessMode {
         const playerState = this.gameState.playerStates.get(playerId);
         if (!playerState) return;
         
+        // 🔑 防止重复添加：如果备战席已有棋子，说明已经初始化过，直接返回
+        if (playerState.benchPieces && playerState.benchPieces.length > 0) {
+            print(`[AutoChessMode] ⚠️ 玩家 ${playerId} 备战席已有 ${playerState.benchPieces.length} 个棋子，跳过重复初始化`);
+            return;
+        }
+        
         // 第一回合固定给玩家三个棋子（不走随机）
         const fixedPieces = ['treant_protector', 'windrunner', 'axe'];
         
@@ -410,32 +416,6 @@ export class AutoChessMode {
                 print(`[AutoChessMode] 警告: 棋子 ${pieceId} 不存在于数据库中`);
             }
         }
-        
-        print(`[AutoChessMode] ========== 玩家 ${playerId} 第一回合初始棋子创建完成 ==========`);
-        print(`[AutoChessMode] 总计生成 ${fixedPieces.length} 个我方棋子 (固定配置)`);
-        
-        // 🎒 测试背包：添加额外的棋子到备战席（不部署到棋盘）
-        // 使用正确的棋子ID格式（与 chessPieceDatabase 匹配）
-        // 选择一些不同费用和类型的棋子用于测试
-        const testBenchPieces = [
-            'crystal_maiden',  // 水晶室女 - 法师
-            'drow_ranger',     // 卓尔游侠 - 射手
-            'lina',            // 莉娜 - 法师
-            'mars',            // 战争之矛 - 战士
-            'enchantress'      // 魅惑魔女 - 射手
-        ];
-        print(`[AutoChessMode] 🎒 ========== 开始添加测试棋子到备战席 ==========`);
-        for (const pieceId of testBenchPieces) {
-            const piece = this.chessPieceDatabase.get(pieceId);
-            if (piece) {
-                playerState.benchPieces.push(piece);
-                print(`[AutoChessMode] 🎒 ✅ 添加测试棋子: ${piece.displayName} (${pieceId})`);
-            } else {
-                print(`[AutoChessMode] 🎒 ❌ 棋子不存在: ${pieceId}`);
-            }
-        }
-        print(`[AutoChessMode] 🎒 备战席总计: ${playerState.benchPieces.length} 个棋子`);
-        print(`[AutoChessMode] 🎒 ========== 测试棋子添加完成 ==========`);
     }
 
     /**
@@ -882,7 +862,7 @@ export class AutoChessMode {
         // 树精卫士 - 坦克
         database.set('treant_protector', {
             id: 'treant_protector',
-            unitName: 'npc_dota_hero_treant',
+            unitName: 'treant_protector1',
             displayName: '树精卫士',
             position: '坦克',
             rarity: ChessRarity.COMMON,
@@ -902,18 +882,18 @@ export class AutoChessMode {
             physicalDamageReduction: 19.35,
             magicDefense: 15,
             attackRange: 200,
-            attackSpeed: 0.60,
-            attackInterval: 1.67,
+            attackSpeed: 1.67,
+            attackInterval: 1.00,
             dps: 30.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['treant_natures_grasp']
+            abilities: ['treant_protector_living_armor']
         });
         
         // 风行者 - 射手
         database.set('windrunner', {
             id: 'windrunner',
-            unitName: 'npc_dota_hero_windrunner',
+            unitName: 'windrunner1',
             displayName: '风行者',
             position: '射手',
             rarity: ChessRarity.COMMON,
@@ -944,7 +924,7 @@ export class AutoChessMode {
         // 战争之矛 (Mars) - 战士
         database.set('mars', {
             id: 'mars',
-            unitName: 'npc_dota_hero_mars',
+            unitName: 'mars1',
             displayName: '战争之矛',
             position: '战士',
             rarity: ChessRarity.COMMON,
@@ -964,7 +944,7 @@ export class AutoChessMode {
             physicalDamageReduction: 15.25,
             magicDefense: 10,
             attackRange: 200,
-            attackSpeed: 0.65,
+            attackSpeed: 0.80,
             attackInterval: 1.54,
             dps: 35.75,
             criticalChance: 0,
@@ -975,7 +955,7 @@ export class AutoChessMode {
         // 雷泽 (Razor) - 法师
         database.set('razor', {
             id: 'razor',
-            unitName: 'npc_dota_hero_razor',
+            unitName: 'razor1',
             displayName: '雷泽',
             position: '法师',
             rarity: ChessRarity.COMMON,
@@ -990,23 +970,23 @@ export class AutoChessMode {
             attackManaRecovery: 6,
             damageManaRecovery: 0,
             skillCooldown: 12.50,
-            damage: 40,
+            damage: 50,
             armor: 2,
             physicalDamageReduction: 10.71,
             magicDefense: 5,
             attackRange: 400,
-            attackSpeed: 0.75,
-            attackInterval: 1.33,
+            attackSpeed: 0.7,
+            attackInterval: 1.43,
             dps: 30.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['razor_plasma_field']
+            abilities: ['razor_eye_of_the_storm']
         });
         
         // 恶魔巫师 (Lion) - 辅助
         database.set('lion', {
             id: 'lion',
-            unitName: 'npc_dota_hero_lion',
+            unitName: 'lion1',
             displayName: '恶魔巫师',
             position: '辅助',
             rarity: ChessRarity.COMMON,
@@ -1026,18 +1006,18 @@ export class AutoChessMode {
             physicalDamageReduction: 10.71,
             magicDefense: 5,
             attackRange: 600,
-            attackSpeed: 0.65,
+            attackSpeed: 0.7,
             attackInterval: 1.54,
             dps: 26.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['lion_impale']
+            abilities: ['lion_hex']
         });
         
         // 魅惑魔女 (Enchantress) - 辅助
         database.set('enchantress', {
             id: 'enchantress',
-            unitName: 'npc_dota_hero_enchantress',
+            unitName: 'enchantress1',
             displayName: '魅惑魔女',
             position: '辅助',
             rarity: ChessRarity.COMMON,
@@ -1052,17 +1032,17 @@ export class AutoChessMode {
             attackManaRecovery: 5.6,
             damageManaRecovery: 0,
             skillCooldown: 13.16,
-            damage: 45,
+            damage: 50,
             armor: 1.5,
             physicalDamageReduction: 8.26,
             magicDefense: 5,
             attackRange: 400,
-            attackSpeed: 0.70,
+            attackSpeed: 0.7,
             attackInterval: 1.43,
             dps: 31.50,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['enchantress_enchant']
+            abilities: ['enchantress1_natures_attendants_heal']
         });
         
         // ========== 二费棋子 (Cost 2) ==========
@@ -1070,7 +1050,7 @@ export class AutoChessMode {
         // 斧王 - 战士
         database.set('axe', {
             id: 'axe',
-            unitName: 'npc_dota_hero_axe',
+            unitName: 'axe1',
             displayName: '斧王',
             position: '战士',
             rarity: ChessRarity.UNCOMMON,
@@ -1090,18 +1070,18 @@ export class AutoChessMode {
             physicalDamageReduction: 23.08,
             magicDefense: 15,
             attackRange: 200,
-            attackSpeed: 0.75,
+            attackSpeed: 0.6,
             attackInterval: 1.33,
             dps: 48.75,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['axe_berserkers_call']
+            abilities: ['axe_battle_hunger_custom']
         });
         
         // 熊战士 (Ursa) - 坦克
         database.set('ursa', {
             id: 'ursa',
-            unitName: 'npc_dota_hero_ursa',
+            unitName: 'ursa1',
             displayName: '熊战士',
             position: '坦克',
             rarity: ChessRarity.UNCOMMON,
@@ -1126,13 +1106,13 @@ export class AutoChessMode {
             dps: 39.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['ursa_overpower']
+            abilities: ['ursa_earthshock']
         });
         
         // 神谕者 (Oracle) - 辅助
         database.set('oracle', {
             id: 'oracle',
-            unitName: 'npc_dota_hero_oracle',
+            unitName: 'oracle1',
             displayName: '神谕者',
             position: '辅助',
             rarity: ChessRarity.UNCOMMON,
@@ -1152,12 +1132,12 @@ export class AutoChessMode {
             physicalDamageReduction: 19.35,
             magicDefense: 15,
             attackRange: 400,
-            attackSpeed: 0.65,
+            attackSpeed: 0.5,
             attackInterval: 1.54,
             dps: 35.75,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['oracle_fortunes_end']
+            abilities: ['oracle1_fatesedict']
         });
         
         // 卓尔游侠 - 射手
@@ -1194,7 +1174,7 @@ export class AutoChessMode {
         // 秀逗魔导师 (Lina) - 法师
         database.set('lina', {
             id: 'lina',
-            unitName: 'npc_dota_hero_lina',
+            unitName: 'lina1',
             displayName: '秀逗魔导师',
             position: '法师',
             rarity: ChessRarity.UNCOMMON,
@@ -1214,12 +1194,12 @@ export class AutoChessMode {
             physicalDamageReduction: 15.25,
             magicDefense: 15,
             attackRange: 600,
-            attackSpeed: 0.70,
+            attackSpeed: 0.65,
             attackInterval: 1.43,
             dps: 38.50,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['lina_dragon_slave']
+            abilities: ['lina_light_strike_array']
         });
         
         // ========== 三费棋子 (Cost 3) ==========
@@ -1227,7 +1207,7 @@ export class AutoChessMode {
         // 灰烬之灵 (Ember Spirit) - 战士
         database.set('ember_spirit', {
             id: 'ember_spirit',
-            unitName: 'npc_dota_hero_ember_spirit',
+            unitName: 'ember_spirit1',
             displayName: '灰烬之灵',
             position: '战士',
             rarity: ChessRarity.RARE,
@@ -1247,18 +1227,18 @@ export class AutoChessMode {
             physicalDamageReduction: 29.58,
             magicDefense: 25,
             attackRange: 200,
-            attackSpeed: 0.65,
+            attackSpeed: 0.75,
             attackInterval: 1.54,
             dps: 42.25,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['ember_spirit_searing_chains']
+            abilities: ['ember_spirit_inner_Fire']
         });
         
         // 敌法师 - 坦克
         database.set('anti_mage', {
             id: 'anti_mage',
-            unitName: 'npc_dota_hero_antimage',
+            unitName: 'anti_mage1',
             displayName: '敌法师',
             position: '坦克',
             rarity: ChessRarity.RARE,
@@ -1278,12 +1258,12 @@ export class AutoChessMode {
             physicalDamageReduction: 29.58,
             magicDefense: 20,
             attackRange: 200,
-            attackSpeed: 0.65,
+            attackSpeed: 0.9,
             attackInterval: 1.54,
             dps: 39.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['antimage_mana_break']
+            abilities: ['anti_mage_counterspell']
         });
         
         // 恐怖利刃 (Terrorblade) - 法师
@@ -1320,7 +1300,7 @@ export class AutoChessMode {
         // 冥界亚龙 (Viper) - 射手
         database.set('viper', {
             id: 'viper',
-            unitName: 'npc_dota_hero_viper',
+            unitName: 'viper1',
             displayName: '冥界亚龙',
             position: '射手',
             rarity: ChessRarity.RARE,
@@ -1340,18 +1320,18 @@ export class AutoChessMode {
             physicalDamageReduction: 19.35,
             magicDefense: 15,
             attackRange: 600,
-            attackSpeed: 0.75,
+            attackSpeed: 0.55,
             attackInterval: 1.33,
             dps: 52.50,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['viper_poison_attack']
+            abilities: ['viper_nethertoxin']
         });
         
         // 死亡先知 (Death Prophet) - 辅助
         database.set('death_prophet', {
             id: 'death_prophet',
-            unitName: 'npc_dota_hero_death_prophet',
+            unitName: 'death_prophet1',
             displayName: '死亡先知',
             position: '辅助',
             rarity: ChessRarity.RARE,
@@ -1371,12 +1351,12 @@ export class AutoChessMode {
             physicalDamageReduction: 23.08,
             magicDefense: 15,
             attackRange: 400,
-            attackSpeed: 0.70,
+            attackSpeed: 0.7,
             attackInterval: 1.43,
             dps: 42.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['death_prophet_crypt_swarm']
+            abilities: ['death_prophet1_silence']
         });
         
         // ========== 四费棋子 (Cost 4) ==========
@@ -1384,7 +1364,7 @@ export class AutoChessMode {
         // 孽主 (Underlord) - 坦克
         database.set('underlord', {
             id: 'underlord',
-            unitName: 'npc_dota_hero_abyssal_underlord',
+            unitName: 'underlord1',
             displayName: '孽主',
             position: '坦克',
             rarity: ChessRarity.EPIC,
@@ -1409,13 +1389,13 @@ export class AutoChessMode {
             dps: 42.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['abyssal_underlord_firestorm']
+            abilities: ['underlord_pit_of_malice']
         });
         
         // 影魔 (Shadow Fiend) - 射手
         database.set('shadow_fiend', {
             id: 'shadow_fiend',
-            unitName: 'npc_dota_hero_nevermore',
+            unitName: 'shadow_fiend1',
             displayName: '影魔',
             position: '射手',
             rarity: ChessRarity.EPIC,
@@ -1446,7 +1426,7 @@ export class AutoChessMode {
         // 水晶室女 - 法师
         database.set('crystal_maiden', {
             id: 'crystal_maiden',
-            unitName: 'npc_dota_hero_crystal_maiden',
+            unitName: 'crystal_maiden1',
             displayName: '水晶室女',
             position: '法师',
             rarity: ChessRarity.EPIC,
@@ -1466,18 +1446,18 @@ export class AutoChessMode {
             physicalDamageReduction: 23.08,
             magicDefense: 20,
             attackRange: 600,
-            attackSpeed: 0.65,
+            attackSpeed: 0.80,
             attackInterval: 1.54,
             dps: 39.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['crystal_maiden_crystal_nova']
+            abilities: ['tidehunter_ravage']
         });
         
         // 食人魔法师 (Ogre Magi) - 辅助
         database.set('ogre_magi', {
             id: 'ogre_magi',
-            unitName: 'npc_dota_hero_ogre_magi',
+            unitName: 'ogre_magi1',
             displayName: '食人魔法师',
             position: '辅助',
             rarity: ChessRarity.EPIC,
@@ -1497,7 +1477,7 @@ export class AutoChessMode {
             physicalDamageReduction: 29.58,
             magicDefense: 25,
             attackRange: 200,
-            attackSpeed: 0.60,
+            attackSpeed: 1.00,
             attackInterval: 1.67,
             dps: 36.00,
             criticalChance: 0,
@@ -1510,7 +1490,7 @@ export class AutoChessMode {
         // 谜团 (Enigma) - 法师
         database.set('enigma', {
             id: 'enigma',
-            unitName: 'npc_dota_hero_enigma',
+            unitName: 'enigma1',
             displayName: '谜团',
             position: '法师',
             rarity: ChessRarity.LEGENDARY,
@@ -1530,7 +1510,7 @@ export class AutoChessMode {
             physicalDamageReduction: 26.47,
             magicDefense: 20,
             attackRange: 800,
-            attackSpeed: 0.65,
+            attackSpeed: 0.8,
             attackInterval: 1.54,
             dps: 45.50,
             criticalChance: 0,
@@ -1541,7 +1521,7 @@ export class AutoChessMode {
         // 破晓晨星 (Dawnbreaker) - 坦克
         database.set('dawnbreaker', {
             id: 'dawnbreaker',
-            unitName: 'npc_dota_hero_dawnbreaker',
+            unitName: 'dawnbreaker1',
             displayName: '破晓晨星',
             position: '坦克',
             rarity: ChessRarity.LEGENDARY,
@@ -1561,18 +1541,18 @@ export class AutoChessMode {
             physicalDamageReduction: 37.50,
             magicDefense: 40,
             attackRange: 200,
-            attackSpeed: 0.60,
+            attackSpeed: 0.8,
             attackInterval: 1.67,
             dps: 42.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['dawnbreaker_fire_wreath']
+            abilities: ['dawnbreaker1_solar_guardian_land']
         });
         
         // 宙斯 (Zeus) - 射手
         database.set('zeus', {
             id: 'zeus',
-            unitName: 'npc_dota_hero_zuus',
+            unitName: 'zeus1',
             displayName: '宙斯',
             position: '射手',
             rarity: ChessRarity.LEGENDARY,
@@ -1592,12 +1572,12 @@ export class AutoChessMode {
             physicalDamageReduction: 26.47,
             magicDefense: 20,
             attackRange: 600,
-            attackSpeed: 0.75,
+            attackSpeed: 0.6,
             attackInterval: 1.33,
             dps: 60.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['zuus_arc_lightning']
+            abilities: ['zeus_Thundergods_Wrath']
         });
         
         return database;
@@ -2389,10 +2369,11 @@ export class AutoChessMode {
     }
     
     /**
-     * 获取玩家备战席棋子（单机模式简化 API）
+     * 获取玩家备战席棋子
+     * @param playerId 玩家ID，如果不传则使用玩家0（单机模式）
      */
-    public getBenchPieces(): ChessPiece[] {
-        const playerState = this.getPlayerState();
+    public getBenchPieces(playerId?: PlayerID): ChessPiece[] {
+        const playerState = this.getPlayerState(playerId);
         return playerState?.benchPieces || [];
     }
     
@@ -2833,10 +2814,10 @@ export class AutoChessMode {
     }
 
     /**
-     * 开始准备阶段倒计时（5秒）
+     * 开始准备阶段倒计时（100秒 - 用于测试背包拖拽）
      */
     private startPreparationCountdown(playerId: PlayerID, stageId: number): void {
-        const PREP_TIME = 5;
+        const PREP_TIME = 100;  // 🧪 测试用：延长到100秒
         let timeLeft = PREP_TIME;
         
         // 如果是第一回合，先进入准备阶段状态并创建初始棋子

@@ -71,6 +71,7 @@
 			"particle"	"particles/heroes/windrunner/windrunner_spell_powershot.vpcf"
 			"particle"	"particles/heroes/windrunner/windrunner_spell_powershot_channel.vpcf"
 			"particle"	"particles/heroes/windrunner/windrunner_spell_powershot_destruction.vpcf"
+			"particle"	"particles/heroes/windrunner/windrunner_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_windrunner.vsndevts"
 		}
 	}
@@ -135,6 +136,7 @@
 		"Precache"
 		{
 			"particle"	"particles/heroes/crystal_maiden/tide_2021_ravage.vpcf"
+			"particle"	"particles/heroes/crystal_maiden/maiden_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_tidehunter.vsndevts"
 		}
 	}
@@ -166,6 +168,7 @@
 		"Precache" {
 			"soundfile" "soundevents/game_sounds_heroes/game_sounds_lina.vsndevts"
 			"particle" "particles/heroes/lina/lina_spell_light_strike_array.vpcf"
+			"particle" "particles/heroes/lina/lina_base_attack.vpcf"
 		}
 	}
 	
@@ -248,6 +251,7 @@
 		{
 			"particle"	"particles/heroes/viper/viper_nethertoxin.vpcf"
 			"particle"	"particles/heroes/viper/viper_poison_debuff.vpcf"
+			"particle"	"particles/heroes/viper/viper_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_viper.vsndevts"
 		}
 	}
@@ -303,6 +307,7 @@
 		"Precache"
 		{
 			"particle"	"particles/heroes/enigma/enigma_blackhole.vpcf"
+			"particle"	"particles/heroes/enigma/enigma_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_enigma.vsndevts"
 		}
 	}
@@ -363,6 +368,7 @@
 		"Precache"
 		{
 			"particle"	"particles/heroes/lion/lion_spell_voodoo.vpcf"
+			"particle"	"particles/heroes/lion/lion_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_lion.vsndevts"
 		}
 	}
@@ -392,6 +398,7 @@
 		"Precache"
 		{
 			"particle"	"particles/heroes/oracle/oracle_fatesedict.vpcf"
+			"particle"	"particles/heroes/oracle/oracle_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts"
 		}
 	}
@@ -421,6 +428,7 @@
 		"Precache"
 		{
 			"particle"	"particles/heroes/death_prophet/death_prophet_silence.vpcf"
+			"particle"	"particles/heroes/death_prophet/death_prophet_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_death_prophet.vsndevts"
 		}
 	}
@@ -549,6 +557,7 @@
 			"particle"	"particles/heroes/zeus/zuus_arc_lightning.vpcf"
 			"particle"	"particles/heroes/zeus/zuus_thundergods_wrath.vpcf"
 			"particle"	"particles/heroes/zeus/zuus_thundergods_wrath_start.vpcf"
+			"particle"	"particles/heroes/zeus/zuus_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_zuus.vsndevts"
 		}
 	}
@@ -633,6 +642,7 @@
 		"Precache"
 		{
 			"particle"	"particles/heroes/razor/razor_rain_storm.vpcf"
+			"particle"	"particles/heroes/razor/razor_base_attack.vpcf"
 			"particle"	"particles/heroes/zeus/zuus_thundergods_wrath_start.vpcf"
 		}
 	}

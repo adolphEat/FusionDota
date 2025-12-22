@@ -77,8 +77,9 @@ let inventorySlots: InventorySlot[] = [];
 let draggedPiece: ChessPiece | null = null;
 let draggedSlotIndex: number = -1;
 let dragOverlay: Panel | null = null;
+let isDragging: boolean = false;  // 🔑 全局拖拽状态
 
-const MAX_SLOTS = 8; // 最大备战席位数
+const MAX_SLOTS = 12; // 最大备战席位数
 
 // ============================================================================
 // 初始化
@@ -92,6 +93,20 @@ function initialize(): void {
     if (!rootPanel) {
         rootPanel = $.CreatePanel('Panel', $.GetContextPanel(), 'InventoryRoot');
         rootPanel.AddClass('inventory_root');
+    }
+    
+    // 🔑 关键：根面板必须允许事件传递（但自身不拦截）
+    // hittest="false" 会阻止所有子元素的事件，所以不设置或设置为 true
+    // 但为了不影响其他UI，我们让根面板不拦截事件，但允许事件传递到子元素
+    rootPanel.hittest = false;  // 根面板不拦截，但允许事件传递
+    
+    // 🔑 如果容器已存在，先删除（防止重复创建导致多个槽位）
+    const existingContainer = $('#InventoryContainer') as Panel;
+    if (existingContainer) {
+        existingContainer.DeleteAsync(0);
+        containerPanel = null;
+        slotsContainer = null;
+        $.Msg('[Inventory] 清理旧的容器，防止重复创建');
     }
     
     // 创建容器
@@ -116,6 +131,9 @@ function initialize(): void {
 function createContainer(): void {
     containerPanel = $.CreatePanel('Panel', rootPanel!, 'InventoryContainer');
     containerPanel.AddClass('inventory_container');
+    
+    // 🔑 关键：容器面板必须能接收鼠标事件
+    containerPanel.hittest = true;
     
     // 设置样式
     containerPanel.style.width = '100%';
@@ -183,13 +201,23 @@ function createContainer(): void {
     });
     
     // 创建插槽容器
+    // 🔑 检查是否已存在，避免重复创建
+    const existingSlotsContainer = $('#InventorySlotsContainer') as Panel;
+    if (existingSlotsContainer) {
+        existingSlotsContainer.DeleteAsync(0);
+        $.Msg('[Inventory] 删除旧的槽位容器');
+    }
+    
     slotsContainer = $.CreatePanel('Panel', containerPanel, 'InventorySlotsContainer');
-    slotsContainer.style.width = '100%';
+    // 计算固定宽度：12个槽位 * (90px宽度 + 10px左右margin) + 10px容器padding = 1210px
+    slotsContainer.style.width = '1210px';  // 固定宽度，确保所有槽位紧密排列
     slotsContainer.style.height = '100px';
     slotsContainer.style.flowChildren = 'right';
-    slotsContainer.style.horizontalAlign = 'center';
+    slotsContainer.style.horizontalAlign = 'left';  // 靠左对齐，槽位从左到右依次排列
     slotsContainer.style.verticalAlign = 'center';
     slotsContainer.style.padding = '5px';
+    // 🔑 关键：容器必须能接收鼠标事件，否则拖拽无法工作
+    slotsContainer.hittest = true;
 }
 
 function initializeSlots(): void {
@@ -214,6 +242,15 @@ function createSlotPanel(index: number): Panel {
     const slot = $.CreatePanel('Panel', slotsContainer!, `InventorySlot_${index}`);
     slot.AddClass('inventory_slot');
     
+    // 🔑 关键：设置拖拽属性（需要 draggable 才能拖拽）
+    slot.hittest = true;
+    slot.draggable = true;  // 需要设置为 true 才能拖拽
+    
+    // 🔑 确保容器允许拖拽（重要！）
+    if (slotsContainer) {
+        slotsContainer.hittest = true;  // 容器必须能接收事件
+    }
+    
     // 设置样式 - 不使用 flowChildren，让子元素可以叠加定位
     slot.style.width = '90px';
     slot.style.height = '90px';
@@ -231,7 +268,7 @@ function createSlotPanel(index: number): Panel {
     emptyLabel.style.horizontalAlign = 'center';
     emptyLabel.style.verticalAlign = 'center';
     emptyLabel.style.opacity = '0.3';
-    emptyLabel.hittest = false;
+    emptyLabel.hittest = false;  // 子元素不拦截事件
     
     return slot;
 }
@@ -282,6 +319,10 @@ function updateSlot(slotIndex: number, piece: ChessPiece | null): void {
     // 清空槽位
     slotPanel.RemoveAndDeleteChildren();
     
+    // 🔑 清空后确保拖拽属性（防御性编程）
+    slotPanel.hittest = true;
+    slotPanel.draggable = true;
+    
     if (piece) {
         renderPieceInSlot(slotPanel, piece, slotIndex);
     } else {
@@ -298,6 +339,10 @@ function updateSlot(slotIndex: number, piece: ChessPiece | null): void {
 }
 
 function renderPieceInSlot(slotPanel: Panel, piece: ChessPiece, slotIndex: number): void {
+    // 🔑 确保可以接收拖拽事件
+    slotPanel.hittest = true;
+    slotPanel.draggable = true;  // 需要设置为 true 才能拖拽
+    
     // 使用 DOTA2 内置的 DOTAHeroImage 面板显示英雄头像
     const heroImage = $.CreatePanel('DOTAHeroImage', slotPanel, `HeroImage_${slotIndex}`) as DOTAHeroImage;
     // 头像填满整个槽位
@@ -305,6 +350,8 @@ function renderPieceInSlot(slotPanel: Panel, piece: ChessPiece, slotIndex: numbe
     heroImage.style.height = '100%';
     heroImage.style.horizontalAlign = 'center';
     heroImage.style.verticalAlign = 'center';
+    // 🔑 关键：子元素不拦截鼠标事件
+    heroImage.hittest = false;
     
     // 获取完整的英雄名称（npc_dota_hero_xxx 格式）
     const heroName = getFullHeroName(piece.unitName, piece.id);
@@ -331,7 +378,7 @@ function renderPieceInSlot(slotPanel: Panel, piece: ChessPiece, slotIndex: numbe
     costLabel.style.marginLeft = '5px';
     costLabel.style.marginTop = '5px';
     costLabel.style.textShadow = '1px 1px 2px #000000';
-    costLabel.hittest = false;
+    costLabel.hittest = false;  // 不拦截事件
     
     // 名称标签（悬停时显示）
     const nameLabel = $.CreatePanel('Label', slotPanel, `Name_${slotIndex}`);
@@ -345,21 +392,22 @@ function renderPieceInSlot(slotPanel: Panel, piece: ChessPiece, slotIndex: numbe
     nameLabel.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
     nameLabel.style.padding = '2px 5px';
     nameLabel.style.borderRadius = '3px';
-    nameLabel.hittest = false;
+    nameLabel.hittest = false;  // 不拦截事件
     
     // 设置拖拽事件
+    $.Msg(`[Inventory] 为槽位 ${slotIndex} 设置拖拽事件 (${piece.displayName})`);
     setupDragEvents(slotPanel, piece, slotIndex);
     
     // 悬停效果
     slotPanel.SetPanelEvent('onmouseover', () => {
         slotPanel.style.backgroundColor = INVENTORY_THEME.slotBgHover;
-        slotPanel.style.transform = 'scale(1.05)';
+        slotPanel.style.transform = 'scale3d(1.05, 1.05, 1.0)';
     });
     
     slotPanel.SetPanelEvent('onmouseout', () => {
         if (draggedSlotIndex !== slotIndex) {
             slotPanel.style.backgroundColor = INVENTORY_THEME.slotBg;
-            slotPanel.style.transform = 'scale(1.0)';
+            slotPanel.style.transform = 'scale3d(1.0, 1.0, 1.0)';
         }
     });
 }
@@ -369,11 +417,162 @@ function renderPieceInSlot(slotPanel: Panel, piece: ChessPiece, slotIndex: numbe
 // ============================================================================
 
 function setupDragEvents(slotPanel: Panel, piece: ChessPiece, slotIndex: number): void {
+    // 🔑 确保可以接收拖拽事件
     slotPanel.hittest = true;
-    slotPanel.draggable = true;
+    slotPanel.draggable = true;  // 需要设置为 true 才能拖拽
     
+    // 🔑 确保所有子元素不拦截事件（防御性编程）
+    const children = slotPanel.Children();
+    for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        if (child) {
+            child.hittest = false;
+        }
+    }
+    
+    $.Msg(`[Inventory] 🎯 注册点击事件: 槽位=${slotIndex}, 棋子=${piece.displayName}, hittest=${slotPanel.hittest}`);
+    
+    // 🔑 使用 onmousedown 开始拖拽（不阻止默认行为，让鼠标可以移动）
+    slotPanel.SetPanelEvent('onmousedown', () => {
+        $.Msg(`[Inventory] 🖱️ 鼠标按下 - 槽位 ${slotIndex}, 棋子: ${piece.displayName}`);
+        
+        // 如果已经在拖拽状态，取消之前的拖拽
+        if (isDragging && draggedPiece) {
+            cleanupDrag();
+        }
+        
+        // 设置部署模式
+        draggedPiece = piece;
+        draggedSlotIndex = slotIndex;
+        isDragging = true;
+        
+        $.Msg(`[Inventory] 🔧 设置拖拽状态: isDragging=${isDragging}, draggedPiece=${piece.displayName}`);
+        
+        // 创建部署提示
+        createDragOverlay(piece);
+        
+        // 高亮原始槽位
+        slotPanel.style.backgroundColor = INVENTORY_THEME.slotBgDragging;
+        slotPanel.style.opacity = '0.5';
+        
+        $.Msg(`[Inventory] ✅ 已选择棋子，拖拽到棋盘位置部署`);
+        
+        // 🔑 在根面板上监听点击（用于部署）
+        const contextPanel = $.GetContextPanel();
+        
+        // 使用一个标志来跟踪是否应该处理点击
+        let shouldHandleClick = true;
+        
+        const deployOnClick = () => {
+            // 如果已经清理或不应该处理，直接返回
+            if (!shouldHandleClick || !draggedPiece || !isDragging) {
+                return;
+            }
+            
+            $.Msg(`[Inventory] 🎯 检测到点击，执行部署: ${draggedPiece.displayName}`);
+            deployPieceAtCursor(draggedPiece, draggedSlotIndex);
+            cleanupDrag();
+            shouldHandleClick = false;  // 标记为不再处理
+        };
+        
+        // 设置事件监听（只设置一次，通过标志控制）
+        contextPanel.SetPanelEvent('onactivate', deployOnClick);
+        
+        // 30秒后自动清理
+        $.Schedule(30.0, () => {
+            if (draggedPiece && isDragging && draggedSlotIndex === slotIndex) {
+                $.Msg(`[Inventory] ⚠️ 部署超时，清理状态`);
+                cleanupDrag();
+                shouldHandleClick = false;  // 标记为不再处理
+            }
+        });
+        
+        // 🔑 不返回 true，让默认行为继续（允许鼠标移动）
+        // return true;  // 注释掉，让鼠标可以移动
+    });
+    
+    // 🔑 也支持 onactivate（点击事件）作为备用
+    slotPanel.SetPanelEvent('onactivate', () => {
+        // 如果已经在拖拽状态，不处理（避免重复）
+        if (isDragging && draggedSlotIndex === slotIndex) {
+            return;
+        }
+        
+        $.Msg(`[Inventory] 🖱️ 点击棋子 - 槽位 ${slotIndex}, 棋子: ${piece.displayName}`);
+        
+        // 设置部署模式（点击模式）
+        draggedPiece = piece;
+        draggedSlotIndex = slotIndex;
+        isDragging = true;
+        
+        // 创建部署提示
+        createDragOverlay(piece);
+        
+        // 高亮原始槽位
+        slotPanel.style.backgroundColor = INVENTORY_THEME.slotBgDragging;
+        slotPanel.style.opacity = '0.5';
+        
+        $.Msg(`[Inventory] ✅ 已选择棋子，点击棋盘位置部署`);
+        
+        // 🔑 在根面板上监听点击（用于部署）
+        const contextPanel = $.GetContextPanel();
+        
+        // 使用一个标志来跟踪是否应该处理点击
+        let shouldHandleClick = true;
+        
+        const deployOnClick = () => {
+            // 如果已经清理或不应该处理，直接返回
+            if (!shouldHandleClick || !draggedPiece || !isDragging) {
+                return;
+            }
+            
+            $.Msg(`[Inventory] 🎯 检测到点击，执行部署: ${draggedPiece.displayName}`);
+            deployPieceAtCursor(draggedPiece, draggedSlotIndex);
+            cleanupDrag();
+            shouldHandleClick = false;  // 标记为不再处理
+        };
+        
+        // 设置事件监听（只设置一次，通过标志控制）
+        contextPanel.SetPanelEvent('onactivate', deployOnClick);
+        
+        // 30秒后自动清理
+        $.Schedule(30.0, () => {
+            if (draggedPiece && isDragging && draggedSlotIndex === slotIndex) {
+                $.Msg(`[Inventory] ⚠️ 部署超时，清理状态`);
+                cleanupDrag();
+                shouldHandleClick = false;  // 标记为不再处理
+            }
+        });
+    });
+    
+    // 清理拖拽状态
+    function cleanupDrag() {
+        // 恢复槽位样式
+        const slot = $(`#InventorySlot_${draggedSlotIndex}`) as Panel;
+        if (slot) {
+            slot.style.backgroundColor = INVENTORY_THEME.slotBg;
+            slot.style.opacity = '1.0';
+        }
+        
+        // 清理
+        if (dragOverlay) {
+            dragOverlay.DeleteAsync(0);
+            dragOverlay = null;
+        }
+        
+        draggedPiece = null;
+        draggedSlotIndex = -1;
+        isDragging = false;
+    }
+    
+    // 保留原生拖拽事件作为备用
     slotPanel.SetPanelEvent('ondragstart', (panelId: string, dragCallbacks: any) => {
-        $.Msg(`[Inventory] Drag start: ${piece.displayName} from slot ${slotIndex}`);
+        $.Msg(`[Inventory] 🚀 拖拽开始: ${piece.displayName} (槽位 ${slotIndex})`);
+        $.Msg(`[Inventory] 🚀 panelId: ${panelId}`);
+        $.Msg(`[Inventory] 🚀 dragCallbacks 存在: ${dragCallbacks != null}`);
+        if (dragCallbacks) {
+            $.Msg(`[Inventory] 🚀 dragCallbacks 键: ${JSON.stringify(Object.keys(dragCallbacks))}`);
+        }
         
         draggedPiece = piece;
         draggedSlotIndex = slotIndex;
@@ -386,15 +585,24 @@ function setupDragEvents(slotPanel: Panel, piece: ChessPiece, slotIndex: number)
         slotPanel.style.opacity = '0.5';
         
         // 设置拖拽数据
-        dragCallbacks.displayPanel = createDragDisplayPanel(piece);
-        dragCallbacks.offsetX = 0;
-        dragCallbacks.offsetY = 0;
+        if (dragCallbacks) {
+            try {
+                dragCallbacks.displayPanel = createDragDisplayPanel(piece);
+                dragCallbacks.offsetX = 0;
+                dragCallbacks.offsetY = 0;
+                $.Msg(`[Inventory] ✅ 拖拽数据已设置`);
+            } catch (e) {
+                $.Msg(`[Inventory] ❌ 设置拖拽数据时出错: ${e}`);
+            }
+        } else {
+            $.Msg(`[Inventory] ❌ dragCallbacks 为 null 或 undefined!`);
+        }
         
         return true;
     });
     
     slotPanel.SetPanelEvent('ondragend', (panelId: string, draggedPanel: Panel) => {
-        $.Msg(`[Inventory] Drag end: ${piece.displayName}`);
+        $.Msg(`[Inventory] 🏁 拖拽结束: ${piece.displayName}`);
         
         // 恢复槽位样式
         slotPanel.style.backgroundColor = INVENTORY_THEME.slotBg;
@@ -414,6 +622,8 @@ function setupDragEvents(slotPanel: Panel, piece: ChessPiece, slotIndex: number)
         draggedPiece = null;
         draggedSlotIndex = -1;
     });
+    
+    $.Msg(`[Inventory] ✅ 拖拽事件注册完成 - 槽位 ${slotIndex}`);
 }
 
 function createDragOverlay(piece: ChessPiece): void {
@@ -428,7 +638,7 @@ function createDragOverlay(piece: ChessPiece): void {
         dragOverlay.hittest = false;
         
         const hint = $.CreatePanel('Label', dragOverlay, 'DragHint');
-        hint.text = '松开鼠标部署棋子';
+        hint.text = '点击棋盘位置部署棋子（或按ESC取消）';
         hint.style.fontSize = '24px';
         hint.style.color = INVENTORY_THEME.textGold;
         hint.style.horizontalAlign = 'center';
@@ -460,6 +670,7 @@ function createDragDisplayPanel(piece: ChessPiece): Panel {
     
     return display;
 }
+
 
 function deployPieceAtCursor(piece: ChessPiece, slotIndex: number): void {
     $.Msg(`[Inventory] 🎯 Deploying piece: ${piece.displayName} from slot ${slotIndex}`);
@@ -591,18 +802,30 @@ function updateInventoryData(data: any): void {
     $.Msg(`[Inventory] 转换后的数组长度: ${piecesArray.length}`);
     $.Msg(`[Inventory] 收到 ${piecesArray.length} 个棋子`);
     
-    // 清空所有槽位
+    // 🔑 清空所有槽位（确保没有残留数据）
     for (let i = 0; i < MAX_SLOTS; i++) {
         updateSlot(i, null);
     }
     
-    // 更新棋子
+    // 🔑 更新棋子（只更新有效的棋子，确保数据完整）
     piecesArray.forEach((piece: ChessPiece, index: number) => {
+        // 检查棋子数据是否完整
+        if (!piece || !piece.id || !piece.unitName) {
+            $.Msg(`[Inventory] ⚠️ 跳过无效棋子数据，索引: ${index}`);
+            return;
+        }
+        
         if (index < MAX_SLOTS) {
             $.Msg(`[Inventory] 更新槽位 ${index}: ${piece.displayName} (${piece.unitName})`);
             updateSlot(index, piece);
+        } else {
+            $.Msg(`[Inventory] ⚠️ 棋子数量超出槽位限制，跳过索引 ${index}: ${piece.displayName}`);
         }
     });
+    
+    // 🔑 记录实际更新的槽位数量
+    const filledSlots = piecesArray.filter((p, i) => p && p.id && i < MAX_SLOTS).length;
+    $.Msg(`[Inventory] 实际填充槽位数量: ${filledSlots}/${MAX_SLOTS}`);
     
     $.Msg('[Inventory] ========== 背包更新完成 ==========');
 }
