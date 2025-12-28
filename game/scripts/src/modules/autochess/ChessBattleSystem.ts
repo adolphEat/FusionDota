@@ -238,14 +238,21 @@ export class ChessBattleSystem {
         const worldPos = this.boardToWorldPosition(position, playerId);
         const team = this.getPlayerTeam(playerId);
         
+        // 🔑 使用 findClearSpace = false，确保单位创建在指定位置，不会重新设置位置
         const unit = CreateUnitByName(
             chessPiece.unitName,
             worldPos,
-            true,
+            false,  // 不自动寻找清晰位置，直接创建在指定位置
             undefined,
             undefined,
             team
         );
+        
+        // 🔑 确保单位在正确的位置（防止CreateUnitByName自动调整位置）
+        if (unit && !unit.IsNull()) {
+            const groundPos = GetGroundPosition(worldPos, unit);
+            unit.SetAbsOrigin(groundPos);
+        }
 
         if (!unit || unit.IsNull()) {
             print(`[ChessBattleSystem] Failed to create unit: ${chessPiece.unitName}`);
@@ -254,6 +261,17 @@ export class ChessBattleSystem {
 
         // 应用棋子属性
         this.applyChessPieceStats(unit, chessPiece);
+
+        // 🔑 设置棋子朝向：互相面对
+        // 玩家方棋子（playerId >= 0）在下半场，面向敌人方向（向上，+Y方向，yaw=0度）
+        // 敌人方棋子（playerId = -1）在上半场，面向玩家方向（向下，-Y方向，yaw=180度）
+        if (playerId >= 0) {
+            // 玩家方：面向敌人方向（向上）
+            unit.SetForwardVector(Vector(0, 1, 0));
+        } else {
+            // 敌人方：面向玩家方向（向下）
+            unit.SetForwardVector(Vector(0, -1, 0));
+        }
 
         // 默认创建即禁止攻击，等待战斗阶段再统一启用
         if (!unit.HasModifier('modifier_disarmed')) {
@@ -456,6 +474,9 @@ export class ChessBattleSystem {
             if (unit && !unit.IsNull()) {
                 this.applyChessPieceStats(unit, randomPiece);
 
+                // 🔑 设置AI棋子朝向：面向玩家方向（向下）
+                unit.SetForwardVector(Vector(0, -1, 0));
+
                 aiPieces.push({
                     pieceId: randomPiece.id,
                     unit: unit,
@@ -590,9 +611,9 @@ export class ChessBattleSystem {
             return;
         }
 
-        // 移除所有棋子
-        const allPieces = [...battle.player1Pieces, ...battle.player2Pieces];
-        for (const piece of allPieces) {
+        // 🔑 只移除敌人棋子（AI），玩家棋子已经在returnPiecesToBench中处理了
+        // 移除敌人棋子（player2，通常是-1）
+        for (const piece of battle.player2Pieces) {
             if (piece.unit && !piece.unit.IsNull()) {
                 piece.unit.RemoveSelf();
             }
@@ -823,6 +844,9 @@ export class ChessBattleSystem {
         
         for (const piece of pieces) {
             if (piece.unit && IsValidEntity(piece.unit)) {
+                // 🔑 确保单位保持在部署位置，不重新设置位置
+                // 单位已经在deployPiece时创建在正确位置，这里只激活能力
+                
                 // 移除准备阶段的限制（如沉默、缴械等）
                 this.removePreparationModifiers(piece.unit);
                 
@@ -830,7 +854,7 @@ export class ChessBattleSystem {
                 piece.unit.SetMoveCapability(UnitMoveCapability.GROUND);
                 // piece.unit.SetAttackCapability(UnitAttackCapability.ATTACK_RANGED); // TODO: 修复攻击能力设置
                 
-                print(`[ChessBattleSystem] 激活棋子: ${piece.pieceId} (${piece.unit.GetUnitName()})`);
+                print(`[ChessBattleSystem] 激活棋子: ${piece.pieceId} (${piece.unit.GetUnitName()}) 在位置 (${piece.position.x}, ${piece.position.y})`);
             }
         }
         
@@ -989,6 +1013,19 @@ export class ChessBattleSystem {
 
         updateFor(battle.player1, battle.player1Pieces);
         updateFor(battle.player2, battle.player2Pieces);
+    }
+
+    /**
+     * 🔑 设置玩家存活棋子的血量记录（供外部调用）
+     */
+    public setPlayerSurvivorHealth(playerId: PlayerID, survivors: Array<{ pieceId: string; health: number }>): void {
+        if (survivors.length > 0) {
+            this.playerSurvivorHealth.set(playerId, survivors);
+            print(`[ChessBattleSystem] ✅ 已设置玩家 ${playerId} 的 ${survivors.length} 个存活棋子血量记录`);
+        } else {
+            this.playerSurvivorHealth.delete(playerId);
+            print(`[ChessBattleSystem] 玩家 ${playerId} 没有存活棋子，清除血量记录`);
+        }
     }
 }
 

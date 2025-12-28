@@ -123,6 +123,9 @@ const TEMPLATE_SYNERGIES: SynergyData[] = [
 function createPlayingHUD(): void {
     $.Msg('🎮 CREATING PLAYING HUD - NEW VERSION 22:50 🎮');
     
+    // 🔑 确保隐藏原生UI（在创建HUD之前）
+    hideNativeUI();
+    
     const rootPanel = $.GetContextPanel();
     if (!rootPanel) {
         $.Msg('Error: Root panel not found');
@@ -155,10 +158,6 @@ function createPlayingHUD(): void {
     // 创建底部快捷栏
     createBottomQuickBar(container);
     
-    // 创建中央提示信息 - 已禁用，不需要显示
-    // createCenterAlert(container);
-    
-    $.Msg('Playing HUD created successfully!');
 }
 
 // 创建羁绊效果条目
@@ -532,8 +531,6 @@ function createBattleLog(parent: Panel): void {
 
 // 创建底部快捷栏
 function createBottomQuickBar(parent: Panel): void {
-    $.Msg('🎮 Creating bottom quick bar...');
-    
     const bottomBar = $.CreatePanel('Panel', parent, 'BottomQuickBar');
     
     const quickActions = [
@@ -601,51 +598,6 @@ function createBottomQuickBar(parent: Panel): void {
     $.Msg(`🎮 Bottom quick bar created with ${quickActions.length} buttons`);
 }
 
-// 创建中央提示信息 - 已禁用
-/*
-function createCenterAlert(parent: Panel): void {
-    const alertPanel = $.CreatePanel('Panel', parent, 'CenterAlertPanel');
-    alertPanel.style.width = '400px';
-    alertPanel.style.height = '100px';
-    alertPanel.style.horizontalAlign = 'center';
-    alertPanel.style.verticalAlign = 'center';
-    alertPanel.style.backgroundColor = PLAYING_HUD_THEME.panelBg;
-    alertPanel.style.border = `2px solid ${PLAYING_HUD_THEME.borderColor}`;
-    alertPanel.style.borderRadius = '15px';
-    alertPanel.style.padding = '20px';
-    alertPanel.style.boxShadow = '0px 4px 20px rgba(0, 0, 0, 0.5)';
-    alertPanel.style.visibility = 'collapse';
-    alertPanel.style.zIndex = '5000';
-    alertPanel.hittest = false; // 不拦截点击事件
-    
-    const alertLabel = $.CreatePanel('Label', alertPanel, 'AlertLabel');
-    alertLabel.text = '';
-    alertLabel.style.fontSize = '18px';
-    alertLabel.style.fontWeight = 'bold';
-    alertLabel.style.color = PLAYING_HUD_THEME.textAccent;
-    alertLabel.style.textAlign = 'center';
-    alertLabel.style.horizontalAlign = 'center';
-}
-
-// 显示中央提示
-function showCenterAlert(message: string, duration: number = 3.0): void {
-    const alertPanel = $.GetContextPanel().FindChildInLayoutFile('CenterAlertPanel');
-    if (alertPanel) {
-        const alertLabel = alertPanel.FindChildInLayoutFile('AlertLabel');
-        if (alertLabel) {
-            alertLabel.text = message;
-            alertPanel.style.visibility = 'visible';
-            
-            $.Schedule(duration, () => {
-                alertPanel.style.visibility = 'collapse';
-            });
-        }
-    }
-}
-*/
-
-// 旧的生命值和魔法值更新函数已删除
-
 // 添加战斗记录
 function addBattleLog(message: string, type: string = 'info'): void {
     const logContainer = $.GetContextPanel().FindChildInLayoutFile('LogContainer');
@@ -696,12 +648,44 @@ GameEvents.Subscribe('battle_log', (data: any) => {
     addBattleLog(data.message, data.type);
 });
 
-// 中央提示已禁用
-/*
-GameEvents.Subscribe('center_alert', (data: any) => {
-    showCenterAlert(data.message, data.duration || 3.0);
+// 🔑 监听战斗结束事件，确保原生UI保持隐藏
+GameEvents.Subscribe('battle_ended', (data: any) => {
+    $.Msg('[PlayingHUD] Battle ended - ensuring native UI stays hidden');
+    hideNativeUI();
+    hideMinimapElements();
 });
-*/
+
+// 🔑 监听自走棋阶段变化事件，确保原生UI保持隐藏
+GameEvents.Subscribe('autochess_phase_started', (data: any) => {
+    $.Msg(`[PlayingHUD] Phase changed to ${data.phase} - ensuring native UI stays hidden`);
+    hideNativeUI();
+    hideMinimapElements();
+    
+    // 🔑 如果是战斗阶段，显示playing-hud
+    if (data.phase === 'battle') {
+        $.Msg('[PlayingHUD] Battle phase started - showing playing HUD');
+        const container = $.GetContextPanel().FindChildInLayoutFile('PlayingHUDContainer');
+        if (!container) {
+            createPlayingHUD();
+        }
+        showPlayingHUD(true);
+        hideNativeUI();
+        hideMinimapElements();
+    }
+});
+
+// 🔑 监听显示playing-hud事件
+GameEvents.Subscribe('show_playing_hud', () => {
+    $.Msg('[PlayingHUD] Show playing HUD event received');
+    const container = $.GetContextPanel().FindChildInLayoutFile('PlayingHUDContainer');
+    if (!container) {
+        createPlayingHUD();
+    }
+    showPlayingHUD(true);
+    hideNativeUI();
+    hideMinimapElements();
+});
+
 
 // 显示/隐藏战斗HUD
 function showPlayingHUD(show: boolean): void {
@@ -738,7 +722,7 @@ function checkGameStateAndShowHUD(): void {
     let shouldShow = gameState >= 8 && gameState <= 10;
     
     // 如果是自走棋模式，即使游戏状态不符合，也尝试显示（因为自走棋可能有不同的状态值）
-    if (currentMode === 'autochess') {
+    if (currentMode === 'autochess') {  
         $.Msg('AutoChess mode detected - forcing HUD display');
         // 在自走棋模式下，只要不是初始化阶段就显示
         shouldShow = gameState >= 1; // 更宽松的条件
@@ -768,105 +752,95 @@ function hideNativeUI(): void {
         GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_INVENTORY_GOLD, false);
         GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_SHOP_SUGGESTEDITEMS, false);
         
+        // 🔑 同时隐藏小地图元素
+        hideMinimapElements();
+        
         $.Msg('✅ Native UI elements hidden successfully');
     } catch (e) {
         $.Msg('❌ Error hiding native UI:', e);
     }
 }
 
-// 恢复原生 Dota 2 UI 元素
-function showNativeUI(): void {
-    $.Msg('🎮 Restoring native Dota 2 UI elements...');
-    
+// 🔑 隐藏小地图元素
+function hideMinimapElements(): void {
     try {
-        // 恢复原生 HUD 元素
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_TOP_TIMEOFDAY, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_TOP_HEROES, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_FLYOUT_SCOREBOARD, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_ACTION_PANEL, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_ACTION_MINIMAP, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_INVENTORY_PANEL, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_INVENTORY_SHOP, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_INVENTORY_ITEMS, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_INVENTORY_QUICKBUY, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_INVENTORY_COURIER, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_INVENTORY_PROTECT, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_INVENTORY_GOLD, true);
-        GameUI.SetDefaultUIEnabled(DotaDefaultUIElement_t.DOTA_DEFAULT_UI_SHOP_SUGGESTEDITEMS, true);
+        const rootPanel = $.GetContextPanel();
+        const minimapIds = ['minimap', 'MinimapContainer', 'minimap_container', 'MinimapButton'];
         
-        $.Msg('✅ Native UI elements restored successfully');
+        minimapIds.forEach(id => {
+            const panel = rootPanel.FindChildTraverse(id);
+            if (panel) {
+                panel.style.visibility = 'collapse';
+                $.Msg(`[PlayingHUD] Hidden minimap element: ${id}`);
+            }
+        });
     } catch (e) {
-        $.Msg('❌ Error restoring native UI:', e);
+        $.Msg('❌ Error hiding minimap elements:', e);
     }
 }
+
+// 🔑 已删除showNativeUI函数 - 不再需要恢复原生UI
 
 // 初始化
 function initializePlayingHUD(): void {
-    // 隐藏原生 UI
-    hideNativeUI();
+    $.Msg('🎮 Playing HUD initializing...');
     
-    // 立即创建HUD，不等待
+    // 🔑 立即创建HUD并隐藏原生UI
     createPlayingHUD();
+    hideNativeUI();
+    hideMinimapElements();
     
-    // 先强制显示，用于测试
-    $.Msg('🎮 Force showing HUD for testing...');
+    // 🔑 初始状态隐藏，等待战斗阶段显示
     showPlayingHUD(true);
     
-    // 延迟检查游戏状态和模式（等待网络表数据同步）
-    $.Schedule(1.0, () => {
-        $.Msg('🎮 Checking game state and mode after 1 second...');
-        checkGameStateAndShowHUD();
-    });
-    
-    // 再次延迟检查，确保网络表数据已同步
-    $.Schedule(3.0, () => {
-        $.Msg('🎮 Re-checking game state and mode after 3 seconds...');
-        checkGameStateAndShowHUD();
-    });
+    $.Msg('🎮 Playing HUD initialized');
 }
 
+// 🔑 暂时禁用所有自动显示HUD的事件监听器
 // 监听游戏状态变化事件
-GameEvents.Subscribe('game_state_changed', (data: any) => {
-    $.Msg('Game state changed:', data);
-    checkGameStateAndShowHUD();
-});
+// GameEvents.Subscribe('game_state_changed', (data: any) => {
+//     $.Msg('Game state changed:', data);
+//     checkGameStateAndShowHUD();
+// });
 
 // 监听游戏模式变化事件
-GameEvents.Subscribe('game_mode_changed', (data: any) => {
-    $.Msg('Game mode changed:', data);
-    if (data && data.newMode) {
-        $.Msg(`New game mode: ${data.newMode}`);
-        checkGameStateAndShowHUD();
-    }
-});
+// GameEvents.Subscribe('game_mode_changed', (data: any) => {
+//     $.Msg('Game mode changed:', data);
+//     if (data && data.newMode) {
+//         $.Msg(`New game mode: ${data.newMode}`);
+//         checkGameStateAndShowHUD();
+//     }
+// });
 
 // 监听网络表中的游戏模式变化
-CustomNetTables.SubscribeNetTableListener('game_mode', (tableName: string, key: string, data: any) => {
-    if (key === 'current') {
-        $.Msg('Game mode updated in NetTable:', data);
-        checkGameStateAndShowHUD();
-    }
-});
+// CustomNetTables.SubscribeNetTableListener('game_mode', (tableName: string, key: string, data: any) => {
+//     if (key === 'current') {
+//         $.Msg('Game mode updated in NetTable:', data);
+//         checkGameStateAndShowHUD();
+//     }
+// });
 
 // 监听游戏开始事件
-GameEvents.Subscribe('game_start', () => {
-    $.Msg('Game started - showing playing HUD');
-    showPlayingHUD(true);
-});
+// GameEvents.Subscribe('game_start', () => {
+//     $.Msg('Game started - showing playing HUD');
+//     showPlayingHUD(true);
+// });
 
 // 监听游戏结束事件
-GameEvents.Subscribe('game_end', () => {
-    $.Msg('Game ended - hiding playing HUD');
-    showPlayingHUD(false);
-});
+// GameEvents.Subscribe('game_end', () => {
+//     $.Msg('Game ended - hiding playing HUD');
+//     showPlayingHUD(false);
+// });
 
 // 定期检查游戏状态（备用方案）
 function startGameStateMonitor(): void {
-    const checkInterval = () => {
-        checkGameStateAndShowHUD();
-        $.Schedule(2.0, checkInterval); // 每2秒检查一次
-    };
-    $.Schedule(5.0, checkInterval); // 5秒后开始监控
+    // 🔑 暂时禁用自动监控
+    // const checkInterval = () => {
+    //     checkGameStateAndShowHUD();
+    //     $.Schedule(2.0, checkInterval); // 每2秒检查一次
+    // };
+    // $.Schedule(5.0, checkInterval); // 5秒后开始监控
+    $.Msg('🎮 Game state monitor disabled');
 }
 
 // 导出全局函数
@@ -876,7 +850,7 @@ function startGameStateMonitor(): void {
     checkState: checkGameStateAndShowHUD,
     addLog: addBattleLog,
     hideNativeUI: hideNativeUI,
-    showNativeUI: showNativeUI,
+    // 🔑 已删除showNativeUI - 不再需要恢复原生UI
     // 预留羁绊更新接口
     updateSynergy: (synergyData: any) => {
         $.Msg('Synergy update received:', synergyData);
@@ -884,11 +858,13 @@ function startGameStateMonitor(): void {
     }
 };
 
-// 立即执行初始化
+// 🔑 立即初始化
 initializePlayingHUD();
 
-// 启动游戏状态监控
-startGameStateMonitor();
+// 🔑 暂时禁用自动监控
+// startGameStateMonitor();
+
+$.Msg('🎮 Playing HUD script loaded');
 
 // 添加全局测试函数
 (globalThis as any).TestPlayingHUD = {
@@ -896,7 +872,7 @@ startGameStateMonitor();
     hide: () => showPlayingHUD(false),
     checkState: checkGameStateAndShowHUD,
     hideNative: hideNativeUI,
-    showNative: showNativeUI,
+    // 🔑 已删除showNative - 不再需要恢复原生UI
     forceShow: () => {
         $.Msg('Force showing Playing HUD for testing...');
         const container = $.GetContextPanel().FindChildInLayoutFile('PlayingHUDContainer');

@@ -27,6 +27,7 @@ declare interface CustomGameEventDeclarations {
     autochess_phase_started: { phase: string; timeLeft: number; round: number; };
     autochess_time_update: { timeLeft: number; phase: string; };
     autochess_battle_match: { player1: number; player2: number; round: number; };
+    show_playing_hud: {};  // 显示playing-hud
     
     // 训练模式控制事件
     show_custom_message: { message: string; duration: number; };

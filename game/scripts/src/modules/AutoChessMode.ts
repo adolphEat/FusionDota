@@ -123,10 +123,6 @@ export class AutoChessMode {
         // 第一层关卡初始可用（从起始点连接的关卡）
         this.availableStages.add('n2'); // 森林小径
         this.availableStages.add('n3'); // 危险矿洞
-        
-        print(`[AutoChessMode] 关卡解锁系统初始化完成`);
-        print(`[AutoChessMode] 已完成关卡: n1`);
-        print(`[AutoChessMode] 可用关卡: n2, n3`);
     }
 
     public static getInstance(): AutoChessMode {
@@ -236,7 +232,7 @@ export class AutoChessMode {
             this.currentWaveStageSelection = 'n1';
             print(`[AutoChessMode] 📝 第一关自动设置: currentWaveStageSelection = n1`);
             
-            // 开始准备阶段倒计时（5秒）
+            // 开始准备阶段倒计时（10秒）
             this.startPreparationCountdown(playerId, 1);
             
             return undefined;
@@ -249,7 +245,7 @@ export class AutoChessMode {
     private startPreparationPhase(): void {
         this.resetWaveSettlementState();
         this.gameState.currentPhase = RoundPhase.PREPARATION;
-        this.gameState.phaseTimeLeft = 100; // 🧪 测试用：100秒准备时间（方便测试背包拖拽）
+        this.gameState.phaseTimeLeft = 10; // 准备阶段时长：10秒
         
         // 将玩家移动到观战区域（靠近棋盘）
         for (const [playerId, playerState] of this.gameState.playerStates) {
@@ -331,6 +327,9 @@ export class AutoChessMode {
         
         print(`[AutoChessMode] Started battle phase for round ${this.gameState.currentRound}`);
         
+        // 🔑 通知客户端显示playing-hud并隐藏原生UI
+        (CustomGameEventManager.Send_ServerToAllClients as any)('show_playing_hud', {});
+        
         // 通知客户端
         (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_phase_started', {
             phase: RoundPhase.BATTLE,
@@ -350,7 +349,65 @@ export class AutoChessMode {
         }
 
         if (this.gameState.currentPhase === RoundPhase.BATTLE) {
+            // 检查场上是否有棋子
+            const deployedPieces = this.battleSystem.getPlayerPieces(playerId);
+            
+            if (deployedPieces.length === 0) {
+                // 场上没有棋子，随机部署一个
+                print(`[AutoChessMode] 场上没有棋子，随机部署一个棋子`);
+                this.deployRandomPieceIfNeeded(playerId);
+            }
+            
+            // 激活已部署的棋子
             this.battleSystem.activatePlayerPieces(playerId);
+        }
+    }
+
+    /**
+     * 如果场上没有棋子，随机部署一个
+     */
+    private deployRandomPieceIfNeeded(playerId: PlayerID): void {
+        const playerState = this.gameState.playerStates.get(playerId);
+        if (!playerState) return;
+
+        // 优先从备战席选择
+        const benchPieces = playerState.benchPieces || [];
+        let pieceToDeploy: any = null;
+
+        if (benchPieces.length > 0) {
+            // 从备战席随机选择一个
+            const randomIndex = Math.floor(RandomFloat(0, benchPieces.length));
+            pieceToDeploy = benchPieces[randomIndex];
+            print(`[AutoChessMode] 从备战席随机选择: ${pieceToDeploy.displayName}`);
+        } else {
+            // 如果备战席也没有，从数据库随机选择一个1费棋子
+            const availablePieces: any[] = [];
+            for (const [pieceId, piece] of this.chessPieceDatabase) {
+                if (piece.cost === 1) {
+                    availablePieces.push(piece);
+                }
+            }
+            
+            if (availablePieces.length > 0) {
+                const randomIndex = Math.floor(RandomFloat(0, availablePieces.length));
+                pieceToDeploy = availablePieces[randomIndex];
+                // 添加到备战席
+                playerState.benchPieces.push(pieceToDeploy);
+                print(`[AutoChessMode] 从数据库随机选择1费棋子: ${pieceToDeploy.displayName}`);
+            }
+        }
+
+        if (pieceToDeploy) {
+            // 随机选择一个位置部署
+            const position = {
+                x: Math.floor(RandomFloat(0, 8)),
+                y: Math.floor(RandomFloat(0, 4)) // 玩家半场：0-3
+            };
+            
+            print(`[AutoChessMode] 随机部署棋子 ${pieceToDeploy.displayName}(${pieceToDeploy.id}) 到位置 (${position.x}, ${position.y})`);
+            this.battleSystem.deployPiece(playerId, pieceToDeploy.id, position);
+        } else {
+            print(`[AutoChessMode] 警告: 无法找到可部署的棋子`);
         }
     }
 
@@ -395,23 +452,15 @@ export class AutoChessMode {
         print(`[AutoChessMode] ========== 第一回合生成玩家初始棋子 ==========`);
         print(`[AutoChessMode] 玩家 ${playerId} - 固定生成3个我方棋子: 树精卫士、风行者、斧王`);
         
-        // 创建并部署棋子
+        // 只添加到备战席，不部署到棋盘
         for (let i = 0; i < fixedPieces.length; i++) {
             const pieceId = fixedPieces[i];
             const piece = this.chessPieceDatabase.get(pieceId);
             
             if (piece) {
-                // 添加到备战席
+                // 只添加到备战席，不部署到棋盘
                 playerState.benchPieces.push(piece);
-                
-                // 在棋盘上创建棋子（准备阶段，可以拖拽）
-                const position = {
-                    x: 1 + i,
-                    y: 1
-                };
-                
-                print(`[AutoChessMode] 部署我方棋子: ${piece.displayName}(${pieceId}) - ${piece.cost}费 到位置 (${position.x}, ${position.y})`);
-                this.battleSystem.deployPiece(playerId, pieceId, position);
+                print(`[AutoChessMode] 添加棋子到备战席: ${piece.displayName}(${pieceId}) - ${piece.cost}费`);
             } else {
                 print(`[AutoChessMode] 警告: 棋子 ${pieceId} 不存在于数据库中`);
             }
@@ -777,7 +826,11 @@ export class AutoChessMode {
             print(`[AutoChessMode] Phase timer removed`);
         }
 
-        // 停止所有战斗
+        // 🔑 先回收存活棋子到背包（在删除棋子之前）
+        print(`[AutoChessMode] Returning surviving pieces to bench...`);
+        this.returnPiecesToBench();
+        
+        // 停止所有战斗（这会清理战场，但玩家棋子已经在上面回收了）
         print(`[AutoChessMode] Stopping all battles...`);
         this.stopAllBattles();
         
@@ -796,6 +849,83 @@ export class AutoChessMode {
         this.triggerWaveSettlement();
         
         print(`[AutoChessMode] ========== endBattlePhase COMPLETE ==========`);
+    }
+
+    /**
+     * 将场上棋子回收到背包
+     */
+    private returnPiecesToBench(): void {
+        print(`[AutoChessMode] ========== 开始回收棋子到背包 ==========`);
+        
+        for (const [playerId, playerState] of this.gameState.playerStates) {
+            if (!playerState.isAlive) continue;
+            
+            // 获取场上部署的棋子
+            const deployedPieces = this.battleSystem.getPlayerPieces(playerId);
+            
+            if (deployedPieces.length === 0) {
+                print(`[AutoChessMode] 玩家 ${playerId} 场上没有棋子，跳过回收`);
+                continue;
+            }
+            
+            print(`[AutoChessMode] 玩家 ${playerId} 场上共有 ${deployedPieces.length} 个棋子，开始回收`);
+            
+            // 🔑 记录存活棋子的血量
+            const survivors: Array<{ pieceId: string; health: number }> = [];
+            
+            // 将每个存活棋子回收到背包
+            for (const deployedPiece of deployedPieces) {
+                // 🔑 只回收存活的棋子
+                if (!deployedPiece.unit || deployedPiece.unit.IsNull() || !deployedPiece.unit.IsAlive()) {
+                    print(`[AutoChessMode] 跳过阵亡的棋子: ${deployedPiece.pieceId}`);
+                    continue;
+                }
+                
+                // 🔑 记录存活棋子的血量
+                const currentHealth = deployedPiece.unit.GetHealth();
+                survivors.push({ pieceId: deployedPiece.pieceId, health: currentHealth });
+                print(`[AutoChessMode] 📝 记录存活棋子 ${deployedPiece.pieceId} 的血量: ${currentHealth.toFixed(0)}`);
+                
+                // 获取棋子定义
+                const piece = this.chessPieceDatabase.get(deployedPiece.pieceId);
+                if (!piece) {
+                    print(`[AutoChessMode] 警告: 棋子 ${deployedPiece.pieceId} 不存在于数据库中，跳过`);
+                    continue;
+                }
+                
+                // 检查背包是否已满
+                const benchPieces = playerState.benchPieces || [];
+                if (benchPieces.length >= 8) {
+                    print(`[AutoChessMode] 警告: 玩家 ${playerId} 背包已满（${benchPieces.length}/8），无法回收棋子 ${piece.displayName}`);
+                    continue;
+                }
+                
+                // 添加到背包
+                benchPieces.push(piece);
+                print(`[AutoChessMode] ✅ 回收存活棋子 ${piece.displayName}(${deployedPiece.pieceId}) 到背包，血量: ${currentHealth.toFixed(0)}`);
+            }
+            
+            // 🔑 保存存活棋子的血量记录到战斗系统
+            if (survivors.length > 0) {
+                this.battleSystem.setPlayerSurvivorHealth(playerId, survivors);
+                print(`[AutoChessMode] ✅ 已保存 ${survivors.length} 个存活棋子的血量记录`);
+            }
+            
+            // 🔑 只删除单位实体，不删除部署记录（因为已经在上面回收了）
+            // 清空场上棋子的单位实体
+            const pieces = this.battleSystem.getPlayerPieces(playerId);
+            for (const piece of pieces) {
+                if (piece.unit && !piece.unit.IsNull()) {
+                    piece.unit.RemoveSelf();
+                }
+            }
+            // 清空部署记录
+            (this.battleSystem as any).playerDeployedPieces.delete(playerId);
+            
+            print(`[AutoChessMode] ✅ 玩家 ${playerId} 棋子回收完成，背包数量: ${playerState.benchPieces.length}`);
+        }
+        
+        print(`[AutoChessMode] ========== 棋子回收完成 ==========`);
     }
 
     /**
@@ -1798,9 +1928,23 @@ export class AutoChessMode {
      * 停止所有战斗
      */
     private stopAllBattles(): void {
-        // 清理所有玩家的棋子
+        // 🔑 只清理敌人棋子（AI），玩家棋子已经在returnPiecesToBench中处理了
+        // 清理AI棋子（playerId = -1）
+        this.battleSystem.clearPlayerPieces(-1);
+        
+        // 清理玩家棋子（但只删除单位，不删除记录，因为已经在returnPiecesToBench中回收了）
         for (const [playerId, playerState] of this.gameState.playerStates) {
-            this.battleSystem.clearPlayerPieces(playerId);
+            if (playerState.isAlive) {
+                // 只删除单位实体，保留部署记录（因为已经回收了）
+                const pieces = this.battleSystem.getPlayerPieces(playerId);
+                for (const piece of pieces) {
+                    if (piece.unit && !piece.unit.IsNull()) {
+                        piece.unit.RemoveSelf();
+                    }
+                }
+                // 清空部署记录
+                (this.battleSystem as any).playerDeployedPieces.delete(playerId);
+            }
         }
         
         print('[AutoChessMode] Stopped all battles');
@@ -2732,7 +2876,7 @@ export class AutoChessMode {
 
     /**
      * 处理选择关卡按钮
-     * 点击选关后：5秒准备阶段 -> 生成怪物 -> 开始战斗
+     * 点击选关后：10秒准备阶段 -> 生成怪物 -> 开始战斗
      */
     public handleWaveStageSelection(playerId: PlayerID, stageId: string): void {
         // 将关卡ID转换为节点ID
@@ -2808,16 +2952,16 @@ export class AutoChessMode {
             }
         );
 
-        // 开始5秒准备阶段
-        print(`[AutoChessMode] 开始5秒准备阶段...`);
+        // 开始10秒准备阶段
+        print(`[AutoChessMode] 开始10秒准备阶段...`);
         this.startPreparationCountdown(playerId, stageIdNum);
     }
 
     /**
-     * 开始准备阶段倒计时（100秒 - 用于测试背包拖拽）
+     * 开始准备阶段倒计时
      */
     private startPreparationCountdown(playerId: PlayerID, stageId: number): void {
-        const PREP_TIME = 100;  // 🧪 测试用：延长到100秒
+        const PREP_TIME = 10;  // 准备阶段时长：10秒
         let timeLeft = PREP_TIME;
         
         // 如果是第一回合，先进入准备阶段状态并创建初始棋子
