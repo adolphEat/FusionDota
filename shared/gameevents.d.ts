@@ -47,6 +47,26 @@ declare interface CustomGameEventDeclarations {
     autochess_end_game: {};
     autochess_surrender: { playerId: number; };
     
+    // 背包系统事件
+    inventory_deploy_piece: {        // 客户端到服务端：部署棋子到棋盘
+        playerId: number;
+        pieceId: string;
+        unitName: string;
+        slotIndex: number;
+        worldX: number;
+        worldY: number;
+        worldZ: number;
+    };
+    request_inventory_data: {};      // 客户端到服务端：请求背包数据
+    update_inventory_data: {         // 服务端到客户端：更新背包数据
+        pieces: any[];
+    };
+    deployment_feedback: {           // 服务端到客户端：部署反馈
+        success: boolean;
+        message?: string;
+        slotIndex: number;
+    };
+    
     // 调试事件
     debug_autochess_activate: {};
     debug_autochess_deactivate: {};

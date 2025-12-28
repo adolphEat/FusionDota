@@ -41,22 +41,27 @@ export class InventoryHandler {
         });
 
         // 客户端部署棋子
-        (CustomGameEventManager.RegisterListener as any)('inventory_deploy_piece', (_: any, data: any) => {
+        // 🔑 注意：RegisterListener 的回调参数是 (userId, event)，其中 userId 是玩家ID，event 是数据对象
+        CustomGameEventManager.RegisterListener('inventory_deploy_piece', (userId, event: any) => {
             print(`[InventoryHandler] ========== 部署棋子请求 ==========`);
+            print(`[InventoryHandler] userId: ${userId}, event: ${event ? 'not nil' : 'nil'}`);
             
-            if (!data) {
-                print(`[InventoryHandler] ⚠️ data is nil, cannot deploy piece`);
+            if (!event) {
+                print(`[InventoryHandler] ⚠️ event is nil, cannot deploy piece`);
                 return;
             }
             
-            const playerId = (data.PlayerID || data.playerId || 0) as PlayerID;
-            print(`[InventoryHandler] PlayerId: ${playerId}`);
-            print(`[InventoryHandler] PieceId: ${data.pieceId}`);
-            print(`[InventoryHandler] UnitName: ${data.unitName}`);
-            print(`[InventoryHandler] SlotIndex: ${data.slotIndex}`);
-            print(`[InventoryHandler] Cursor: (${data.cursorX}, ${data.cursorY})`);
+            // userId 是第一个参数（玩家ID），event 是第二个参数（数据对象）
+            // 但 event 中也可能包含 playerId，优先使用 event 中的 playerId
+            const playerId = (event.PlayerID || event.playerId || userId || 0) as PlayerID;
             
-            this.handleDeployPiece(playerId, data);
+            print(`[InventoryHandler] PlayerId: ${playerId}`);
+            print(`[InventoryHandler] PieceId: ${event.pieceId}`);
+            print(`[InventoryHandler] UnitName: ${event.unitName}`);
+            print(`[InventoryHandler] SlotIndex: ${event.slotIndex}`);
+            print(`[InventoryHandler] WorldPos: (${event.worldX}, ${event.worldY}, ${event.worldZ})`);
+            
+            this.handleDeployPiece(playerId, event);
         });
 
         print('[InventoryHandler] Event handlers registered');
@@ -216,7 +221,7 @@ export class InventoryHandler {
         
         if (worldX === undefined || worldY === undefined) {
             print(`[InventoryHandler] ⚠️ Missing world coordinates`);
-            this.sendDeploymentFeedback(playerId, false, '坐标无效');
+            this.sendDeploymentFeedback(playerId, false, '坐标无效', slotIndex);
             return;
         }
         
@@ -224,7 +229,7 @@ export class InventoryHandler {
         
         if (!boardPosition) {
             print(`[InventoryHandler] ⚠️ Position outside player's half`);
-            this.sendDeploymentFeedback(playerId, false, '只能放置在己方半场（下半区）');
+            this.sendDeploymentFeedback(playerId, false, '只能放置在己方半场（下半区）', slotIndex);
             return;
         }
 
@@ -250,14 +255,19 @@ export class InventoryHandler {
             this.removePieceFromBench(playerState, slotIndex);
             print(`[InventoryHandler] ✅ Piece deployed successfully`);
             
-            // 更新客户端背包
-            this.sendInventoryData(playerId);
+            // 🔑 先发送成功反馈，让客户端立即更新UI
+            this.sendDeploymentFeedback(playerId, true, `${piece.displayName} 已部署`, slotIndex);
             
-            // 发送成功反馈
-            this.sendDeploymentFeedback(playerId, true, `${piece.displayName} 已部署`);
+            // 🔑 延迟发送背包数据更新，确保数据已经正确移除
+            // 使用延迟确保 removePieceFromBench 已经完成
+            Timers.CreateTimer(0.1, () => {
+                print(`[InventoryHandler] 🔄 延迟发送背包数据更新`);
+                this.sendInventoryData(playerId);
+                return; // 不重复执行
+            });
         } else {
             print(`[InventoryHandler] ❌ Failed to deploy piece`);
-            this.sendDeploymentFeedback(playerId, false, '部署失败');
+            this.sendDeploymentFeedback(playerId, false, '部署失败', slotIndex);
         }
     }
     
@@ -267,39 +277,44 @@ export class InventoryHandler {
      */
     private removePieceFromBench(playerState: any, slotIndex: number): void {
         const benchPieces = playerState.benchPieces;
-        if (!benchPieces) return;
+        if (!benchPieces) {
+            print(`[InventoryHandler] ⚠️ removePieceFromBench: benchPieces is null or undefined`);
+            return;
+        }
         
-        // 方法1：使用 Lua 的 table.remove（如果可用）
-        // 在 TSTL 中，我们可以直接调用 Lua 的 table.remove
-        const tableRemove = (globalThis as any).table?.remove;
-        if (tableRemove) {
-            // Lua 的 table.remove 使用 1-based 索引
-            tableRemove(benchPieces, slotIndex + 1);
-            print(`[InventoryHandler] 使用 table.remove 移除棋子，索引: ${slotIndex + 1}`);
-        } else {
-            // 方法2：重建数组（作为回退方案）
-            const newBenchPieces: any[] = [];
-            if (Array.isArray(benchPieces)) {
-                for (let i = 0; i < benchPieces.length; i++) {
-                    if (i !== slotIndex) {
-                        newBenchPieces.push(benchPieces[i]);
-                    }
-                }
-            } else {
-                // Lua 表：使用 Object.keys 遍历
-                const keys = Object.keys(benchPieces);
-            let currentIndex = 0;
-                for (let i = 0; i < keys.length; i++) {
-                    const key = keys[i] as string;
-                    if (currentIndex !== slotIndex) {
-                        newBenchPieces.push((benchPieces as any)[key]);
-                    }
-                    currentIndex++;
+        print(`[InventoryHandler] 🔄 removePieceFromBench: slotIndex=${slotIndex}, benchPieces类型=${typeof benchPieces}, 是数组=${Array.isArray(benchPieces)}`);
+        
+        // 🔑 方法1：重建数组（更安全可靠）
+        const newBenchPieces: any[] = [];
+        if (Array.isArray(benchPieces)) {
+            // 标准数组：直接遍历
+            for (let i = 0; i < benchPieces.length; i++) {
+                if (i !== slotIndex) {
+                    newBenchPieces.push(benchPieces[i]);
+                } else {
+                    print(`[InventoryHandler] 跳过索引 ${i}（要移除的棋子）`);
                 }
             }
-            playerState.benchPieces = newBenchPieces;
-            print(`[InventoryHandler] 重建数组移除棋子，索引: ${slotIndex}`);
+            print(`[InventoryHandler] 重建数组移除棋子，原长度: ${benchPieces.length}, 新长度: ${newBenchPieces.length}`);
+        } else {
+            // Lua 表：使用 Object.keys 遍历
+            const keys = Object.keys(benchPieces);
+            let currentIndex = 0;
+            for (let i = 0; i < keys.length; i++) {
+                const key = keys[i] as string;
+                if (currentIndex !== slotIndex) {
+                    newBenchPieces.push((benchPieces as any)[key]);
+                } else {
+                    print(`[InventoryHandler] 跳过索引 ${currentIndex}（要移除的棋子）`);
+                }
+                currentIndex++;
+            }
+            print(`[InventoryHandler] 重建Lua表移除棋子，原长度: ${keys.length}, 新长度: ${newBenchPieces.length}`);
         }
+        
+        // 🔑 更新 playerState.benchPieces
+        playerState.benchPieces = newBenchPieces;
+        print(`[InventoryHandler] ✅ 棋子已从备战席移除`);
     }
 
     // 棋盘配置（与 ChessBattleSystem 保持一致）
@@ -387,14 +402,15 @@ export class InventoryHandler {
     /**
      * 发送部署反馈到客户端
      */
-    private sendDeploymentFeedback(playerId: PlayerID, success: boolean, message: string): void {
+    private sendDeploymentFeedback(playerId: PlayerID, success: boolean, message: string, slotIndex?: number): void {
         const player = PlayerResource.GetPlayer(playerId);
         if (player) {
             (CustomGameEventManager.Send_ServerToPlayer as any)(player, 'deployment_feedback', {
                 success: success,
-                message: message
+                message: message,
+                slotIndex: slotIndex !== undefined ? slotIndex : -1
             });
-            print(`[InventoryHandler] 📤 Feedback: ${success ? '✅' : '❌'} ${message}`);
+            print(`[InventoryHandler] 📤 Feedback: ${success ? '✅' : '❌'} ${message}, slotIndex: ${slotIndex}`);
         }
     }
 }

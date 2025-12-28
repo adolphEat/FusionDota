@@ -6,7 +6,7 @@ local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
 local __TS__ObjectKeys = ____lualib.__TS__ObjectKeys
 local __TS__NumberToFixed = ____lualib.__TS__NumberToFixed
 local __TS__SourceMapTraceBack = ____lualib.__TS__SourceMapTraceBack
-__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["11"] = 9,["12"] = 9,["13"] = 9,["15"] = 306,["16"] = 307,["17"] = 308,["18"] = 309,["19"] = 312,["20"] = 13,["21"] = 12,["22"] = 16,["23"] = 17,["24"] = 18,["26"] = 20,["27"] = 16,["28"] = 26,["29"] = 28,["30"] = 28,["31"] = 28,["32"] = 29,["33"] = 30,["34"] = 32,["35"] = 33,["36"] = 34,["39"] = 38,["40"] = 39,["41"] = 40,["42"] = 28,["43"] = 28,["44"] = 44,["45"] = 44,["46"] = 44,["47"] = 45,["48"] = 47,["49"] = 48,["52"] = 52,["53"] = 53,["54"] = 54,["55"] = 55,["56"] = 56,["57"] = 57,["58"] = 59,["59"] = 44,["60"] = 44,["61"] = 62,["62"] = 26,["63"] = 68,["64"] = 69,["65"] = 70,["66"] = 72,["67"] = 73,["70"] = 79,["71"] = 80,["72"] = 80,["73"] = 80,["74"] = 80,["75"] = 80,["76"] = 80,["77"] = 80,["79"] = 80,["81"] = 80,["83"] = 80,["85"] = 80,["86"] = 83,["87"] = 84,["88"] = 85,["89"] = 86,["91"] = 89,["94"] = 92,["95"] = 95,["96"] = 96,["97"] = 97,["99"] = 99,["100"] = 99,["101"] = 100,["102"] = 101,["103"] = 102,["104"] = 102,["105"] = 102,["106"] = 102,["107"] = 102,["108"] = 102,["109"] = 102,["110"] = 102,["111"] = 102,["112"] = 102,["113"] = 102,["114"] = 102,["115"] = 102,["116"] = 115,["118"] = 99,["122"] = 120,["124"] = 121,["125"] = 121,["126"] = 122,["127"] = 123,["128"] = 124,["129"] = 125,["130"] = 125,["131"] = 125,["132"] = 125,["133"] = 125,["134"] = 125,["135"] = 125,["136"] = 125,["137"] = 125,["138"] = 125,["139"] = 125,["140"] = 125,["141"] = 125,["142"] = 138,["144"] = 121,["149"] = 145,["150"] = 146,["151"] = 147,["153"] = 150,["154"] = 150,["155"] = 151,["156"] = 152,["157"] = 150,["160"] = 156,["161"] = 160,["162"] = 163,["163"] = 164,["164"] = 165,["165"] = 166,["167"] = 68,["168"] = 173,["169"] = 174,["170"] = 175,["173"] = 180,["174"] = 181,["175"] = 182,["178"] = 186,["179"] = 187,["180"] = 190,["181"] = 191,["182"] = 192,["183"] = 193,["185"] = 195,["188"] = 199,["189"] = 200,["192"] = 206,["193"] = 207,["194"] = 208,["195"] = 209,["198"] = 214,["199"] = 215,["200"] = 217,["201"] = 218,["202"] = 219,["205"] = 223,["206"] = 225,["207"] = 226,["208"] = 227,["211"] = 231,["212"] = 234,["213"] = 242,["214"] = 245,["215"] = 247,["216"] = 250,["217"] = 251,["218"] = 254,["219"] = 257,["220"] = 257,["221"] = 257,["222"] = 257,["223"] = 257,["225"] = 259,["226"] = 260,["228"] = 173,["229"] = 268,["230"] = 269,["231"] = 270,["234"] = 274,["236"] = 274,["238"] = 274,["239"] = 275,["240"] = 277,["241"] = 278,["243"] = 281,["244"] = 282,["246"] = 283,["247"] = 283,["248"] = 284,["249"] = 285,["251"] = 283,["255"] = 290,["256"] = 291,["258"] = 292,["259"] = 292,["260"] = 293,["261"] = 294,["262"] = 295,["264"] = 297,["265"] = 292,["269"] = 300,["270"] = 301,["272"] = 268,["273"] = 318,["274"] = 320,["275"] = 321,["276"] = 324,["277"] = 324,["278"] = 324,["280"] = 324,["282"] = 324,["283"] = 327,["284"] = 328,["285"] = 331,["286"] = 332,["287"] = 335,["288"] = 336,["289"] = 338,["290"] = 341,["291"] = 342,["292"] = 343,["294"] = 347,["295"] = 348,["296"] = 349,["298"] = 352,["299"] = 318,["300"] = 358,["301"] = 364,["302"] = 364,["304"] = 366,["305"] = 367,["306"] = 369,["307"] = 370,["308"] = 371,["312"] = 382,["313"] = 383,["316"] = 377,["317"] = 379,["318"] = 380,["324"] = 374,["327"] = 358,["328"] = 390,["329"] = 391,["330"] = 392,["331"] = 393,["332"] = 397,["334"] = 390,["335"] = 403});
+__TS__SourceMapTraceBack(debug.getinfo(1).short_src, {["11"] = 9,["12"] = 9,["13"] = 9,["15"] = 321,["16"] = 322,["17"] = 323,["18"] = 324,["19"] = 327,["20"] = 13,["21"] = 12,["22"] = 16,["23"] = 17,["24"] = 18,["26"] = 20,["27"] = 16,["28"] = 26,["29"] = 28,["30"] = 28,["31"] = 28,["32"] = 29,["33"] = 30,["34"] = 32,["35"] = 33,["36"] = 34,["39"] = 38,["40"] = 39,["41"] = 40,["42"] = 28,["43"] = 28,["44"] = 45,["45"] = 45,["46"] = 45,["47"] = 46,["48"] = 47,["49"] = 49,["50"] = 50,["53"] = 56,["54"] = 58,["55"] = 59,["56"] = 60,["57"] = 61,["58"] = 62,["59"] = 64,["60"] = 45,["61"] = 45,["62"] = 67,["63"] = 26,["64"] = 73,["65"] = 74,["66"] = 75,["67"] = 77,["68"] = 78,["71"] = 84,["72"] = 85,["73"] = 85,["74"] = 85,["75"] = 85,["76"] = 85,["77"] = 85,["78"] = 85,["80"] = 85,["82"] = 85,["84"] = 85,["86"] = 85,["87"] = 88,["88"] = 89,["89"] = 90,["90"] = 91,["92"] = 94,["95"] = 97,["96"] = 100,["97"] = 101,["98"] = 102,["100"] = 104,["101"] = 104,["102"] = 105,["103"] = 106,["104"] = 107,["105"] = 107,["106"] = 107,["107"] = 107,["108"] = 107,["109"] = 107,["110"] = 107,["111"] = 107,["112"] = 107,["113"] = 107,["114"] = 107,["115"] = 107,["116"] = 107,["117"] = 120,["119"] = 104,["123"] = 125,["125"] = 126,["126"] = 126,["127"] = 127,["128"] = 128,["129"] = 129,["130"] = 130,["131"] = 130,["132"] = 130,["133"] = 130,["134"] = 130,["135"] = 130,["136"] = 130,["137"] = 130,["138"] = 130,["139"] = 130,["140"] = 130,["141"] = 130,["142"] = 130,["143"] = 143,["145"] = 126,["150"] = 150,["151"] = 151,["152"] = 152,["154"] = 155,["155"] = 155,["156"] = 156,["157"] = 157,["158"] = 155,["161"] = 161,["162"] = 165,["163"] = 168,["164"] = 169,["165"] = 170,["166"] = 171,["168"] = 73,["169"] = 178,["170"] = 179,["171"] = 180,["174"] = 185,["175"] = 186,["176"] = 187,["179"] = 191,["180"] = 192,["181"] = 195,["182"] = 196,["183"] = 197,["184"] = 198,["186"] = 200,["189"] = 204,["190"] = 205,["193"] = 211,["194"] = 212,["195"] = 213,["196"] = 214,["199"] = 219,["200"] = 220,["201"] = 222,["202"] = 223,["203"] = 224,["206"] = 228,["207"] = 230,["208"] = 231,["209"] = 232,["212"] = 236,["213"] = 239,["214"] = 247,["215"] = 250,["216"] = 252,["217"] = 255,["218"] = 256,["219"] = 259,["220"] = 259,["221"] = 259,["222"] = 259,["223"] = 259,["224"] = 259,["225"] = 263,["226"] = 263,["227"] = 263,["228"] = 264,["229"] = 265,["231"] = 263,["232"] = 263,["234"] = 269,["235"] = 270,["237"] = 178,["238"] = 278,["239"] = 279,["240"] = 280,["241"] = 281,["244"] = 285,["245"] = 288,["246"] = 289,["248"] = 291,["249"] = 291,["250"] = 292,["251"] = 293,["253"] = 295,["255"] = 291,["258"] = 298,["260"] = 301,["261"] = 302,["263"] = 303,["264"] = 303,["265"] = 304,["266"] = 305,["267"] = 306,["269"] = 308,["271"] = 310,["272"] = 303,["275"] = 312,["277"] = 316,["278"] = 317,["279"] = 278,["280"] = 333,["281"] = 335,["282"] = 336,["283"] = 339,["284"] = 339,["285"] = 339,["287"] = 339,["289"] = 339,["290"] = 342,["291"] = 343,["292"] = 346,["293"] = 347,["294"] = 350,["295"] = 351,["296"] = 353,["297"] = 356,["298"] = 357,["299"] = 358,["301"] = 362,["302"] = 363,["303"] = 364,["305"] = 367,["306"] = 333,["307"] = 373,["308"] = 379,["309"] = 379,["311"] = 381,["312"] = 382,["313"] = 384,["314"] = 385,["315"] = 386,["319"] = 397,["320"] = 398,["323"] = 392,["324"] = 394,["325"] = 395,["331"] = 389,["334"] = 373,["335"] = 405,["336"] = 406,["337"] = 407,["338"] = 408,["339"] = 409,["340"] = 410,["341"] = 411,["342"] = 411,["343"] = 411,["345"] = 411,["347"] = 408,["348"] = 413,["350"] = 405,["351"] = 419});
 local ____exports = {}
 ____exports.InventoryHandler = __TS__Class()
 local InventoryHandler = ____exports.InventoryHandler
@@ -43,19 +43,20 @@ function InventoryHandler.prototype.registerEventHandlers(self)
     )
     CustomGameEventManager:RegisterListener(
         "inventory_deploy_piece",
-        function(____, _, data)
+        function(userId, event)
             print("[InventoryHandler] ========== 部署棋子请求 ==========")
-            if not data then
-                print("[InventoryHandler] ⚠️ data is nil, cannot deploy piece")
+            print((("[InventoryHandler] userId: " .. tostring(userId)) .. ", event: ") .. (event and "not nil" or "nil"))
+            if not event then
+                print("[InventoryHandler] ⚠️ event is nil, cannot deploy piece")
                 return
             end
-            local playerId = data.PlayerID or data.playerId or 0
+            local playerId = event.PlayerID or event.playerId or userId or 0
             print("[InventoryHandler] PlayerId: " .. tostring(playerId))
-            print("[InventoryHandler] PieceId: " .. tostring(data.pieceId))
-            print("[InventoryHandler] UnitName: " .. tostring(data.unitName))
-            print("[InventoryHandler] SlotIndex: " .. tostring(data.slotIndex))
-            print(((("[InventoryHandler] Cursor: (" .. tostring(data.cursorX)) .. ", ") .. tostring(data.cursorY)) .. ")")
-            self:handleDeployPiece(playerId, data)
+            print("[InventoryHandler] PieceId: " .. tostring(event.pieceId))
+            print("[InventoryHandler] UnitName: " .. tostring(event.unitName))
+            print("[InventoryHandler] SlotIndex: " .. tostring(event.slotIndex))
+            print(((((("[InventoryHandler] WorldPos: (" .. tostring(event.worldX)) .. ", ") .. tostring(event.worldY)) .. ", ") .. tostring(event.worldZ)) .. ")")
+            self:handleDeployPiece(playerId, event)
         end
     )
     print("[InventoryHandler] Event handlers registered")
@@ -199,13 +200,13 @@ function InventoryHandler.prototype.handleDeployPiece(self, playerId, data)
     local worldY = data.worldY
     if worldX == nil or worldY == nil then
         print("[InventoryHandler] ⚠️ Missing world coordinates")
-        self:sendDeploymentFeedback(playerId, false, "坐标无效")
+        self:sendDeploymentFeedback(playerId, false, "坐标无效", slotIndex)
         return
     end
     local boardPosition = self:worldToBoardPosition(worldX, worldY, playerId)
     if not boardPosition then
         print("[InventoryHandler] ⚠️ Position outside player's half")
-        self:sendDeploymentFeedback(playerId, false, "只能放置在己方半场（下半区）")
+        self:sendDeploymentFeedback(playerId, false, "只能放置在己方半场（下半区）", slotIndex)
         return
     end
     print(((((("[InventoryHandler] Deploying " .. tostring(piece.displayName)) .. " to board position (") .. tostring(boardPosition.x)) .. ", ") .. tostring(boardPosition.y)) .. ")")
@@ -215,71 +216,77 @@ function InventoryHandler.prototype.handleDeployPiece(self, playerId, data)
     if success then
         self:removePieceFromBench(playerState, slotIndex)
         print("[InventoryHandler] ✅ Piece deployed successfully")
-        self:sendInventoryData(playerId)
         self:sendDeploymentFeedback(
             playerId,
             true,
-            tostring(piece.displayName) .. " 已部署"
+            tostring(piece.displayName) .. " 已部署",
+            slotIndex
+        )
+        Timers:CreateTimer(
+            0.1,
+            function()
+                print("[InventoryHandler] 🔄 延迟发送背包数据更新")
+                self:sendInventoryData(playerId)
+                return
+            end
         )
     else
         print("[InventoryHandler] ❌ Failed to deploy piece")
-        self:sendDeploymentFeedback(playerId, false, "部署失败")
+        self:sendDeploymentFeedback(playerId, false, "部署失败", slotIndex)
     end
 end
 function InventoryHandler.prototype.removePieceFromBench(self, playerState, slotIndex)
     local benchPieces = playerState.benchPieces
     if not benchPieces then
+        print("[InventoryHandler] ⚠️ removePieceFromBench: benchPieces is null or undefined")
         return
     end
-    local ____opt_4 = _G.table
-    if ____opt_4 ~= nil then
-        ____opt_4 = ____opt_4.remove
-    end
-    local tableRemove = ____opt_4
-    if tableRemove then
-        tableRemove(nil, benchPieces, slotIndex + 1)
-        print("[InventoryHandler] 使用 table.remove 移除棋子，索引: " .. tostring(slotIndex + 1))
-    else
-        local newBenchPieces = {}
-        if __TS__ArrayIsArray(benchPieces) then
-            do
-                local i = 0
-                while i < #benchPieces do
-                    if i ~= slotIndex then
-                        newBenchPieces[#newBenchPieces + 1] = benchPieces[i + 1]
-                    end
-                    i = i + 1
+    print((((("[InventoryHandler] 🔄 removePieceFromBench: slotIndex=" .. tostring(slotIndex)) .. ", benchPieces类型=") .. __TS__TypeOf(benchPieces)) .. ", 是数组=") .. tostring(__TS__ArrayIsArray(benchPieces)))
+    local newBenchPieces = {}
+    if __TS__ArrayIsArray(benchPieces) then
+        do
+            local i = 0
+            while i < #benchPieces do
+                if i ~= slotIndex then
+                    newBenchPieces[#newBenchPieces + 1] = benchPieces[i + 1]
+                else
+                    print(("[InventoryHandler] 跳过索引 " .. tostring(i)) .. "（要移除的棋子）")
                 end
-            end
-        else
-            local keys = __TS__ObjectKeys(benchPieces)
-            local currentIndex = 0
-            do
-                local i = 0
-                while i < #keys do
-                    local key = keys[i + 1]
-                    if currentIndex ~= slotIndex then
-                        newBenchPieces[#newBenchPieces + 1] = benchPieces[key]
-                    end
-                    currentIndex = currentIndex + 1
-                    i = i + 1
-                end
+                i = i + 1
             end
         end
-        playerState.benchPieces = newBenchPieces
-        print("[InventoryHandler] 重建数组移除棋子，索引: " .. tostring(slotIndex))
+        print((("[InventoryHandler] 重建数组移除棋子，原长度: " .. tostring(#benchPieces)) .. ", 新长度: ") .. tostring(#newBenchPieces))
+    else
+        local keys = __TS__ObjectKeys(benchPieces)
+        local currentIndex = 0
+        do
+            local i = 0
+            while i < #keys do
+                local key = keys[i + 1]
+                if currentIndex ~= slotIndex then
+                    newBenchPieces[#newBenchPieces + 1] = benchPieces[key]
+                else
+                    print(("[InventoryHandler] 跳过索引 " .. tostring(currentIndex)) .. "（要移除的棋子）")
+                end
+                currentIndex = currentIndex + 1
+                i = i + 1
+            end
+        end
+        print((("[InventoryHandler] 重建Lua表移除棋子，原长度: " .. tostring(#keys)) .. ", 新长度: ") .. tostring(#newBenchPieces))
     end
+    playerState.benchPieces = newBenchPieces
+    print("[InventoryHandler] ✅ 棋子已从备战席移除")
 end
 function InventoryHandler.prototype.worldToBoardPosition(self, worldX, worldY, playerId)
     local boardTotalSize = self.BOARD_SIZE * self.CELL_SIZE
     local centerOffset = boardTotalSize / 2
-    local ____temp_6
+    local ____temp_4
     if playerId >= 0 then
-        ____temp_6 = playerId * 2000
+        ____temp_4 = playerId * 2000
     else
-        ____temp_6 = 0
+        ____temp_4 = 0
     end
-    local playerOffset = ____temp_6
+    local playerOffset = ____temp_4
     local boardStartX = self.BOARD_OFFSET_X - centerOffset + playerOffset
     local boardStartY = self.BOARD_OFFSET_Y - centerOffset
     local relativeX = worldX - boardStartX
@@ -325,11 +332,20 @@ function InventoryHandler.prototype.deployPieceToBoard(self, playerId, piece, po
         end
     end
 end
-function InventoryHandler.prototype.sendDeploymentFeedback(self, playerId, success, message)
+function InventoryHandler.prototype.sendDeploymentFeedback(self, playerId, success, message, slotIndex)
     local player = PlayerResource:GetPlayer(playerId)
     if player then
-        CustomGameEventManager:Send_ServerToPlayer(player, "deployment_feedback", {success = success, message = message})
-        print((("[InventoryHandler] 📤 Feedback: " .. (success and "✅" or "❌")) .. " ") .. message)
+        local ____CustomGameEventManager_Send_ServerToPlayer_8 = CustomGameEventManager.Send_ServerToPlayer
+        local ____success_6 = success
+        local ____message_7 = message
+        local ____temp_5
+        if slotIndex ~= nil then
+            ____temp_5 = slotIndex
+        else
+            ____temp_5 = -1
+        end
+        ____CustomGameEventManager_Send_ServerToPlayer_8(CustomGameEventManager, player, "deployment_feedback", {success = ____success_6, message = ____message_7, slotIndex = ____temp_5})
+        print((((("[InventoryHandler] 📤 Feedback: " .. (success and "✅" or "❌")) .. " ") .. message) .. ", slotIndex: ") .. tostring(slotIndex))
     end
 end
 ____exports.inventoryHandler = ____exports.InventoryHandler:getInstance()
