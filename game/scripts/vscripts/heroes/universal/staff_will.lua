@@ -12,6 +12,10 @@ function staff_will:GetIntrinsicModifierName()
     return "modifier_staff_will"
 end
 
+function staff_will:GetAbilityTextureName()
+    return "abaddon_death_coil"
+end
+
 -- 全局攻速暴击效果修饰符
 if modifier_staff_will == nil then
     modifier_staff_will = class({})
@@ -34,7 +38,7 @@ function modifier_staff_will:IsPassive()
 end
 
 function modifier_staff_will:GetTexture()
-    return "item_bfury"
+    return "abaddon_death_coil"
 end
 
 function modifier_staff_will:DeclareFunctions()

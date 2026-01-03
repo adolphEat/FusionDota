@@ -13,6 +13,10 @@ function knight_3:GetIntrinsicModifierName()
     return "modifier_knight_3"
 end
 
+function knight_3:GetAbilityTextureName()
+    return "backdoor_protection"
+end
+
 -- 全局骑士羁绊效果修饰符
 if modifier_knight_3 == nil then
     modifier_knight_3 = class({})
@@ -35,7 +39,7 @@ function modifier_knight_3:IsPassive()
 end
 
 function modifier_knight_3:GetTexture()
-    return "item_buckler"
+    return "backdoor_protection"
 end
 
 -- 骑士单位列表

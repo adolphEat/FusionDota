@@ -13,6 +13,10 @@ function warlock_2:GetIntrinsicModifierName()
     return "modifier_warlock_2"
 end
 
+function warlock_2:GetAbilityTextureName()
+    return "keeper_of_the_light_recall_secondary"
+end
+
 -- 全局术士羁绊效果修饰符
 if modifier_warlock_2 == nil then
     modifier_warlock_2 = class({})
@@ -35,7 +39,7 @@ function modifier_warlock_2:IsPassive()
 end
 
 function modifier_warlock_2:GetTexture()
-    return "item_cloak"
+    return "keeper_of_the_light_recall_secondary"
 end
 
 -- 术士单位列表

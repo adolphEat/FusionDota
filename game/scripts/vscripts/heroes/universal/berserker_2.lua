@@ -20,6 +20,10 @@ function berserker_2:GetIntrinsicModifierName()
     return "modifier_berserker_2"
 end
 
+function berserker_2:GetAbilityTextureName()
+    return "axe_counter_helix_unleashed"
+end
+
 -- 全局战斗狂人羁绊效果修饰符
 if modifier_berserker_2 == nil then
     modifier_berserker_2 = class({})
@@ -42,7 +46,7 @@ function modifier_berserker_2:IsPassive()
 end
 
 function modifier_berserker_2:GetTexture()
-    return "item_bfury"
+    return "axe_counter_helix_unleashed"
 end
 
 -- 战斗狂人单位列表

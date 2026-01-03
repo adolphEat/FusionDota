@@ -9,6 +9,10 @@ function double_cast:GetIntrinsicModifierName()
     return "modifier_double_cast"
 end
 
+function double_cast:GetAbilityTextureName()
+    return "chaos_knight_reality_rift"
+end
+
 LinkLuaModifier("modifier_double_cast", "heroes/universal/double_cast", LUA_MODIFIER_MOTION_NONE)
 
 modifier_double_cast = class({})
@@ -67,6 +71,14 @@ function modifier_double_cast:TryAutoCastAbility(unit, ability)
         self:TryCastEnchantressHeal(unit, ability)
     elseif ability_name == "oracle1_fatesedict" then
         self:TryCastOracleFatesEdict(unit, ability)
+    elseif ability_name == "razor_storm_eye" then
+        self:TryCastRazorStormEye(unit, ability)
+    elseif ability_name == "terrorblade_demon_form" then
+        self:TryCastTerrorbladeDemonForm(unit, ability)
+    elseif ability_name == "dawnbreaker1_solar_guardian_land" then
+        self:TryCastDawnbreakerSolarGuardian(unit, ability)
+    elseif ability_name == "anti_mage_counterspell" then
+        self:TryCastAntiMageCounterspell(unit, ability)
     else
         -- 默认双重施法逻辑
         self:TryCastDefaultAbility(unit, ability)
@@ -105,6 +117,49 @@ end
 function modifier_double_cast:TryCastOracleFatesEdict(unit, ability)
     -- Oracle技能本身已经有智能目标选择，直接释放即可
     unit:CastAbilityNoTarget(ability, unit:GetPlayerOwnerID())
+end
+
+-- Razor风暴之眼技能的特殊双重施法逻辑
+function modifier_double_cast:TryCastRazorStormEye(unit, ability)
+    -- 检查技能是否可用（如果可用说明上一次效果已结束）
+    -- 风暴之眼没有 modifier，通过检查技能是否可用来判断
+    if ability:IsFullyCastable() then
+        unit:CastAbilityNoTarget(ability, unit:GetPlayerOwnerID())
+    end
+end
+
+-- Terrorblade恶魔形态技能的特殊双重施法逻辑
+function modifier_double_cast:TryCastTerrorbladeDemonForm(unit, ability)
+    -- 检查变身效果是否已经结束
+    local has_demon_form = unit:HasModifier("modifier_terrorblade_demon_form_custom")
+    
+    if not has_demon_form then
+        -- 上一次变身效果已结束，可以释放第二次
+        unit:CastAbilityNoTarget(ability, unit:GetPlayerOwnerID())
+    end
+end
+
+-- Dawnbreaker天光现世技能的特殊双重施法逻辑
+function modifier_double_cast:TryCastDawnbreakerSolarGuardian(unit, ability)
+    -- 检查引导效果是否已经结束（检查 modifier 和是否在引导中）
+    local has_channeling = unit:HasModifier("modifier_dawnbreaker_solar_guardian_channeling")
+    local is_channeling = unit:IsChanneling()
+    
+    if not has_channeling and not is_channeling then
+        -- 上一次引导效果已结束，可以释放第二次
+        unit:CastAbilityNoTarget(ability, unit:GetPlayerOwnerID())
+    end
+end
+
+-- Anti-Mage法术反制技能的特殊双重施法逻辑
+function modifier_double_cast:TryCastAntiMageCounterspell(unit, ability)
+    -- 检查魔法反制护盾是否已经消失
+    local has_shield = unit:HasModifier("modifier_anti_mage_counterspell_shield")
+    
+    if not has_shield then
+        -- 上一次护盾已消失，可以释放第二次
+        unit:CastAbilityNoTarget(ability, unit:GetPlayerOwnerID())
+    end
 end
 
 -- 默认双重施法逻辑
@@ -155,6 +210,77 @@ function modifier_double_cast:FindNearestEnemy(unit)
     end
     
     return nil
+end
+
+-- 在指定持续时间后触发双重施法（用于需要等待技能持续结束的技能）
+function modifier_double_cast:ScheduleDoubleCastAfterDuration(unit, ability, skill_key, duration)
+    local ability_name = ability:GetName()
+    local timer_name = "double_cast_delay_" .. skill_key
+    
+    -- 使用 Think 函数定期检查技能是否已结束
+    local check_interval = 0.1
+    local elapsed_time = 0
+    
+    GameRules:GetGameModeEntity():SetThink(function()
+        if not IsValidEntity(unit) or not IsValidEntity(ability) then
+            return nil
+        end
+        
+        elapsed_time = elapsed_time + check_interval
+        
+        -- 检查技能是否已结束（根据技能类型）
+        local skill_ended = false
+        
+        if ability_name == "razor_storm_eye" then
+            -- 风暴之眼：检查技能是否可用（如果可用说明上一次效果已结束）
+            skill_ended = ability:IsFullyCastable()
+        elseif ability_name == "terrorblade_demon_form" then
+            -- 恶魔形态：检查变身效果是否已结束
+            skill_ended = not unit:HasModifier("modifier_terrorblade_demon_form_custom")
+        elseif ability_name == "dawnbreaker1_solar_guardian_land" then
+            -- 天光现世：检查引导效果是否已结束
+            skill_ended = not unit:HasModifier("modifier_dawnbreaker_solar_guardian_channeling") and not unit:IsChanneling()
+        elseif ability_name == "anti_mage_counterspell" then
+            -- 法术反制：检查护盾是否已消失
+            skill_ended = not unit:HasModifier("modifier_anti_mage_counterspell_shield")
+        else
+            -- 其他技能：等待指定时间后触发
+            if duration then
+                skill_ended = elapsed_time >= duration
+            else
+                -- 如果没有设置持续时间，默认等待1秒
+                skill_ended = elapsed_time >= 1.0
+            end
+        end
+        
+        -- 如果技能已结束，触发双重施法
+        if skill_ended then
+            print("Executing double cast for: " .. ability_name .. " after duration check")
+            -- 恢复满蓝
+            local max_mana = unit:GetMaxMana()
+            unit:SetMana(max_mana)
+            
+            -- 显示消息
+            SendOverheadEventMessage(nil, OVERHEAD_ALERT_MANA_ADD, unit, max_mana, nil)
+            
+            -- 尝试释放技能
+            self:TryAutoCastAbility(unit, ability)
+            
+            return nil -- 停止定时器
+        end
+        
+        -- 如果超过最大等待时间（duration + 1秒缓冲），也触发双重施法（防止无限等待）
+        if elapsed_time >= duration + 1.0 then
+            print("Executing double cast for: " .. ability_name .. " after timeout")
+            local max_mana = unit:GetMaxMana()
+            unit:SetMana(max_mana)
+            SendOverheadEventMessage(nil, OVERHEAD_ALERT_MANA_ADD, unit, max_mana, nil)
+            self:TryAutoCastAbility(unit, ability)
+            return nil
+        end
+        
+        return check_interval -- 继续检查
+    end, timer_name, check_interval)
 end
 
 function modifier_double_cast:DeclareFunctions()
@@ -215,26 +341,23 @@ function modifier_double_cast:OnAbilityExecuted(keys)
                 self.unit_double_cast_pending[skill_key] = true
                 print("Created double cast pending marker for: " .. skill_key)
                 
-                -- 延迟1秒后触发双重施法
-                local timer_name = "double_cast_delay_" .. skill_key
-                GameRules:GetGameModeEntity():SetThink(function()
-                    if not IsValidEntity(unit) or not IsValidEntity(ability) then
-                        return nil
-                    end
-                    
-                    print("Executing double cast for: " .. ability_name)
-                    -- 恢复满蓝
-                    local max_mana = unit:GetMaxMana()
-                    unit:SetMana(max_mana)
-                    
-                    -- 显示消息
-                    SendOverheadEventMessage(nil, OVERHEAD_ALERT_MANA_ADD, unit, max_mana, nil)
-                    
-                    -- 尝试释放技能
-                    self:TryAutoCastAbility(unit, ability)
-                    
-                    return nil
-                end, timer_name, 1.0)
+                -- 对于需要等待技能持续结束的技能，使用特殊的延迟逻辑
+                if ability_name == "razor_storm_eye" then
+                    -- 风暴之眼持续3秒，等待3秒后触发双重施法
+                    self:ScheduleDoubleCastAfterDuration(unit, ability, skill_key, 3.0)
+                elseif ability_name == "terrorblade_demon_form" then
+                    -- 恶魔形态持续10秒，等待10秒后触发双重施法
+                    self:ScheduleDoubleCastAfterDuration(unit, ability, skill_key, 10.0)
+                elseif ability_name == "dawnbreaker1_solar_guardian_land" then
+                    -- 天光现世引导4秒，等待4秒后触发双重施法
+                    self:ScheduleDoubleCastAfterDuration(unit, ability, skill_key, 4.0)
+                elseif ability_name == "anti_mage_counterspell" then
+                    -- 法术反制：等待护盾消失后触发双重施法（不设置固定时间，通过检查护盾状态）
+                    self:ScheduleDoubleCastAfterDuration(unit, ability, skill_key, nil)
+                else
+                    -- 其他技能延迟1秒后触发双重施法
+                    self:ScheduleDoubleCastAfterDuration(unit, ability, skill_key, 1.0)
+                end
             end
         end
         return

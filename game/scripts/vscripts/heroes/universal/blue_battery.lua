@@ -10,6 +10,10 @@ function blue_battery:GetIntrinsicModifierName()
     return "modifier_blue_battery"
 end
 
+function blue_battery:GetAbilityTextureName()
+    return "keeper_of_the_light_mana_leak"
+end
+
 -- 全局buff修饰器
 modifier_blue_battery = class({})
 

@@ -13,6 +13,10 @@ function sylph_1:GetIntrinsicModifierName()
     return "modifier_sylph_1"
 end
 
+function sylph_1:GetAbilityTextureName()
+    return "brewmaster_primal_companion_fire"
+end
+
 -- 全局仙灵羁绊效果修饰符
 if modifier_sylph_1 == nil then
     modifier_sylph_1 = class({})
@@ -35,7 +39,7 @@ function modifier_sylph_1:IsPassive()
 end
 
 function modifier_sylph_1:GetTexture()
-    return "item_arcane_boots"
+    return "brewmaster_primal_companion_fire"
 end
 
 -- 仙灵单位列表

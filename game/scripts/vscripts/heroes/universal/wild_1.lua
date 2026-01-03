@@ -13,6 +13,10 @@ function wild_1:GetIntrinsicModifierName()
     return "modifier_wild_1"
 end
 
+function wild_1:GetAbilityTextureName()
+    return "beastmaster_call_of_the_wild_boar"
+end
+
 -- 确保技能升级时创建modifier
 function wild_1:OnUpgrade()
     if not IsServer() then return end
@@ -48,7 +52,7 @@ function modifier_wild_1:IsPassive()
 end
 
 function modifier_wild_1:GetTexture()
-    return "item_hyperstone"
+    return "beastmaster_call_of_the_wild_boar"
 end
 
 -- 狂野单位列表

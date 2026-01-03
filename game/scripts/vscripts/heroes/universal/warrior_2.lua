@@ -24,6 +24,10 @@ function warrior_2:GetIntrinsicModifierName()
     return "modifier_warrior_2"
 end
 
+function warrior_2:GetAbilityTextureName()
+    return "beastmaster_primal_roar"
+end
+
 -- 全局斗士羁绊效果修饰符
 if modifier_warrior_2 == nil then
     modifier_warrior_2 = class({})
@@ -46,7 +50,7 @@ function modifier_warrior_2:IsPassive()
 end
 
 function modifier_warrior_2:GetTexture()
-    return "item_heart"
+    return "beastmaster_primal_roar"
 end
 
 -- 斗士单位列表
@@ -420,7 +424,8 @@ function modifier_warrior_2_effect:OnCreated(params)
             local warrior_units = {
                 "treant_protector1",  -- 树精卫士
                 "anti_mage1",         -- 敌法师
-                "ogre_magi1"          -- 食人魔法师
+                "ogre_magi1",         -- 食人魔法师
+                "axe1"                -- 斧王
             }
             
             local is_warrior = false
@@ -635,7 +640,7 @@ function modifier_warrior_2_effect:OnIntervalThink()
             local warrior_units = {
                 "treant_protector1",  -- 树精卫士
                 "anti_mage1",         -- 敌法师
-                "ogre_magi1"          -- 食人魔法师
+                "ogre_magi1",         -- 食人魔法师
                 "axe1"                -- 斧王
             }
             

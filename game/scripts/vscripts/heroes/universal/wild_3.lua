@@ -15,6 +15,10 @@ function wild_3:GetIntrinsicModifierName()
     return "modifier_wild_3"
 end
 
+function wild_3:GetAbilityTextureName()
+    return "beastmaster_call_of_the_wild_boar"
+end
+
 -- 确保技能升级时创建modifier
 function wild_3:OnUpgrade()
     if not IsServer() then return end
@@ -50,7 +54,7 @@ function modifier_wild_3:IsPassive()
 end
 
 function modifier_wild_3:GetTexture()
-    return "item_hyperstone"
+    return "beastmaster_call_of_the_wild_boar"
 end
 
 -- 狂野单位列表
@@ -87,7 +91,7 @@ function modifier_wild_3:OnCreated()
         self.trigger_interval = self:GetAbility():GetSpecialValueFor("trigger_interval") or 10.0
         self.attack_speed_bonus_percent = self:GetAbility():GetSpecialValueFor("attack_speed_bonus_percent") or 10.0
         self.attack_damage_bonus = self:GetAbility():GetSpecialValueFor("attack_damage_bonus") or 10.0
-        self.execute_threshold = self:GetAbility():GetSpecialValueFor("execute_threshold") or 0.2
+        self.execute_threshold = (self:GetAbility():GetSpecialValueFor("execute_threshold_percent") or 20.0) / 100.0
         
         print("Wild 3: Modifier created, trigger_interval =", self.trigger_interval)
         
@@ -348,7 +352,7 @@ function wild_3:OnProjectileHit(target, location)
         -- 检查是否低于20%最大生命值
         local new_health = target:GetHealth()
         local health_percent = new_health / max_health
-        local execute_threshold = self:GetSpecialValueFor("execute_threshold") or 0.2
+        local execute_threshold = (self:GetSpecialValueFor("execute_threshold_percent") or 20.0) / 100.0
         
         if health_percent <= execute_threshold or new_health <= 0 then
             -- 斩杀

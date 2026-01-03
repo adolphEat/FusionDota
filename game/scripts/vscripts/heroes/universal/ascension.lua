@@ -12,6 +12,10 @@ function ascension:GetIntrinsicModifierName()
     return "modifier_ascension"
 end
 
+function ascension:GetAbilityTextureName()
+    return "brewmaster_storm_wind_walk"
+end
+
 -- 全局飞升效果修饰符
 if modifier_ascension == nil then
     modifier_ascension = class({})
@@ -34,7 +38,7 @@ function modifier_ascension:IsPassive()
 end
 
 function modifier_ascension:GetTexture()
-    return "item_ultimate_scepter"
+    return "brewmaster_storm_wind_walk"
 end
 
 function modifier_ascension:OnCreated()
@@ -199,5 +203,5 @@ function modifier_ascension_effect:GetModifierTotalDamageOutgoing_Percentage()
 end
 
 function modifier_ascension_effect:GetTexture()
-    return "item_ultimate_scepter"
+    return "brewmaster_storm_wind_walk"
 end

@@ -8,7 +8,7 @@
 	"test1"
 	{
 		"BaseClass"	"npc_dota_creature"
-		"Ability1"	"windrunner_powershot"
+		"Ability1"	"windrunner_piercing_arrow"
 		"Ability2"	""
 		"Ability3"	""
 		"Ability4"	""
@@ -34,7 +34,7 @@
 		"AttackRate"	"0.65"
 		"AttackAnimationPoint"	"0.40"
 		"AttackRange"	"800"
-		"ProjectileModel"	"particles/heroes/windrunner/windrunner_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_windrunner/windrunner_base_attack.vpcf"
 		"ProjectileSpeed"	"800"
 		"ArmorPhysical"	"0"
 		"MagicalResistance"	"0"
@@ -55,9 +55,9 @@
 	"windrunner1"
 	{
 		"BaseClass"	"npc_dota_creature"
-		"Ability1"	"windrunner_powershot"
-		"Ability2"	"sylph_2"
-		"Ability3"	"ranger_3"
+		"Ability1"	"windrunner_piercing_arrow"
+		"Ability2"	"warrior_2"
+		"Ability3"	""
 		"Ability4"	""
 		"Ability5"	""
 		"Ability6"	""
@@ -81,7 +81,7 @@
 		"AttackRate"	"1.25"
 		"AttackAnimationPoint"	"0.80"
 		"AttackRange"	"800"
-		"ProjectileModel"	"particles/heroes/windrunner/windrunner_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_windrunner/windrunner_base_attack.vpcf"
 		"ProjectileSpeed"	"600"
 		"ArmorPhysical"	"2"
 		"MagicalResistance"	"5"
@@ -304,7 +304,7 @@
 		"AttackRate"	"1.54"
 		"AttackAnimationPoint"	"0.7"
 		"AttackRange"	"600"
-		"ProjectileModel"	"particles/heroes/lion/lion_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_lion/lion_base_attack.vpcf"
 		"ProjectileSpeed"	"900"
 		"ArmorPhysical"	"2"
 		"MagicalResistance"	"5"
@@ -379,7 +379,7 @@
 		"AttackRate"	"1.43"
 		"AttackAnimationPoint"	"0.7"
 		"AttackRange"	"400"
-		"ProjectileModel"	"particles/heroes/enchantress/enchantress_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_enchantress/enchantress_base_attack.vpcf"
 		"ProjectileSpeed"	"900"
 		"ArmorPhysical"	"1.5"
 		"MagicalResistance"	"5"
@@ -433,7 +433,7 @@
 	{
 		"BaseClass"	"npc_dota_creature"
 		"Name"	"razor1"
-		"Ability1"	"razor_eye_of_the_storm"
+		"Ability1"	"razor_storm_eye"
 		"Ability2"	"void_1"
 		"Ability3"	""
 		"Ability4"	""
@@ -459,7 +459,7 @@
 		"AttackRate"	"1.43"
 		"AttackAnimationPoint"	"0.7"
 		"AttackRange"	"400"
-		"ProjectileModel"	"particles/heroes/razor/razor_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_razor/razor_base_attack.vpcf"
 		"ProjectileSpeed"	"2000"
 		"ArmorPhysical"	"2"
 		"MagicalResistance"	"5"
@@ -514,7 +514,7 @@
 "ursa1"
 	{
 		"BaseClass"	"npc_dota_creature"
-		"Ability1"	"ursa_earthshock"
+		"Ability1"	"ursa_ground_slam"
 		"Ability2"	"knight_1"
 		"Ability3"	""
 		"Ability4"	""
@@ -690,7 +690,7 @@
 		"AttackRate"	"1.54"
 		"AttackAnimationPoint"	"0.5"
 		"AttackRange"	"400"
-		"ProjectileModel"	"particles/heroes/oracle/oracle_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_oracle/oracle_base_attack.vpcf"
 		"ProjectileSpeed"	"900"
 		"ArmorPhysical"	"4"
 		"MagicalResistance"	"15"
@@ -734,12 +734,102 @@
 		}
 	}
 
+"drow_ranger1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Name"	"drow_ranger1"
+		"Ability1"	"drow_multishot"
+		"Ability2"	""
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/drow_ranger/drow_base.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Drow"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_drowranger.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
+		"AttackDamageMin"	"60"
+		"AttackDamageMax"	"60"
+		"AttackRate"	"1.25"
+		"AttackAnimationPoint"	"0.5"
+		"AttackRange"	"800"
+		"ProjectileModel"	"particles/units/heroes/hero_drow_ranger/drow_base_attack.vpcf"
+		"ProjectileSpeed"	"900"
+		"ArmorPhysical"	"3"
+		"MagicalResistance"	"15"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"650"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"0"
+		"StatusManaRegen"	"0"
+		"StatusStartingMana"	"0"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"4628"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"4632"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"4625"//武器
+				}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"4629"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"4626"//背部（斗篷、翅膀）
+				}
+				
+				"Wearable6"
+				{
+					"ItemDef"	"4613"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable7"
+				{
+					"ItemDef"	"4630"//背部（斗篷、翅膀）
+				}
+			}
+		}
+	}
+
 //3 fei dan wei
 
 "lina1"
 	{
 		"BaseClass"	"npc_dota_creature"
-		"Ability1"	"lina_light_strike_array"
+		"Ability1"	"lina_flame_strike"
 		"Ability2"	"divine_general_1"
 		"Ability3"	""
 		"Ability4"	""
@@ -765,7 +855,7 @@
 		"AttackRate"	"1.43"
 		"AttackAnimationPoint"	"0.65"
 		"AttackRange"	"600"
-		"ProjectileModel"	"particles/heroes/lina/lina_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_lina/lina_base_attack.vpcf"
 		"ProjectileSpeed"	"1000"
 		"ArmorPhysical"	"3"
 		"MagicalResistance"	"15"
@@ -807,7 +897,7 @@
 "viper1"
 	{
 		"BaseClass"	"npc_dota_creature"
-		"Ability1"	"viper_nethertoxin"
+		"Ability1"	"viper_poison_burst"
 		"Ability2"	""
 		"Ability3"	""
 		"Ability4"	""
@@ -833,7 +923,7 @@
 		"AttackRate"	"1.33"
 		"AttackAnimationPoint"	"0.55"
 		"AttackRange"	"600"
-		"ProjectileModel"	"particles/heroes/viper/viper_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_viper/viper_base_attack.vpcf"
 		"ProjectileSpeed"	"1200"
 		"ArmorPhysical"	"4"
 		"MagicalResistance"	"15"
@@ -980,7 +1070,7 @@
 		"AttackRate"	"1.43"
 		"AttackAnimationPoint"	"0.7"
 		"AttackRange"	"400"
-		"ProjectileModel"	"particles/heroes/death_prophet/death_prophet_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_death_prophet/death_prophet_base_attack.vpcf"
 		"ProjectileSpeed"	"900"
 		"ArmorPhysical"	"5"
 		"MagicalResistance"	"15"
@@ -1106,12 +1196,95 @@
 		}
 	}
 
+	"terrorblade1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Name"	"terrorblade1"
+		"Ability1"	"terrorblade_demon_form"
+		"Ability2"	""
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/terrorblade/terrorblade.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Terrorblade"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_antimage.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_MELEE_ATTACK"
+		"AttackDamageMin"	"65"
+		"AttackDamageMax"	"65"
+		"AttackRate"	"1.67"
+		"AttackAnimationPoint"	"0.9"
+		"AttackRange"	"200"
+		"ArmorPhysical"	"6"
+		"MagicalResistance"	"20"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"800"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"140"
+		"StatusManaRegen"	"1"
+		"StatusStartingMana"	"60"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"14340"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"14342"//肩部、护甲
+				}
+
+				"Wearable3"
+				{
+					"ItemDef"	"14338"//武器
+				}
+				
+				//"Wearable4"
+				//{
+				//	"ItemDef"	"14510"//副手装备（箭袋、盾牌）
+				//}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"14341"//背部（斗篷、翅膀）
+				}
+				
+				"Wearable6"
+				{
+					"ItemDef"	"14339"//变身恶魔形态
+				}
+			}
+		}
+	}
+
 //4 fei dan wei
 
 "crystal_maiden1"
 	{
 		"BaseClass"	"npc_dota_creature"
-		"Ability1"	"tidehunter_ravage"
+		"Ability1"	"tidehunter_tidal_wave"
 		"Ability2"	""
 		"Ability3"	""
 		"Ability4"	""
@@ -1137,7 +1310,7 @@
 		"AttackRate"	"1.54"
 		"AttackAnimationPoint"	"0.80"
 		"AttackRange"	"600"
-		"ProjectileModel"	"particles/heroes/crystal_maiden/maiden_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_crystal_maiden/maiden_base_attack.vpcf"
 		"ProjectileSpeed"	"800"
 		"ArmorPhysical"	"5"
 		"MagicalResistance"	"20"
@@ -1450,7 +1623,7 @@
 		"AttackRate"	"1.54"
 		"AttackAnimationPoint"	"0.8"
 		"AttackRange"	"800"
-		"ProjectileModel"	"particles/heroes/enigma/enigma_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_enigma/enigma_base_attack.vpcf"
 		"ProjectileSpeed"	"900"
 		"ArmorPhysical"	"6"
 		"MagicalResistance"	"20"
@@ -1500,7 +1673,7 @@
 		}
 	}
 
-"zeus1"
+	"zeus1"
 	{
 		"BaseClass"	"npc_dota_creature"
 		"Name"	"zeus1"
@@ -1530,7 +1703,7 @@
 		"AttackRate"	"1.33"
 		"AttackAnimationPoint"	"0.6"
 		"AttackRange"	"600"
-		"ProjectileModel"	"particles/heroes/zeus/zuus_base_attack.vpcf"
+		"ProjectileModel"	"particles/units/heroes/hero_zuus/zuus_base_attack.vpcf"
 		"ProjectileSpeed"	"900"
 		"ArmorPhysical"	"6"
 		"MagicalResistance"	"20"
@@ -1580,7 +1753,7 @@
 		}
 	}
 
-"dawnbreaker1"
+	"dawnbreaker1"
 	{
 		"BaseClass"	"npc_dota_creature"
 		"Name"	"dawnbreaker11"
@@ -1654,6 +1827,86 @@
 				//{
 				//	"ItemDef"	"9037"//背部（斗篷、翅膀）
 				//}
+			}
+		}
+	}
+
+	"invoker1"
+	{
+		"BaseClass"	"npc_dota_creature"
+		"Name"	"invoker1"
+		"Ability1"	"invoker_elemental_invoke"
+		"Ability2"	""
+		"Ability3"	""
+		"Ability4"	""
+		"Ability5"	""
+		"Ability6"	""
+		"Ability7"	""
+		"Ability8"	""
+		"Ability9"	""
+		"Ability10"	"universal_mana_restore_on_attack"
+		"Ability11"	"universal_mana_restore_on_damage"
+		"Ability12"	""
+		"Ability13"	""
+		"Ability14"	""
+		"Ability15"	""
+		"Ability16"	""
+		"Model"	"models/heroes/invoker/invoker.vmdl"
+		"ModelScale"	"1"
+		"SoundSet"	"Hero_Invoker"
+		"GameSoundsFile"	"soundevents/game_sounds_heroes/game_sounds_invoker.vsndevts"
+		"AttackCapabilities"	"DOTA_UNIT_CAP_RANGED_ATTACK"
+		"AttackDamageMin"	"65"
+		"AttackDamageMax"	"65"
+		"AttackRate"	"1.54"
+		"AttackAnimationPoint"	"0.8"
+		"AttackRange"	"800"
+		"ProjectileModel"	"particles/units/heroes/hero_invoker/invoker_kid_base_attack_all.vpcf"
+		"ProjectileSpeed"	"900"
+		"ArmorPhysical"	"5"
+		"MagicalResistance"	"25"
+		"MovementTurnRate"	"10"
+		"MovementCapabilities"	"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementSpeed"	"500"
+		"StatusHealth"	"1000"
+		"StatusHealthRegen"	"0"
+		"StatusMana"	"60"
+		"StatusManaRegen"	"3"
+		"StatusStartingMana"	"0"
+		"CombatClassAttack"	"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+		"CombatClassDefend"	"DOTA_COMBAT_CLASS_DEFEND_BASIC"
+		"TeamName"	"DOTA_TEAM_GOODGUYS"
+		"UnitRelationshipClass"	"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+		"MinimapIcon"	"minimap_creep"
+		"MinimapIconSize"	"256"
+		"Creature"
+		{
+			"AttachWearables"
+			{
+				"Wearable1"
+				{
+					"ItemDef"	"4236"//头部
+				}
+				
+				"Wearable2"
+				{
+					"ItemDef"	"4235"//肩部、护甲
+				}
+
+				//"Wearable3"
+				//{
+				//	"ItemDef"	"25715"//武器
+				//}
+				
+				"Wearable4"
+				{
+					"ItemDef"	"4234"//副手装备（箭袋、盾牌）
+				}
+				
+				"Wearable5"
+				{
+					"ItemDef"	"4233"//背部（斗篷、翅膀）
+				}
 			}
 		}
 	}

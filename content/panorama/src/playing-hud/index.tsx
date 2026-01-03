@@ -36,85 +36,147 @@ interface SynergyData {
 }
 
 // 羁绊图标映射 - 使用 icon 文件夹中的图标
+// 注意：使用基础文件名（不含 _png 后缀和 .png 扩展名）
 const SYNERGY_ICON_MAP: Record<string, string> = {
-    warrior: 'hazard_armor_png.png',        // 战士 - 护甲图标
-    mage: 'hazard_magicresist_png.png',     // 法师 - 魔抗图标
-    assassin: 'hazard_attack_png.png',      // 刺客 - 攻击图标
-    hunter: 'hazard_speed_png.png',         // 猎人 - 速度图标
-    orc: 'hazard_enrage_2_png.png',         // 兽人 - 狂暴图标
-    undead: 'hazard_vampiric_png.png',      // 不死 - 吸血图标
-    human: 'hazard_glimmer_png.png',        // 人类 - 闪光图标
-    goblin: 'hazard_embiggen_png.png',      // 地精 - 变大图标
+    sylph_1: 'hazard_chillingtouch',        // 仙灵 - 寒冰触摸图标
+    divine_general_1: 'hazard_armor',        // 神将 - 护甲图标
+    wild_1: 'hazard_enrage_2',              // 狂野 - 狂暴图标
+    void_1: 'hazard_meteor',                // 虚空 - 流星图标
+    berserker_1: 'hazard_attack',           // 战斗狂人 - 攻击图标
+    creation: 'hazard_glimmer',             // 创造 - 闪光图标
+    ranger_1: 'hazard_speed',               // 游侠 - 速度图标
+    knight_1: 'hazard_frontreduction',      // 骑士 - 正面减伤图标
+    warrior_1: 'hazard_armor',              // 斗士 - 护甲图标
+    mage_1: 'hazard_magicresist',           // 法师 - 魔抗图标
+    warlock_1: 'hazard_bubble',             // 术师 - 气泡图标
+    destroyer_1: 'hazard_attack',           // 毁灭者 - 攻击图标（临时使用）
 };
 
 // 模板羁绊数据（用于UI展示）
 const TEMPLATE_SYNERGIES: SynergyData[] = [
     {
-        id: 'warrior',
-        name: '战士',
-        type: 'class',
-        icon: 'file://{images}/custom_game/icon/hazard_armor_png.png',
-        currentCount: 2,
+        id: 'sylph_1',
+        name: '仙灵',
+        type: 'race',
+        icon: 'file://{images}/custom_game/icon/hazard_chillingtouch_png.png',
+        currentCount: 0,
         tiers: [
-            { count: 2, effect: '所有友军+200生命值', active: true },
-            { count: 4, effect: '所有友军+400生命值', active: false },
-            { count: 6, effect: '所有友军+800生命值', active: false }
+            { count: 2, effect: '仙灵的普攻有30%机率减少目标法力，并恢复5法力', active: false },
+            { count: 3, effect: '仙灵的普攻有30%机率减少目标法力，并恢复10法力', active: false },
+            { count: 4, effect: '仙灵的普攻有30%机率减少目标法力，并恢复15法力', active: false }
         ]
     },
     {
-        id: 'mage',
+        id: 'divine_general_1',
+        name: '神将',
+        type: 'race',
+        icon: 'file://{images}/custom_game/icon/hazard_armor_png.png',
+        currentCount: 0,
+        tiers: [
+            { count: 2, effect: '神将获得+3护甲，+3魔抗，每次普攻命中回复全体友军10生命', active: false },
+            { count: 3, effect: '神将获得+6护甲，+6魔抗，每次普攻命中回复全体友军20生命', active: false },
+            { count: 5, effect: '神将获得+10护甲，+10魔抗，每次普攻命中回复全体友军40生命', active: false }
+        ]
+    },
+    {
+        id: 'wild_1',
+        name: '狂野',
+        type: 'race',
+        icon: 'file://{images}/custom_game/icon/hazard_enrage_2_png.png',
+        currentCount: 0,
+        tiers: [
+            { count: 3, effect: '战斗开始后每10秒触发一次：增加10%攻击速度（可叠加）', active: false },
+            { count: 4, effect: '战斗开始后每10秒触发一次：增加10%攻击速度（可叠加），增加10点物理攻击（可叠加）', active: false },
+            { count: 5, effect: '战斗开始后每10秒触发一次：增加10%攻击速度（可叠加），增加10点物理攻击（可叠加），向场上生命值最低的单位投掷长矛造成伤害，目标血量低于20%时处决', active: false }
+        ]
+    },
+    {
+        id: 'void_1',
+        name: '虚空',
+        type: 'race',
+        icon: 'file://{images}/custom_game/icon/hazard_meteor_png.png',
+        currentCount: 0,
+        tiers: [
+            { count: 2, effect: '虚空单位普攻与技能附带5%真实伤害', active: false },
+            { count: 5, effect: '虚空单位普攻与技能附带15%真实伤害', active: false }
+        ]
+    },
+    {
+        id: 'berserker_1',
+        name: '战斗狂人',
+        type: 'race',
+        icon: 'file://{images}/custom_game/icon/hazard_attack_png.png',
+        currentCount: 0,
+        tiers: [
+            { count: 2, effect: '场上有单位死亡时，战斗狂人获得10%攻击速度和20%全能增伤', active: false },
+            { count: 4, effect: '场上有单位死亡时，战斗狂人获得30%攻击速度和50%全能增伤', active: false }
+        ]
+    },
+    {
+        id: 'creation',
+        name: '创造',
+        type: 'race',
+        icon: 'file://{images}/custom_game/icon/hazard_glimmer_png.png',
+        currentCount: 0,
+        tiers: [
+            { count: 1, effect: '卡尔可以视为任何种族（即所有种族计数+1，且卡尔可以享受到所有种族的加成）', active: false }
+        ]
+    },
+    {
+        id: 'ranger_1',
+        name: '游侠',
+        type: 'class',
+        icon: 'file://{images}/custom_game/icon/hazard_speed_png.png',
+        currentCount: 0,
+        tiers: [
+            { count: 2, effect: '每过9秒，所有游侠获得3秒+50%攻速提升', active: false },
+            { count: 3, effect: '每过9秒，所有游侠获得3秒+100%攻速提升', active: false },
+            { count: 5, effect: '每过5秒，所有游侠获得3秒+150%攻速提升', active: false }
+        ]
+    },
+    {
+        id: 'knight_1',
+        name: '骑士',
+        type: 'class',
+        icon: 'file://{images}/custom_game/icon/hazard_frontreduction_png.png',
+        currentCount: 0,
+        tiers: [
+            { count: 2, effect: '所有友军格挡10伤害', active: false },
+            { count: 4, effect: '所有友军格挡20伤害', active: false },
+            { count: 5, effect: '所有友军格挡40伤害', active: false }
+        ]
+    },
+    {
+        id: 'warrior_1',
+        name: '斗士',
+        type: 'class',
+        icon: 'file://{images}/custom_game/icon/hazard_armor_png.png',
+        currentCount: 0,
+        tiers: [
+            { count: 2, effect: '所有友军获得250额外生命值，斗士单位额外获得100生命值', active: false },
+            { count: 4, effect: '所有友军获得500额外生命值，斗士单位额外获得200生命值', active: false }
+        ]
+    },
+    {
+        id: 'mage_1',
         name: '法师',
         type: 'class',
         icon: 'file://{images}/custom_game/icon/hazard_magicresist_png.png',
-        currentCount: 1,
-        tiers: [
-            { count: 3, effect: '所有友军魔抗-30%', active: false },
-            { count: 6, effect: '所有友军魔抗-60%', active: false }
-        ]
-    },
-    {
-        id: 'assassin',
-        name: '刺客',
-        type: 'class',
-        icon: 'file://{images}/custom_game/icon/hazard_attack_png.png',
-        currentCount: 3,
-        tiers: [
-            { count: 3, effect: '刺客有10%几率造成3倍伤害', active: true },
-            { count: 6, effect: '刺客有20%几率造成4倍伤害', active: false }
-        ]
-    },
-    {
-        id: 'orc',
-        name: '兽人',
-        type: 'race',
-        icon: 'file://{images}/custom_game/icon/hazard_enrage_2_png.png',
-        currentCount: 2,
-        tiers: [
-            { count: 2, effect: '所有兽人+250生命值', active: true },
-            { count: 4, effect: '所有兽人+400生命值，+15护甲', active: false }
-        ]
-    },
-    {
-        id: 'undead',
-        name: '不死',
-        type: 'race',
-        icon: 'file://{images}/custom_game/icon/hazard_vampiric_png.png',
         currentCount: 0,
         tiers: [
-            { count: 2, effect: '所有友军护甲-5', active: false },
-            { count: 4, effect: '所有友军护甲-7', active: false }
+            { count: 2, effect: '所有友军获得1/秒法力恢复，法师单位获得2/秒法力恢复', active: false },
+            { count: 4, effect: '所有友军获得2/秒法力恢复，法师单位获得4/秒法力恢复', active: false }
         ]
     },
     {
-        id: 'human',
-        name: '人类',
-        type: 'race',
-        icon: 'file://{images}/custom_game/icon/hazard_glimmer_png.png',
-        currentCount: 1,
+        id: 'warlock_1',
+        name: '术师',
+        type: 'class',
+        icon: 'file://{images}/custom_game/icon/hazard_bubble_png.png',
+        currentCount: 0,
         tiers: [
-            { count: 2, effect: '所有人类+20%攻击速度', active: false },
-            { count: 4, effect: '所有人类+35%攻击速度', active: false },
-            { count: 6, effect: '所有人类+50%攻击速度', active: false }
+            { count: 1, effect: '所有友军获得10%魔法抗性，术士获得20%魔法抗性', active: false },
+            { count: 3, effect: '所有友军获得15%魔法抗性，术士获得30%魔法抗性', active: false }
         ]
     }
 ];
@@ -249,12 +311,19 @@ function createSynergyItem(parent: Panel, synergy: SynergyData): void {
     const icon = $.CreatePanel('Image', header, `SynergyIcon_${synergy.id}`);
     icon.AddClass('synergy_icon');
     
+    // 从映射中获取图标文件名并构建完整路径
+    // Panorama 图标系统会自动处理 _png.png 后缀
+    const iconFileName = SYNERGY_ICON_MAP[synergy.id];
+    const iconPath = iconFileName 
+        ? `file://{images}/custom_game/icon/${iconFileName}_png.png` 
+        : synergy.icon; // 如果映射不存在，使用原路径作为后备
+    
     // 调试日志：输出图标路径
-    $.Msg(`🖼️ Loading synergy icon: ${synergy.name} - ${synergy.icon}`);
+    $.Msg(`🖼️ Loading synergy icon: ${synergy.name} (${synergy.id}) - ${iconPath}`);
     
     // 使用SetImage方法加载图片（需要XML预加载才能自动编译PNG）
     // 路径格式：file://{images}/... 会被自动转换为编译后的vtex_c
-    icon.SetImage(synergy.icon);
+    icon.SetImage(iconPath);
     
     icon.style.width = '32px';
     icon.style.height = '32px';
@@ -866,7 +935,7 @@ initializePlayingHUD();
 
 $.Msg('🎮 Playing HUD script loaded');
 
-// 添加全局测试函数
+// 添加全局测试函数    
 (globalThis as any).TestPlayingHUD = {
     show: () => showPlayingHUD(true),
     hide: () => showPlayingHUD(false),

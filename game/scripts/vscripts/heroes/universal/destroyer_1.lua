@@ -1,6 +1,6 @@
 -- 毁灭者1羁绊技能 - 全局buff技能
 -- 毁灭者击杀单位后立即恢复最大魔法值的50%
--- 毁灭者单位：影魔(shadow_fiend1)
+-- 毁灭者单位：影魔(shadow_fiend1)、恐怖利刃(terrorblade1)
 
 LinkLuaModifier("modifier_destroyer_1", "heroes/universal/destroyer_1", LUA_MODIFIER_MOTION_NONE)
 
@@ -16,6 +16,10 @@ end
 
 function destroyer_1:GetIntrinsicModifierName()
     return "modifier_destroyer_1"
+end
+
+function destroyer_1:GetAbilityTextureName()
+    return "axe_berserkers_call_shoutmask"
 end
 
 -- 全局毁灭者羁绊效果修饰符
@@ -40,7 +44,7 @@ function modifier_destroyer_1:IsPassive()
 end
 
 function modifier_destroyer_1:GetTexture()
-    return "item_arcane_boots"
+    return "axe_berserkers_call_shoutmask"
 end
 
 -- 毁灭者单位列表
@@ -49,7 +53,8 @@ function modifier_destroyer_1:IsDestroyerUnit(unit)
     
     local unit_name = unit:GetUnitName()
     local destroyer_units = {
-        "shadow_fiend1"       -- 影魔
+        "shadow_fiend1",      -- 影魔
+        "terrorblade1"        -- 恐怖利刃
     }
     
     for _, destroyer_name in pairs(destroyer_units) do

@@ -10,6 +10,10 @@ function soul_link:GetIntrinsicModifierName()
     return "modifier_soul_link"
 end
 
+function soul_link:GetAbilityTextureName()
+    return "skywrath_mage_arcane_bolt"
+end
+
 -- 全局buff修饰器
 modifier_soul_link = class({})
 

@@ -10,6 +10,10 @@ function titans_power:GetIntrinsicModifierName()
     return "modifier_titans_power"
 end
 
+function titans_power:GetAbilityTextureName()
+    return "lone_druid_spirit_bear_demolish"
+end
+
 -- 全局buff修饰器
 modifier_titans_power = class({})
 

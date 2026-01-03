@@ -9,6 +9,10 @@ function healing_orb:GetIntrinsicModifierName()
     return "modifier_healing_orb"
 end
 
+function healing_orb:GetAbilityTextureName()
+    return "frogmen_water_bubble_small"
+end
+
 -- 全局buff修饰器
 modifier_healing_orb = class({})
 

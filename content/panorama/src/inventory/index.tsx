@@ -564,7 +564,7 @@ function setupBoardClickHandler(): void {
     boardClickCapture.style.height = `${boardHeight}px`;
     boardClickCapture.style.horizontalAlign = 'center';
     boardClickCapture.style.verticalAlign = 'top';  // 🔑 从顶部开始，不覆盖底部的背包UI
-    boardClickCapture.style.zIndex = '50';  // 🔑 较低的 zIndex，确保不会阻挡其他 UI
+    boardClickCapture.style.zIndex = '1100';  // 🔑 必须高于 playing-hud (zIndex=1000)，确保能捕获点击事件
     boardClickCapture.style.backgroundColor = 'transparent';
     boardClickCapture.hittest = true;
     

@@ -10,6 +10,10 @@ function overheal:GetIntrinsicModifierName()
     return "modifier_overheal"
 end
 
+function overheal:GetAbilityTextureName()
+    return "lone_druid_spirit_bear_return"
+end
+
 -- 全局buff修饰器
 modifier_overheal = class({})
 

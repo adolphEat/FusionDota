@@ -22,6 +22,10 @@ function ranger_1:GetIntrinsicModifierName()
     return "modifier_ranger_1"
 end
 
+function ranger_1:GetAbilityTextureName()
+    return "windrunner_windrun"
+end
+
 -- 全局游侠羁绊效果修饰符
 if modifier_ranger_1 == nil then
     modifier_ranger_1 = class({})
@@ -44,7 +48,7 @@ function modifier_ranger_1:IsPassive()
 end
 
 function modifier_ranger_1:GetTexture()
-    return "item_hyperstone"
+    return "windrunner_windrun"
 end
 
 -- 游侠单位列表

@@ -39,11 +39,11 @@
 
 //单位技能部分
 
-	"windrunner_powershot"
+	"windrunner_piercing_arrow"
 	{
 		"BaseClass"	"ability_lua"
-		"ScriptFile"	"heroes/hero_windrunner/windrunner_powershot.lua"
-		"AbilityTextureName"	"windrunner_powershot"
+		"ScriptFile"	"heroes/hero_windrunner/windrunner_piercing_arrow.lua"
+		"AbilityTextureName"	"windrunner_focusfire"
 		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_PHYSICAL"
 		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_POINT"
@@ -71,7 +71,6 @@
 			"particle"	"particles/heroes/windrunner/windrunner_spell_powershot.vpcf"
 			"particle"	"particles/heroes/windrunner/windrunner_spell_powershot_channel.vpcf"
 			"particle"	"particles/heroes/windrunner/windrunner_spell_powershot_destruction.vpcf"
-			"particle"	"particles/heroes/windrunner/windrunner_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_windrunner.vsndevts"
 		}
 	}
@@ -108,10 +107,10 @@
 		}
 	}
 
-	"tidehunter_ravage"
+	"tidehunter_tidal_wave"
 	{
 		"BaseClass"	"ability_lua"
-		"ScriptFile"	"heroes/crystal maiden/tidehunter_ravage.lua"
+		"ScriptFile"	"heroes/crystal maiden/tidehunter_tidal_wave.lua"
 		"AbilityTextureName"	"tidehunter_ravage"
 		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
@@ -136,14 +135,13 @@
 		"Precache"
 		{
 			"particle"	"particles/heroes/crystal_maiden/tide_2021_ravage.vpcf"
-			"particle"	"particles/heroes/crystal_maiden/maiden_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_tidehunter.vsndevts"
 		}
 	}
 	
-	"lina_light_strike_array" {
+	"lina_flame_strike" {
 		"BaseClass" "ability_lua"
-		"ScriptFile" "heroes/hero_lina/lina_light_strike_array.lua"
+		"ScriptFile" "heroes/hero_lina/lina_flame_strike.lua"
 		"AbilityTextureName" "lina_light_strike_array"
 		"MaxLevel" "3"
 		"AbilityCooldown" "0.0 0.0 0.0"
@@ -155,26 +153,25 @@
 		"AbilityCastPoint" "0.0"
 		
 		"AbilityValues" {
-			"light_strike_array_aoe" "400"
-			"light_strike_array_delay_time" "0.5"
-			"light_strike_array_damage" "250 250 250"
-			"light_strike_array_burn_duration" "10.0"
-			"light_strike_array_burn_damage_percent" "1.0"
-			"light_strike_array_burn_interval" "1.0"
-			"light_strike_array_mana_restore" "5"
+			"flame_strike_aoe" "400"
+			"flame_strike_delay_time" "0.5"
+			"flame_strike_damage" "250 250 250"
+			"flame_strike_burn_duration" "10.0"
+			"flame_strike_burn_damage_percent" "1.0"
+			"flame_strike_burn_interval" "1.0"
+			"flame_strike_mana_restore" "5"
 			"auto_cast_range" "9999"
 		}
 
 		"Precache" {
 			"soundfile" "soundevents/game_sounds_heroes/game_sounds_lina.vsndevts"
 			"particle" "particles/heroes/lina/lina_spell_light_strike_array.vpcf"
-			"particle" "particles/heroes/lina/lina_base_attack.vpcf"
 		}
 	}
 	
-	"ursa_earthshock" {
+	"ursa_ground_slam" {
 		"BaseClass" "ability_lua"
-		"ScriptFile" "heroes/hero_ursa/ursa_earthshock.lua"
+		"ScriptFile" "heroes/hero_ursa/ursa_ground_slam.lua"
 		"AbilityTextureName" "ursa_earthshock"
 		"MaxLevel" "3"
 		"AbilityCooldown" "0.0 0.0 0.0"
@@ -185,9 +182,9 @@
 		"AbilityCastPoint" "0.0"
 		
 		"AbilityValues" {
-			"shock_radius" "400"
+			"slam_radius" "400"
 			"attackspeed_slow" "15 15 15"
-			"earthshock_damage" "200 200 200"
+			"ground_slam_damage" "200 200 200"
 			"slow_duration" "5.0"
 		}
 		
@@ -225,10 +222,10 @@
 		}
 	}
 	
-	"viper_nethertoxin"
+	"viper_poison_burst"
 	{
 		"BaseClass"	"ability_lua"
-		"ScriptFile"	"heroes/hero_viper/viper_nethertoxin.lua"
+		"ScriptFile"	"heroes/hero_viper/viper_poison_burst.lua"
 		"AbilityTextureName"	"viper_nethertoxin"
 		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
@@ -245,13 +242,13 @@
 			"poison_duration"	"10.0"
 			"poison_damage_per_second"	"10"
 			"poison_interval"	"1.0"
+			"max_stacks"	"5"
 		}
 		
 		"Precache"
 		{
 			"particle"	"particles/heroes/viper/viper_nethertoxin.vpcf"
 			"particle"	"particles/heroes/viper/viper_poison_debuff.vpcf"
-			"particle"	"particles/heroes/viper/viper_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_viper.vsndevts"
 		}
 	}
@@ -301,13 +298,14 @@
 			"radius"	"1200"
 			"duration"	"8.0"
 			"total_damage"	"500 500 500"
+			"execute_threshold_percent"	"10"
+			"attack_speed_slow"	"30"
 			"auto_cast_range"	"9999"
 		}
 		
 		"Precache"
 		{
 			"particle"	"particles/heroes/enigma/enigma_blackhole.vpcf"
-			"particle"	"particles/heroes/enigma/enigma_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_enigma.vsndevts"
 		}
 	}
@@ -368,7 +366,6 @@
 		"Precache"
 		{
 			"particle"	"particles/heroes/lion/lion_spell_voodoo.vpcf"
-			"particle"	"particles/heroes/lion/lion_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_lion.vsndevts"
 		}
 	}
@@ -398,7 +395,6 @@
 		"Precache"
 		{
 			"particle"	"particles/heroes/oracle/oracle_fatesedict.vpcf"
-			"particle"	"particles/heroes/oracle/oracle_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts"
 		}
 	}
@@ -428,7 +424,6 @@
 		"Precache"
 		{
 			"particle"	"particles/heroes/death_prophet/death_prophet_silence.vpcf"
-			"particle"	"particles/heroes/death_prophet/death_prophet_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_death_prophet.vsndevts"
 		}
 	}
@@ -497,7 +492,7 @@
 		}
 	}
 
-		"shadow_fiend_Shadowraze"
+	"shadow_fiend_Shadowraze"
 	{
 		"BaseClass"	"ability_lua"
 		"ScriptFile"	"heroes/hero_shadow_fiend/shadow_fiend_Shadowraze.lua"
@@ -557,7 +552,6 @@
 			"particle"	"particles/heroes/zeus/zuus_arc_lightning.vpcf"
 			"particle"	"particles/heroes/zeus/zuus_thundergods_wrath.vpcf"
 			"particle"	"particles/heroes/zeus/zuus_thundergods_wrath_start.vpcf"
-			"particle"	"particles/heroes/zeus/zuus_base_attack.vpcf"
 			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_zuus.vsndevts"
 		}
 	}
@@ -618,10 +612,10 @@
 		}
 	}
 
-	"razor_eye_of_the_storm"
+	"razor_storm_eye"
 	{
 		"BaseClass"	"ability_lua"
-		"ScriptFile"	"heroes/hero_razor/razor_eye_of_the_storm.lua"
+		"ScriptFile"	"heroes/hero_razor/razor_storm_eye.lua"
 		"AbilityTextureName"	"razor_eye_of_the_storm"
 		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
@@ -642,7 +636,6 @@
 		"Precache"
 		{
 			"particle"	"particles/heroes/razor/razor_rain_storm.vpcf"
-			"particle"	"particles/heroes/razor/razor_base_attack.vpcf"
 			"particle"	"particles/heroes/zeus/zuus_thundergods_wrath_start.vpcf"
 		}
 	}
@@ -676,6 +669,66 @@
 		}
 	}
 
+	"drow_multishot"
+	{
+		"BaseClass"				"ability_lua"
+		"ScriptFile"			"heroes/hero_drow_ranger/drow_multishot"
+		"AbilityTextureName"	"drow_ranger_multishot"
+		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_PHYSICAL"
+		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"MaxLevel"				"1"
+		"AbilityCooldown"		"0"
+		"AbilityManaCost"		"0"
+		"AbilityCastPoint"		"0.0"
+		
+		"AbilityValues"
+		{
+			"split_arrow_count"			"2"
+			"damage_bonus_per_100_range"	"5.0"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/drow_ranger/drow_base_attack.vpcf"
+		}
+	}
+
+"terrorblade_demon_form"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_terrorblade/terrorblade_demon_form.lua"
+		"AbilityTextureName"	"terrorblade_metamorphosis"
+		"AbilityType"	"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"MaxLevel"	"3"
+		"AbilityCooldown"	"0.0 0.0 0.0"
+		"AbilityManaCost"	"140"
+		"AbilityCastPoint"	"0.0"
+		"AbilityCastAnimation"	"ACT_DOTA_CAST_ABILITY_1"
+		
+		"AbilityValues"
+		{
+			"duration"	"10.0"
+			"bonus_attack_range"	"400"
+			"attack_speed_bonus_percent"	"15.0"
+			"bonus_magic_damage"	"50"
+			"life_steal_interval"	"2.0"
+			"life_steal_amount"	"100"
+			"auto_cast_range"	"9999"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/terrorblade/terrorblade_metamorphosis_transform.vpcf"
+			"particle"	"particles/heroes/terrorblade/terrorblade_metamorphosis.vpcf"
+			"particle"	"particles/heroes/terrorblade/terrorblade_metamorphosis_base_attack.vpcf"
+			"particle"	"particles/heroes/terrorblade/terrorblade_sunder.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_terrorblade.vsndevts"
+		}
+	}
+
 
 	//Rogue技能部分
 
@@ -683,7 +736,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/vampiric_vitality"
-		"AbilityTextureName"	"item_mask_of_madness"
+		"AbilityTextureName"	"bloodseeker_blood_bath"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -702,7 +755,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/staff_will"
-		"AbilityTextureName"	"item_bfury"
+		"AbilityTextureName"	"abaddon_death_coil"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -723,7 +776,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/clockwork_accelerator"
-		"AbilityTextureName"	"item_hyperstone"
+		"AbilityTextureName"	"faceless_void_time_zone"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -734,7 +787,7 @@
 		
 		"AbilityValues"
 		{
-			"interval_time"		"3.0"
+			"interval_time"		"5.0"
 			"attack_speed_increment"	"10.0"
 		}
 	}
@@ -743,7 +796,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/ascension"
-		"AbilityTextureName"	"item_ultimate_scepter"
+		"AbilityTextureName"	"brewmaster_storm_wind_walk"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -763,7 +816,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/healing_orb"
-		"AbilityTextureName"	"item_healing_salve"
+		"AbilityTextureName"	"frogmen_water_bubble_small"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -782,7 +835,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/blue_battery"
-		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityTextureName"	"keeper_of_the_light_mana_leak"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -802,7 +855,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/titans_power"
-		"AbilityTextureName"	"item_heart"
+		"AbilityTextureName"	"lone_druid_spirit_bear_demolish"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -821,7 +874,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/overheal"
-		"AbilityTextureName"	"item_bloodstone"
+		"AbilityTextureName"	"lone_druid_spirit_bear_return"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -842,7 +895,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/soul_link"
-		"AbilityTextureName"	"item_soul_ring"
+		"AbilityTextureName"	"skywrath_mage_arcane_bolt"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -862,7 +915,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/ludens_echo"
-		"AbilityTextureName"	"item_cyclone"
+		"AbilityTextureName"	"wisp_tether"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -881,7 +934,7 @@
 	{
 		"BaseClass"	"ability_lua"
 		"ScriptFile"	"heroes/universal/double_cast.lua"
-		"AbilityTextureName"	"item_refresher"
+		"AbilityTextureName"	"chaos_knight_reality_rift"
 		"AbilityType"	"DOTA_ABILITY_TYPE_PASSIVE"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -902,7 +955,7 @@
 	{
 		"BaseClass"	"ability_lua"
 		"ScriptFile"	"heroes/universal/living_bomb.lua"
-		"AbilityTextureName"	"item_cyclone"
+		"AbilityTextureName"	"centaur_khan_endurance_aura"
 		"AbilityType"	"DOTA_ABILITY_TYPE_PASSIVE"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_MAGICAL"
 		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -915,7 +968,7 @@
 		"AbilityValues"
 		{
 			"explosion_damage"	"200"
-			"explosion_radius"	"200"
+			"explosion_radius"	"400"
 		}
 	}
 	//	羁绊技能部分
@@ -924,7 +977,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/sylph_1"
-		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityTextureName"	"brewmaster_primal_companion_fire"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -944,7 +997,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/sylph_2"
-		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityTextureName"	"brewmaster_primal_companion_fire"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -964,7 +1017,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/sylph_3"
-		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityTextureName"	"brewmaster_primal_companion_fire"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -984,7 +1037,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/divine_general_1"
-		"AbilityTextureName"	"item_heart"
+		"AbilityTextureName"	"leshrac_pulse_nova"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1005,7 +1058,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/divine_general_2"
-		"AbilityTextureName"	"item_heart"
+		"AbilityTextureName"	"leshrac_pulse_nova"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1026,7 +1079,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/divine_general_3"
-		"AbilityTextureName"	"item_heart"
+		"AbilityTextureName"	"leshrac_pulse_nova"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1047,7 +1100,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/wild_1"
-		"AbilityTextureName"	"item_hyperstone"
+		"AbilityTextureName"	"beastmaster_call_of_the_wild_boar"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1067,7 +1120,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/wild_2"
-		"AbilityTextureName"	"item_hyperstone"
+		"AbilityTextureName"	"beastmaster_call_of_the_wild_boar"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1088,7 +1141,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/wild_3"
-		"AbilityTextureName"	"item_hyperstone"
+		"AbilityTextureName"	"beastmaster_call_of_the_wild_boar"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1102,7 +1155,7 @@
 			"trigger_interval"		"10.0"
 			"attack_speed_bonus_percent"	"10.0"
 			"attack_damage_bonus"		"10.0"
-			"execute_threshold"		"0.2"
+			"execute_threshold_percent"		"20.0"
 		}
 		
 		"Precache"
@@ -1115,7 +1168,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/void_1"
-		"AbilityTextureName"	"faceless_void_time_lock"
+		"AbilityTextureName"	"dazzle_nothl_projection"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1134,7 +1187,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/void_2"
-		"AbilityTextureName"	"faceless_void_time_lock"
+		"AbilityTextureName"	"dazzle_nothl_projection"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1153,7 +1206,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/berserker_1"
-		"AbilityTextureName"	"item_bfury"
+		"AbilityTextureName"	"axe_counter_helix_unleashed"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1176,7 +1229,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/berserker_2"
-		"AbilityTextureName"	"item_bfury"
+		"AbilityTextureName"	"axe_counter_helix_unleashed"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1199,7 +1252,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/ranger_1"
-		"AbilityTextureName"	"item_hyperstone"
+		"AbilityTextureName"	"windrunner_windrun"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1220,7 +1273,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/ranger_2"
-		"AbilityTextureName"	"item_hyperstone"
+		"AbilityTextureName"	"windrunner_windrun"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1241,7 +1294,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/ranger_3"
-		"AbilityTextureName"	"item_hyperstone"
+		"AbilityTextureName"	"windrunner_windrun"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1262,7 +1315,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/knight_1"
-		"AbilityTextureName"	"item_buckler"
+		"AbilityTextureName"	"backdoor_protection"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1281,7 +1334,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/knight_2"
-		"AbilityTextureName"	"item_buckler"
+		"AbilityTextureName"	"backdoor_protection"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1300,7 +1353,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/knight_3"
-		"AbilityTextureName"	"item_buckler"
+		"AbilityTextureName"	"backdoor_protection"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1319,7 +1372,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/warrior_1"
-		"AbilityTextureName"	"item_heart"
+		"AbilityTextureName"	"beastmaster_primal_roar"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1339,7 +1392,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/warrior_2"
-		"AbilityTextureName"	"item_heart"
+		"AbilityTextureName"	"beastmaster_primal_roar"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1359,7 +1412,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/mage_1"
-		"AbilityTextureName"	"item_energy_booster"
+		"AbilityTextureName"	"faceless_void_time_dilation"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1379,7 +1432,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/mage_2"
-		"AbilityTextureName"	"item_energy_booster"
+		"AbilityTextureName"	"faceless_void_time_dilation"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1399,7 +1452,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/warlock_1"
-		"AbilityTextureName"	"item_cloak"
+		"AbilityTextureName"	"keeper_of_the_light_recall_secondary"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1419,7 +1472,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/warlock_2"
-		"AbilityTextureName"	"item_cloak"
+		"AbilityTextureName"	"keeper_of_the_light_recall_secondary"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1439,7 +1492,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/destroyer_1"
-		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityTextureName"	"axe_berserkers_call_shoutmask"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1458,7 +1511,7 @@
 	{
 		"BaseClass"				"ability_lua"
 		"ScriptFile"			"heroes/universal/destroyer_2"
-		"AbilityTextureName"	"item_arcane_boots"
+		"AbilityTextureName"	"axe_berserkers_call_shoutmask"
 		"AbilityType"			"DOTA_ABILITY_TYPE_BASIC"
 		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
 		"AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_PASSIVE"
@@ -1472,5 +1525,52 @@
 			"mana_restore_percent"		"100.0"
 		}
 	}
+
+	"invoker_elemental_invoke"
+	{
+		"BaseClass"	"ability_lua"
+		"ScriptFile"	"heroes/hero_invoker/invoker_invoke.lua"
+		"AbilityTextureName"	"invoker_invoke"
+		"AbilityType"	"DOTA_ABILITY_TYPE_ULTIMATE"
+		"AbilityUnitDamageType"	"DAMAGE_TYPE_NONE"
+		"AbilityBehavior"	"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"MaxLevel"	"1"
+		"AbilityCooldown"	"0"
+		"AbilityManaCost"	"0"
+		"AbilityCastPoint"	"0.0"
+		
+		"AbilityValues"
+		{
+			"fire_orb_attack_bonus_percent"	"3.0"
+			"fire_orb_attack_bonus_flat"	"5"
+			"ice_orb_mana_regen"	"1.0"
+			"max_orbs"	"3"
+			"flame_strike_burn_duration"	"10.0"
+			"flame_strike_burn_damage_percent"	"1.0"
+			"flame_strike_burn_interval"	"1.0"
+			"orbital_strike_damage"	"300"
+			"orbital_strike_radius"	"400"
+			"recovery_wind_distance"	"1000"
+			"recovery_wind_enemy_damage"	"300"
+			"recovery_wind_ally_heal"	"150"
+			"arctic_blast_damage"	"200"
+			"arctic_blast_attack_slow_percent"	"15.0"
+			"arctic_blast_duration"	"10.0"
+		}
+		
+		"Precache"
+		{
+			"particle"	"particles/heroes/invoker/invoker_kid_exort_orb.vpcf"
+			"particle"	"particles/heroes/invoker/invoker_kid_quas_orb.vpcf"
+			"particle"	"particles/heroes/invoker/invoker_forge_spirit_death_d.vpcf"
+			"particle"	"particles/heroes/invoker/invoker_sun_strike.vpcf"
+			"particle"	"particles/heroes/invoker/invoker_tornado.vpcf"
+			"particle"	"particles/heroes/invoker/invoker_cold_snap.vpcf"
+			"particle"	"particles/generic_gameplay/generic_slowed_cold.vpcf"
+			"soundfile"	"soundevents/game_sounds_heroes/game_sounds_invoker.vsndevts"
+		}
+	}
+
+	
 
 }

@@ -7,6 +7,7 @@ import { GameMode, GameModeManager } from './GameModeManager';
 import { ChessBattleSystem } from './autochess/ChessBattleSystem';
 import { StageConfigManager, NodeType } from './autochess/StageConfigManager';
 import { getTimestamp } from '../utils/time_utils';
+import { inventoryHandler } from './InventoryHandler';
 
 export enum ChessRarity {
     COMMON = 1,      // 普通 (白色)
@@ -85,6 +86,9 @@ export class AutoChessMode {
     private chessPieceDatabase: Map<string, ChessPiece>;
     private isActive: boolean = false;
     private battleSystem: ChessBattleSystem;
+    private isBattlePhaseEnding: boolean = false; // 🔑 防止战斗阶段重复结束
+    private firstRoundPiecesCreated: Map<PlayerID, boolean> = new Map(); // 🔑 记录第一回合是否已创建初始棋子
+    private autoDeployTriggeredThisRound: boolean = false; // 🔑 记录本回合是否已触发自动部署
     
     // 波次结算相关状态
     private currentWaveSettlementShown: boolean = false;
@@ -208,8 +212,7 @@ export class AutoChessMode {
         this.initializePlayerStates();
         print(`[AutoChessMode] Player states initialized, count: ${this.gameState.playerStates.size}`);
         
-        // 为玩家创建初始棋子（第一回合的3个固定棋子）
-        this.createPlayerInitialPieces();
+        // 🔑 不在这里创建初始棋子，在准备阶段创建
         
         print('[AutoChessMode] ✅ 单机模式游戏已初始化');
         
@@ -246,6 +249,9 @@ export class AutoChessMode {
         this.resetWaveSettlementState();
         this.gameState.currentPhase = RoundPhase.PREPARATION;
         this.gameState.phaseTimeLeft = 10; // 准备阶段时长：10秒
+        
+        // 🔑 重置自动部署标记
+        this.autoDeployTriggeredThisRound = false;
         
         // 将玩家移动到观战区域（靠近棋盘）
         for (const [playerId, playerState] of this.gameState.playerStates) {
@@ -296,22 +302,30 @@ export class AutoChessMode {
      * 开始战斗阶段
      */
     private startBattlePhase(): void {
-        // 单机模式：战斗阶段隐藏背包
-        (CustomGameEventManager.Send_ServerToAllClients as any)('hide_inventory', {});
-        
         this.gameState.currentPhase = RoundPhase.BATTLE;
         this.gameState.phaseTimeLeft = 45; // 45秒战斗时间
         
-        // 部署所有玩家的棋子到战场
+        print(`[AutoChessMode] ========== 战斗阶段开始 ==========`);
+        
+        // 🔑 先部署所有玩家的棋子（包括自动部署），让UI有时间更新
         for (const [playerId, playerState] of this.gameState.playerStates) {
             if (playerState.isAlive) {
+                const benchBefore = (playerState.benchPieces || []).length;
+                print(`[AutoChessMode] 🔍 战斗开始前，玩家 ${playerId} 背包有 ${benchBefore} 个棋子`);
+                
                 // 设置玩家为受保护状态（无敌但可移动）
                 this.battleSystem.setPlayerAsProtected(playerId);
                 
-                // 部署玩家棋子到战斗位置
+                // 部署玩家棋子到战斗位置（如果场上没有，会自动从背包部署并更新UI）
                 this.deployPlayerChessPieces(playerId);
+                
+                const benchAfter = (playerState.benchPieces || []).length;
+                print(`[AutoChessMode] 🔍 部署后，玩家 ${playerId} 背包剩余 ${benchAfter} 个棋子`);
             }
         }
+        
+        // 🔑 战斗阶段隐藏背包UI（自动部署已在准备阶段剩余3秒时完成）
+        (CustomGameEventManager.Send_ServerToAllClients as any)('hide_inventory', {});
         
         // 创建敌人棋子（根据当前波次配置）
         this.createEnemyPieces();
@@ -340,6 +354,7 @@ export class AutoChessMode {
 
     /**
      * 部署玩家棋子到战场（战斗阶段）
+     * 🔑 激活已部署的棋子（自动部署已在准备阶段倒计时剩余3秒时完成）
      */
     private deployPlayerChessPieces(playerId: PlayerID): void {
         const playerState = this.gameState.playerStates.get(playerId);
@@ -351,11 +366,12 @@ export class AutoChessMode {
         if (this.gameState.currentPhase === RoundPhase.BATTLE) {
             // 检查场上是否有棋子
             const deployedPieces = this.battleSystem.getPlayerPieces(playerId);
+            print(`[AutoChessMode] 玩家 ${playerId} 场上有 ${deployedPieces.length} 个棋子`);
             
+            // 🔑 如果还是没有棋子（极端情况：准备阶段背包为空），这里是最后的保障
             if (deployedPieces.length === 0) {
-                // 场上没有棋子，随机部署一个
-                print(`[AutoChessMode] 场上没有棋子，随机部署一个棋子`);
-                this.deployRandomPieceIfNeeded(playerId);
+                print(`[AutoChessMode] ⚠️ 战斗开始时场上还是没有棋子，尝试最后一次自动部署`);
+                this.autoDeployFromBench(playerId);
             }
             
             // 激活已部署的棋子
@@ -413,28 +429,73 @@ export class AutoChessMode {
 
     /**
      * 为玩家创建初始棋子（准备阶段）
+     * 🔑 只在第1回合（回合0）创建初始棋子到背包（游戏启动资金）
+     * 自动部署逻辑在战斗开始时执行
      */
     private createPlayerInitialPieces(): void {
-
-        
-        for (const [playerId, playerState] of this.gameState.playerStates) {
-            if (playerState.isAlive) {
-      
-                this.battleSystem.clearPlayerPieces(playerId);
-                
-                // 单机模式：创建初始棋子（第一次游戏开始）
-                    this.createFirstRoundPieces(playerId);
-                
-                print(`[AutoChessMode] 玩家 ${playerId} 初始棋子创建完成`);
+        // 🔑 只在第1回合（回合0）创建初始棋子到背包
+        if (this.gameState.currentRound === 0) {
+            for (const [playerId, playerState] of this.gameState.playerStates) {
+                if (playerState.isAlive) {
+                    // 🔑 检查背包 + 场上的棋子总数
+                    const benchPieces = playerState.benchPieces || [];
+                    const deployedPieces = this.battleSystem.getPlayerPieces(playerId);
+                    const totalPieces = benchPieces.length + deployedPieces.length;
+                    
+                    if (totalPieces === 0) {
+                        print(`[AutoChessMode] 第1回合，玩家完全没有棋子（背包:${benchPieces.length} + 场上:${deployedPieces.length}），创建初始棋子到背包`);
+                        this.createFirstRoundPieces(playerId);
+                    } else {
+                        print(`[AutoChessMode] 第1回合，玩家已有棋子（背包:${benchPieces.length} + 场上:${deployedPieces.length} = ${totalPieces}），跳过创建`);
+                    }
+                }
             }
         }
         
-        print(`[AutoChessMode] ========== 玩家初始棋子创建完成 ==========`);
+        print(`[AutoChessMode] ========== 玩家初始棋子检查完成 ==========`);
     }
 
     /**
-     * 为第一回合创建初始棋子（固定三个棋子：树精卫士、风行者、斧王）
-     * 注意：这是生成玩家自己的棋子，不是敌方怪物
+     * 从背包自动部署棋子到场上
+     * 🔑 随机部署1个棋子，部署后从背包移除
+     */
+    private autoDeployFromBench(playerId: PlayerID): void {
+        const playerState = this.gameState.playerStates.get(playerId);
+        if (!playerState) return;
+        
+        const benchPieces = playerState.benchPieces || [];
+        if (benchPieces.length === 0) {
+            print(`[AutoChessMode] 玩家 ${playerId} 背包为空，无法自动部署`);
+            return;
+        }
+        
+        print(`[AutoChessMode] 从背包随机部署1个棋子到场上`);
+        
+        // 🔑 随机选择背包中的1个棋子
+        const randomIndex = Math.floor(RandomFloat(0, benchPieces.length));
+        const selectedPiece = benchPieces[randomIndex];
+        
+        // 随机位置部署（玩家半场）
+        const position = {
+            x: Math.floor(RandomFloat(0, 8)),
+            y: Math.floor(RandomFloat(0, 4)) // 玩家半场：0-3
+        };
+        
+        // 部署到场上
+        this.battleSystem.deployPiece(playerId, selectedPiece.id, position);
+        print(`[AutoChessMode] 自动部署: ${selectedPiece.displayName}(${selectedPiece.id}) 到位置 (${position.x}, ${position.y})`);
+        
+        // 从背包移除选中的棋子
+        benchPieces.splice(randomIndex, 1);
+        
+        // 🔑 通知客户端更新背包UI
+        inventoryHandler.sendInventoryData(playerId);
+        print(`[AutoChessMode] 已通知客户端更新背包，剩余 ${benchPieces.length} 个棋子`);
+    }
+
+    /**
+     * 为第一回合创建初始棋子
+     * 🔑 从棋子库随机生成1个1费棋子到背包（游戏启动资金）
      */
     private createFirstRoundPieces(playerId: PlayerID): void {
         const playerState = this.gameState.playerStates.get(playerId);
@@ -446,25 +507,33 @@ export class AutoChessMode {
             return;
         }
         
-        // 第一回合固定给玩家三个棋子（不走随机）
-        const fixedPieces = ['treant_protector', 'windrunner', 'axe'];
-        
         print(`[AutoChessMode] ========== 第一回合生成玩家初始棋子 ==========`);
-        print(`[AutoChessMode] 玩家 ${playerId} - 固定生成3个我方棋子: 树精卫士、风行者、斧王`);
         
-        // 只添加到备战席，不部署到棋盘
-        for (let i = 0; i < fixedPieces.length; i++) {
-            const pieceId = fixedPieces[i];
-            const piece = this.chessPieceDatabase.get(pieceId);
-            
-            if (piece) {
-                // 只添加到备战席，不部署到棋盘
-                playerState.benchPieces.push(piece);
-                print(`[AutoChessMode] 添加棋子到备战席: ${piece.displayName}(${pieceId}) - ${piece.cost}费`);
-            } else {
-                print(`[AutoChessMode] 警告: 棋子 ${pieceId} 不存在于数据库中`);
+        // 🔑 从棋子库收集所有1费棋子
+        const oneCostPieces: ChessPiece[] = [];
+        for (const piece of this.chessPieceDatabase.values()) {
+            if (piece.cost === 1) {
+                oneCostPieces.push(piece);
             }
         }
+        
+        if (oneCostPieces.length === 0) {
+            print(`[AutoChessMode] ❌ 错误：棋子库中没有1费棋子`);
+            return;
+        }
+        
+        // 🔑 随机生成1个1费棋子到背包
+        const randomIndex = Math.floor(RandomFloat(0, oneCostPieces.length));
+        const selectedPiece = oneCostPieces[randomIndex];
+        
+        // 直接添加到背包（不部署到场上）
+        playerState.benchPieces.push(selectedPiece);
+        print(`[AutoChessMode] 玩家 ${playerId} - 随机生成1个1费棋子到背包: ${selectedPiece.displayName}(${selectedPiece.id})`);
+
+        
+        // 🔑 通知客户端更新背包UI
+        inventoryHandler.sendInventoryData(playerId);
+        print(`[AutoChessMode] 已通知客户端更新背包，当前背包数量: ${playerState.benchPieces.length}`);
     }
 
     /**
@@ -512,26 +581,34 @@ export class AutoChessMode {
     /**
      * 创建默认初始棋子（降级方案）
      */
+    /**
+     * 创建默认初始棋子（降级方案）
+     * 🔑 只部署到场上，不添加到背包（避免重复）
+     */
     private createDefaultInitialPieces(playerId: PlayerID): void {
         const playerState = this.gameState.playerStates.get(playerId);
         if (!playerState) return;
         
         const defaultPieces = ['axe', 'crystal_maiden', 'drow_ranger'];
+        print(`[AutoChessMode] 🔧 降级方案：创建 ${defaultPieces.length} 个默认棋子到场上（不添加到背包）`);
         
         for (let i = 0; i < defaultPieces.length; i++) {
             const pieceId = defaultPieces[i];
             const piece = this.chessPieceDatabase.get(pieceId);
             
             if (piece) {
-                playerState.benchPieces.push(piece);
                 const position = { x: 1 + i, y: 1 };
                 this.battleSystem.deployPiece(playerId, pieceId, position);
+                print(`[AutoChessMode] 创建默认棋子: ${piece.displayName}(${pieceId}) 到位置 (${position.x}, ${position.y})`);
             }
         }
+        
+        // 🔑 不添加到背包，战斗结束后存活的会自动回到背包
     }
 
     /**
      * 从备战席部署棋子
+     * 🔑 部署后清空背包，避免重复添加
      */
     private deployPiecesFromBench(playerId: PlayerID): void {
         const playerState = this.gameState.playerStates.get(playerId);
@@ -541,7 +618,8 @@ export class AutoChessMode {
         print(`[AutoChessMode] 玩家 ${playerId} 备战席棋子数量: ${benchPieces.length}`);
         
         // 将备战席的棋子部署到棋盘上
-        for (let i = 0; i < Math.min(benchPieces.length, 7); i++) {
+        const deployedCount = Math.min(benchPieces.length, 7);
+        for (let i = 0; i < deployedCount; i++) {
             const piece = benchPieces[i];
             const position = {
                 x: 1 + i,
@@ -551,6 +629,13 @@ export class AutoChessMode {
             print(`[AutoChessMode] 部署备战席棋子: ${piece.id} 到位置 (${position.x}, ${position.y})`);
             this.battleSystem.deployPiece(playerId, piece.id, position);
         }
+        
+        // 🔑 部署后清空背包（因为棋子已经在场上了）
+        playerState.benchPieces = [];
+        print(`[AutoChessMode] ✅ 已部署 ${deployedCount} 个棋子，背包已清空`);
+        
+        // 🔑 通知客户端更新背包UI
+        inventoryHandler.sendInventoryData(playerId);
     }
 
     /**
@@ -566,11 +651,22 @@ export class AutoChessMode {
 
         print(`[AutoChessMode] ========== 重新创建玩家 ${playerId} 的棋子 ==========`);
         
+        // 🔑 调试：打印当前 benchPieces 状态
+        const benchPieces = playerState.benchPieces || [];
+        const boardPieces = playerState.boardPieces || [];
+        print(`[AutoChessMode] 🔍 DEBUG: benchPieces.length = ${benchPieces.length}`);
+        print(`[AutoChessMode] 🔍 DEBUG: boardPieces.length = ${boardPieces.length}`);
+        if (benchPieces.length > 0) {
+            for (let i = 0; i < benchPieces.length; i++) {
+                const p = benchPieces[i];
+                print(`[AutoChessMode] 🔍 DEBUG: benchPieces[${i}] = ${p.displayName}(${p.id})`);
+            }
+        }
+        
         // 先清理该玩家的所有棋子（确保干净状态）
         this.battleSystem.clearPlayerPieces(playerId);
         
         // 优先从棋盘位置恢复棋子（如果有保存的位置信息）
-        const boardPieces = playerState.boardPieces || [];
         if (boardPieces.length > 0) {
             print(`[AutoChessMode] 从棋盘位置恢复 ${boardPieces.length} 个棋子`);
             for (let i = 0; i < boardPieces.length; i++) {
@@ -585,13 +681,12 @@ export class AutoChessMode {
             }
         } else {
             // 如果没有棋盘棋子，从备战席恢复
-            const benchPieces = playerState.benchPieces || [];
             if (benchPieces.length > 0) {
                 print(`[AutoChessMode] 从备战席恢复 ${benchPieces.length} 个棋子`);
                 this.deployPiecesFromBench(playerId);
             } else {
                 // 如果都没有，创建默认初始棋子（降级方案）
-                print(`[AutoChessMode] 警告: 玩家 ${playerId} 没有棋子，创建默认棋子`);
+                print(`[AutoChessMode] ⚠️ 警告: 玩家 ${playerId} 没有棋子（benchPieces=${benchPieces.length}, boardPieces=${boardPieces.length}），创建默认棋子`);
                 this.createDefaultInitialPieces(playerId);
             }
         }
@@ -777,6 +872,24 @@ export class AutoChessMode {
             // 准备阶段刷新一次网格，避免Debug线消失
             if (this.gameState.currentPhase === RoundPhase.PREPARATION) {
                 this.battleSystem.recreateHexBoard();
+                
+                // 🔑 准备阶段剩余3秒时，检查并自动部署（在背包UI还可见时）
+                if (this.gameState.phaseTimeLeft === 3 && !this.autoDeployTriggeredThisRound) {
+                    this.autoDeployTriggeredThisRound = true;
+                    print(`[AutoChessMode] ⏰ 准备阶段剩余3秒，检查是否需要自动部署...`);
+                    
+                    for (const [playerId, playerState] of this.gameState.playerStates) {
+                        if (playerState.isAlive) {
+                            const deployedPieces = this.battleSystem.getPlayerPieces(playerId);
+                            if (deployedPieces.length === 0) {
+                                print(`[AutoChessMode] 玩家 ${playerId} 未部署棋子，准备自动部署...`);
+                                this.autoDeployFromBench(playerId);
+                            } else {
+                                print(`[AutoChessMode] 玩家 ${playerId} 已有 ${deployedPieces.length} 个棋子，跳过自动部署`);
+                            }
+                        }
+                    }
+                }
             }
             
             // 同步时间到客户端
@@ -863,17 +976,17 @@ export class AutoChessMode {
             // 获取场上部署的棋子
             const deployedPieces = this.battleSystem.getPlayerPieces(playerId);
             
-            if (deployedPieces.length === 0) {
-                print(`[AutoChessMode] 玩家 ${playerId} 场上没有棋子，跳过回收`);
-                continue;
-            }
+            print(`[AutoChessMode] 玩家 ${playerId} 场上共有 ${deployedPieces.length} 个棋子`);
             
-            print(`[AutoChessMode] 玩家 ${playerId} 场上共有 ${deployedPieces.length} 个棋子，开始回收`);
+            // 🔑 获取当前备战席的棋子（这些都是未部署的，因为部署时已经从备战席移除了）
+            const oldBenchPieces = playerState.benchPieces || [];
+            print(`[AutoChessMode] 玩家 ${playerId} 备战席有 ${oldBenchPieces.length} 个未部署的棋子`);
             
-            // 🔑 记录存活棋子的血量
+            // 🔑 记录存活棋子的血量和数据
             const survivors: Array<{ pieceId: string; health: number }> = [];
+            const survivorPieces: ChessPiece[] = [];
             
-            // 将每个存活棋子回收到背包
+            // 遍历场上棋子，收集存活的
             for (const deployedPiece of deployedPieces) {
                 // 🔑 只回收存活的棋子
                 if (!deployedPiece.unit || deployedPiece.unit.IsNull() || !deployedPiece.unit.IsAlive()) {
@@ -893,16 +1006,31 @@ export class AutoChessMode {
                     continue;
                 }
                 
-                // 检查背包是否已满
-                const benchPieces = playerState.benchPieces || [];
-                if (benchPieces.length >= 8) {
-                    print(`[AutoChessMode] 警告: 玩家 ${playerId} 背包已满（${benchPieces.length}/8），无法回收棋子 ${piece.displayName}`);
-                    continue;
+                survivorPieces.push(piece);
+                print(`[AutoChessMode] ✅ 存活棋子: ${piece.displayName}(${deployedPiece.pieceId})，血量: ${currentHealth.toFixed(0)}`);
+            }
+            
+            print(`[AutoChessMode] 存活棋子数量: ${survivorPieces.length}`);
+            
+            // 🔑 重建备战席：旧备战席（未部署的）+ 存活棋子
+            playerState.benchPieces = [];
+            
+            // 先保留旧备战席的棋子（这些是未部署的，因为部署时已经移除了）
+            for (const piece of oldBenchPieces) {
+                if (playerState.benchPieces.length >= 8) {
+                    print(`[AutoChessMode] 警告: 备战席已满（8/8），无法添加更多棋子`);
+                    break;
                 }
-                
-                // 添加到背包
-                benchPieces.push(piece);
-                print(`[AutoChessMode] ✅ 回收存活棋子 ${piece.displayName}(${deployedPiece.pieceId}) 到背包，血量: ${currentHealth.toFixed(0)}`);
+                playerState.benchPieces.push(piece);
+            }
+            
+            // 再添加存活的棋子（从场上回收）
+            for (const piece of survivorPieces) {
+                if (playerState.benchPieces.length >= 8) {
+                    print(`[AutoChessMode] 警告: 备战席已满（8/8），无法回收棋子 ${piece.displayName}`);
+                    break;
+                }
+                playerState.benchPieces.push(piece);
             }
             
             // 🔑 保存存活棋子的血量记录到战斗系统
@@ -922,7 +1050,12 @@ export class AutoChessMode {
             // 清空部署记录
             (this.battleSystem as any).playerDeployedPieces.delete(playerId);
             
-            print(`[AutoChessMode] ✅ 玩家 ${playerId} 棋子回收完成，背包数量: ${playerState.benchPieces.length}`);
+            print(`[AutoChessMode] ========== 玩家 ${playerId} 棋子回收汇总 ==========`);
+            print(`[AutoChessMode] 旧备战席（未部署）: ${oldBenchPieces.length} 个`);
+            print(`[AutoChessMode] 场上存活: ${survivorPieces.length} 个`);
+            print(`[AutoChessMode] 场上阵亡: ${deployedPieces.length - survivorPieces.length} 个`);
+            print(`[AutoChessMode] 最终备战席: ${playerState.benchPieces.length} = ${oldBenchPieces.length}(未部署) + ${survivorPieces.length}(存活)`);
+            print(`[AutoChessMode] =====================================`);
         }
         
         print(`[AutoChessMode] ========== 棋子回收完成 ==========`);
@@ -997,8 +1130,8 @@ export class AutoChessMode {
             position: '坦克',
             rarity: ChessRarity.COMMON,
             cost: 1,
-            race: ['自然'],
-            class: ['战士'],
+            race: ['仙灵'],
+            class: ['斗士'],
             health: 650,
             maxMana: 100,
             initialMana: 40,
@@ -1028,8 +1161,8 @@ export class AutoChessMode {
             position: '射手',
             rarity: ChessRarity.COMMON,
             cost: 1,
-            race: ['精灵'],
-            class: ['射手'],
+            race: ['仙灵'],
+            class: ['游侠'],
             health: 500,
             maxMana: 80,
             initialMana: 0,
@@ -1048,7 +1181,7 @@ export class AutoChessMode {
             dps: 36.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['windrunner_powershot']
+            abilities: ['windrunner_piercing_arrow']
         });
         
         // 战争之矛 (Mars) - 战士
@@ -1059,8 +1192,8 @@ export class AutoChessMode {
             position: '战士',
             rarity: ChessRarity.COMMON,
             cost: 1,
-            race: ['人类'],
-            class: ['战士'],
+            race: ['战斗狂人'],
+            class: ['骑士'],
             health: 650,
             maxMana: 100,
             initialMana: 40,
@@ -1090,8 +1223,8 @@ export class AutoChessMode {
             position: '法师',
             rarity: ChessRarity.COMMON,
             cost: 1,
-            race: ['元素'],
-            class: ['法师'],
+            race: ['虚空'],
+            class: ['游侠'],
             health: 550,
             maxMana: 100,
             initialMana: 0,
@@ -1110,7 +1243,7 @@ export class AutoChessMode {
             dps: 30.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['razor_eye_of_the_storm']
+            abilities: ['razor_storm_eye']
         });
         
         // 恶魔巫师 (Lion) - 辅助
@@ -1121,8 +1254,8 @@ export class AutoChessMode {
             position: '辅助',
             rarity: ChessRarity.COMMON,
             cost: 1,
-            race: ['恶魔'],
-            class: ['法师'],
+            race: ['狂野'],
+            class: ['术士'],
             health: 500,
             maxMana: 70,
             initialMana: 0,
@@ -1152,8 +1285,8 @@ export class AutoChessMode {
             position: '辅助',
             rarity: ChessRarity.COMMON,
             cost: 1,
-            race: ['自然'],
-            class: ['辅助'],
+            race: ['狂野'],
+            class: ['法师'],
             health: 550,
             maxMana: 100,
             initialMana: 20,
@@ -1185,8 +1318,8 @@ export class AutoChessMode {
             position: '战士',
             rarity: ChessRarity.UNCOMMON,
             cost: 2,
-            race: ['兽人'],
-            class: ['战士'],
+            race: ['战斗狂人'],
+            class: ['斗士'],
             health: 750,
             maxMana: 0,
             initialMana: 0,
@@ -1216,8 +1349,8 @@ export class AutoChessMode {
             position: '坦克',
             rarity: ChessRarity.UNCOMMON,
             cost: 2,
-            race: ['野兽'],
-            class: ['战士'],
+            race: ['狂野'],
+            class: ['骑士'],
             health: 800,
             maxMana: 100,
             initialMana: 0,
@@ -1236,7 +1369,7 @@ export class AutoChessMode {
             dps: 39.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['ursa_earthshock']
+            abilities: ['ursa_ground_slam']
         });
         
         // 神谕者 (Oracle) - 辅助
@@ -1247,8 +1380,8 @@ export class AutoChessMode {
             position: '辅助',
             rarity: ChessRarity.UNCOMMON,
             cost: 2,
-            race: ['人类'],
-            class: ['辅助'],
+            race: ['仙灵'],
+            class: ['术士'],
             health: 700,
             maxMana: 100,
             initialMana: 0,
@@ -1273,13 +1406,13 @@ export class AutoChessMode {
         // 卓尔游侠 - 射手
         database.set('drow_ranger', {
             id: 'drow_ranger',
-            unitName: 'npc_dota_hero_drow_ranger',
+            unitName: 'drow_ranger1',
             displayName: '卓尔游侠',
             position: '射手',
             rarity: ChessRarity.UNCOMMON,
             cost: 2,
-            race: ['不死'],
-            class: ['猎人'],
+            race: ['虚空'],
+            class: ['游侠'],
             health: 650,
             maxMana: 0,
             initialMana: 0,
@@ -1298,7 +1431,7 @@ export class AutoChessMode {
             dps: 48.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['drow_ranger_frost_arrows']
+            abilities: ['drow_multishot']
         });
         
         // 秀逗魔导师 (Lina) - 法师
@@ -1309,7 +1442,7 @@ export class AutoChessMode {
             position: '法师',
             rarity: ChessRarity.UNCOMMON,
             cost: 2,
-            race: ['人类'],
+            race: ['神将'],
             class: ['法师'],
             health: 650,
             maxMana: 100,
@@ -1329,7 +1462,7 @@ export class AutoChessMode {
             dps: 38.50,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['lina_light_strike_array']
+            abilities: ['lina_flame_strike']
         });
         
         // ========== 三费棋子 (Cost 3) ==========
@@ -1342,8 +1475,8 @@ export class AutoChessMode {
             position: '战士',
             rarity: ChessRarity.RARE,
             cost: 3,
-            race: ['元素'],
-            class: ['刺客'],
+            race: ['神将'],
+            class: ['骑士'],
             health: 850,
             maxMana: 100,
             initialMana: 0,
@@ -1373,8 +1506,8 @@ export class AutoChessMode {
             position: '坦克',
             rarity: ChessRarity.RARE,
             cost: 3,
-            race: ['恶魔猎手'],
-            class: ['刺客'],
+            race: ['战斗狂人'],
+            class: ['斗士'],
             health: 800,
             maxMana: 80,
             initialMana: 50,
@@ -1399,13 +1532,13 @@ export class AutoChessMode {
         // 恐怖利刃 (Terrorblade) - 法师
         database.set('terrorblade', {
             id: 'terrorblade',
-            unitName: 'npc_dota_hero_terrorblade',
+            unitName: 'terrorblade1',
             displayName: '恐怖利刃',
             position: '法师',
             rarity: ChessRarity.RARE,
             cost: 3,
-            race: ['恶魔'],
-            class: ['战士'],
+            race: ['仙灵'],
+            class: ['毁灭者'],
             health: 800,
             maxMana: 140,
             initialMana: 60,
@@ -1424,7 +1557,7 @@ export class AutoChessMode {
             dps: 39.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['terrorblade_metamorphosis']
+            abilities: ['terrorblade_demon_form']
         });
         
         // 冥界亚龙 (Viper) - 射手
@@ -1435,8 +1568,8 @@ export class AutoChessMode {
             position: '射手',
             rarity: ChessRarity.RARE,
             cost: 3,
-            race: ['龙族'],
-            class: ['射手'],
+            race: ['狂野'],
+            class: ['游侠'],
             health: 750,
             maxMana: 0,
             initialMana: 0,
@@ -1455,7 +1588,7 @@ export class AutoChessMode {
             dps: 52.50,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['viper_nethertoxin']
+            abilities: ['viper_poison_burst']
         });
         
         // 死亡先知 (Death Prophet) - 辅助
@@ -1466,8 +1599,8 @@ export class AutoChessMode {
             position: '辅助',
             rarity: ChessRarity.RARE,
             cost: 3,
-            race: ['不死'],
-            class: ['法师'],
+            race: ['虚空'],
+            class: ['术士'],
             health: 750,
             maxMana: 100,
             initialMana: 40,
@@ -1499,8 +1632,8 @@ export class AutoChessMode {
             position: '坦克',
             rarity: ChessRarity.EPIC,
             cost: 4,
-            race: ['恶魔'],
-            class: ['战士'],
+            race: ['战斗狂人'],
+            class: ['骑士'],
             health: 1100,
             maxMana: 130,
             initialMana: 40,
@@ -1530,8 +1663,8 @@ export class AutoChessMode {
             position: '射手',
             rarity: ChessRarity.EPIC,
             cost: 4,
-            race: ['恶魔'],
-            class: ['法师'],
+            race: ['虚空'],
+            class: ['毁灭者'],
             health: 850,
             maxMana: 6,
             initialMana: 0,
@@ -1550,7 +1683,7 @@ export class AutoChessMode {
             dps: 55.00,
             criticalChance: 0,
             criticalDamage: 150,
-            abilities: ['nevermore_shadowraze']
+            abilities: ['shadow_fiend_Shadowraze']
         });
         
         // 水晶室女 - 法师
@@ -1561,7 +1694,7 @@ export class AutoChessMode {
             position: '法师',
             rarity: ChessRarity.EPIC,
             cost: 4,
-            race: ['人类'],
+            race: ['仙灵'],
             class: ['法师'],
             health: 900,
             maxMana: 150,
@@ -1592,8 +1725,8 @@ export class AutoChessMode {
             position: '辅助',
             rarity: ChessRarity.EPIC,
             cost: 4,
-            race: ['兽人'],
-            class: ['法师'],
+            race: ['狂野'],
+            class: ['斗士'],
             health: 1100,
             maxMana: 80,
             initialMana: 0,
@@ -1625,7 +1758,7 @@ export class AutoChessMode {
             position: '法师',
             rarity: ChessRarity.LEGENDARY,
             cost: 5,
-            race: ['元素'],
+            race: ['虚空'],
             class: ['法师'],
             health: 1000,
             maxMana: 150,
@@ -1656,8 +1789,8 @@ export class AutoChessMode {
             position: '坦克',
             rarity: ChessRarity.LEGENDARY,
             cost: 5,
-            race: ['人类'],
-            class: ['战士'],
+            race: ['神将'],
+            class: ['骑士'],
             health: 1300,
             maxMana: 140,
             initialMana: 20,
@@ -1687,8 +1820,8 @@ export class AutoChessMode {
             position: '射手',
             rarity: ChessRarity.LEGENDARY,
             cost: 5,
-            race: ['神'],
-            class: ['法师'],
+            race: ['神将'],
+            class: ['游侠'],
             health: 1000,
             maxMana: 100,
             initialMana: 0,
@@ -1708,6 +1841,37 @@ export class AutoChessMode {
             criticalChance: 0,
             criticalDamage: 150,
             abilities: ['zeus_Thundergods_Wrath']
+        });
+        
+        // 卡尔 (Invoker) - 辅助
+        database.set('invoker', {
+            id: 'invoker',
+            unitName: 'invoker1',
+            displayName: '卡尔',
+            position: '辅助',
+            rarity: ChessRarity.LEGENDARY,
+            cost: 5,
+            race: ['创造'],
+            class: ['毁灭者'],
+            health: 1000,
+            maxMana: 60,
+            initialMana: 0,
+            healthRecovery: 0,
+            naturalManaRecovery: 3,
+            attackManaRecovery: 5.2,
+            damageManaRecovery: 0,
+            skillCooldown: 0,
+            damage: 65,
+            armor: 5,
+            physicalDamageReduction: 23.08,
+            magicDefense: 25,
+            attackRange: 800,
+            attackSpeed: 0.8,
+            attackInterval: 1.54,
+            dps: 42.25,
+            criticalChance: 0,
+            criticalDamage: 150,
+            abilities: ['invoker_elemental_invoke']
         });
         
         return database;
@@ -3004,10 +3168,29 @@ export class AutoChessMode {
 
         // 创建倒计时计时器
         print(`[AutoChessMode] 创建准备阶段倒计时计时器，初始时间: ${timeLeft}秒`);
+        let autoDeployTriggered = false; // 🔑 标记是否已触发自动部署
         const countdownTimer = Timers.CreateTimer(1.0, () => {
             timeLeft--;
             
             print(`[AutoChessMode] 准备阶段倒计时: ${timeLeft}秒 (stageId: ${stageId}, playerId: ${playerId})`);
+            
+            // 🔑 剩余3秒时，检查并自动部署（在背包UI还可见时）
+            if (timeLeft === 3 && !autoDeployTriggered) {
+                autoDeployTriggered = true;
+                print(`[AutoChessMode] ⏰ 倒计时剩余3秒，检查是否需要自动部署...`);
+                
+                for (const [pid, playerState] of this.gameState.playerStates) {
+                    if (playerState.isAlive) {
+                        const deployedPieces = this.battleSystem.getPlayerPieces(pid);
+                        if (deployedPieces.length === 0) {
+                            print(`[AutoChessMode] 玩家 ${pid} 未部署棋子，准备自动部署...`);
+                            this.autoDeployFromBench(pid);
+                        } else {
+                            print(`[AutoChessMode] 玩家 ${pid} 已有 ${deployedPieces.length} 个棋子，跳过自动部署`);
+                        }
+                    }
+                }
+            }
             
             // 同步倒计时到客户端
             (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_preparation_countdown', {
@@ -3055,12 +3238,11 @@ export class AutoChessMode {
         const enemiesAlreadyCreated = enemyPieces && enemyPieces.length > 0;
         
         if (enemiesAlreadyCreated) {
-            print(`[AutoChessMode] 敌人已在准备阶段创建，启用所有单位攻击能力...`);
-            // 启用所有单位攻击
-            this.battleSystem.enableAllAttacks();
+            print(`[AutoChessMode] 敌人已在准备阶段创建，将在稍后统一启用攻击能力`);
+            // 攻击能力将在稍后统一启用（避免重复调用）
         } else {
             // 清理之前的AI棋子（如果存在）
-        this.battleSystem.clearPlayerPieces(-1);
+            this.battleSystem.clearPlayerPieces(-1);
             
             // 根据关卡配置生成敌人
             print(`[AutoChessMode] 根据关卡 ${stageId} 配置生成敌人...`);
@@ -3078,15 +3260,28 @@ export class AutoChessMode {
             print(`[AutoChessMode] 玩家 ${pid} 进入新关卡，准备重新创建棋子`);
         }
 
-        // 重新创建玩家棋子（从备战席或棋盘位置恢复）
-        print(`[AutoChessMode] 重新创建玩家棋子...`);
+        // 检查玩家是否已有部署的棋子（准备阶段已部署）
+        print(`[AutoChessMode] 检查玩家棋子状态...`);
         for (const [pid, playerState] of this.gameState.playerStates) {
             if (playerState.isAlive) {
                 this.battleSystem.setPlayerAsProtected(pid);
                 
-                // 从备战席和棋盘位置恢复棋子
-                this.recreatePlayerPieces(pid);
-                print(`[AutoChessMode] 玩家 ${pid} 棋子已重新创建`);
+                // 检查是否已有部署的棋子
+                const deployedPieces = this.battleSystem.getPlayerPieces(pid);
+                if (deployedPieces && deployedPieces.length > 0) {
+                    print(`[AutoChessMode] 玩家 ${pid} 已有 ${deployedPieces.length} 个部署的棋子，无需重新创建`);
+                    // 准备阶段已部署，无需重新创建
+                } else {
+                    print(`[AutoChessMode] 玩家 ${pid} 没有部署棋子，尝试从背包部署...`);
+                    // 如果没有部署棋子，从背包部署
+                    const benchPieces = playerState.benchPieces || [];
+                    if (benchPieces.length > 0) {
+                        print(`[AutoChessMode] 从背包自动部署1个棋子...`);
+                        this.autoDeployFromBench(pid);
+                    } else {
+                        print(`[AutoChessMode] ⚠️ 警告：玩家 ${pid} 背包和场上都没有棋子，跳过部署`);
+                    }
+                }
             }
         }
 

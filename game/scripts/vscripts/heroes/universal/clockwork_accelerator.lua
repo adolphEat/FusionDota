@@ -12,6 +12,10 @@ function clockwork_accelerator:GetIntrinsicModifierName()
     return "modifier_clockwork_accelerator"
 end
 
+function clockwork_accelerator:GetAbilityTextureName()
+    return "faceless_void_time_zone"
+end
+
 -- 全局发条加速器效果修饰符
 if modifier_clockwork_accelerator == nil then
     modifier_clockwork_accelerator = class({})
@@ -34,7 +38,7 @@ function modifier_clockwork_accelerator:IsPassive()
 end
 
 function modifier_clockwork_accelerator:GetTexture()
-    return "item_hyperstone"
+    return "faceless_void_time_zone"
 end
 
 function modifier_clockwork_accelerator:OnCreated()
@@ -154,5 +158,5 @@ function modifier_clockwork_accelerator_effect:GetModifierAttackSpeedBonus_Const
 end
 
 function modifier_clockwork_accelerator_effect:GetTexture()
-    return "item_hyperstone"
+    return "faceless_void_time_zone"
 end

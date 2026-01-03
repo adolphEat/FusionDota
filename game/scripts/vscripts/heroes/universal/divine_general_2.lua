@@ -13,6 +13,10 @@ function divine_general_2:GetIntrinsicModifierName()
     return "modifier_divine_general_2"
 end
 
+function divine_general_2:GetAbilityTextureName()
+    return "leshrac_pulse_nova"
+end
+
 -- 全局神将羁绊效果修饰符
 if modifier_divine_general_2 == nil then
     modifier_divine_general_2 = class({})
@@ -35,7 +39,7 @@ function modifier_divine_general_2:IsPassive()
 end
 
 function modifier_divine_general_2:GetTexture()
-    return "item_heart"
+    return "leshrac_pulse_nova"
 end
 
 -- 神将单位列表

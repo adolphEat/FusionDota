@@ -12,6 +12,10 @@ function vampiric_vitality:GetIntrinsicModifierName()
     return "modifier_vampiric_vitality"
 end
 
+function vampiric_vitality:GetAbilityTextureName()
+    return "bloodseeker_blood_bath"
+end
+
 -- 全局吸血效果修饰符
 if modifier_vampiric_vitality == nil then
     modifier_vampiric_vitality = class({})
@@ -34,7 +38,7 @@ function modifier_vampiric_vitality:IsPassive()
 end
 
 function modifier_vampiric_vitality:GetTexture()
-    return "item_mask_of_madness"
+    return "item_satanic"
 end
 
 function modifier_vampiric_vitality:DeclareFunctions()

@@ -10,6 +10,10 @@ function ludens_echo:GetIntrinsicModifierName()
     return "modifier_ludens_echo"
 end
 
+function ludens_echo:GetAbilityTextureName()
+    return "wisp_tether"
+end
+
 -- 全局buff修饰器
 modifier_ludens_echo = class({})
 

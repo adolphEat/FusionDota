@@ -13,6 +13,10 @@ function mage_1:GetIntrinsicModifierName()
     return "modifier_mage_1"
 end
 
+function mage_1:GetAbilityTextureName()
+    return "faceless_void_time_dilation"
+end
+
 -- 全局法师羁绊效果修饰符
 if modifier_mage_1 == nil then
     modifier_mage_1 = class({})
@@ -35,7 +39,7 @@ function modifier_mage_1:IsPassive()
 end
 
 function modifier_mage_1:GetTexture()
-    return "item_energy_booster"
+    return "faceless_void_time_dilation"
 end
 
 -- 法师单位列表

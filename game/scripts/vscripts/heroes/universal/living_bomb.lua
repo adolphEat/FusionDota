@@ -1,6 +1,7 @@
 -- living_bomb.lua
 -- 全局技能：活体炸弹
--- 效果：所有己方和敌方单位死亡时会对周围200范围内的所有单位造成200点魔法伤害
+-- 效果：场上所有单位（无论敌我）死亡时对200范围内的同阵营单位造成200点魔法伤害
+-- 敌方单位死亡则对敌方阵营单位造成伤害，己方单位死亡则对己方阵营单位造成伤害
 
 LinkLuaModifier("modifier_living_bomb", "heroes/universal/living_bomb", LUA_MODIFIER_MOTION_NONE)
 
@@ -47,9 +48,15 @@ function LivingBombListener:TriggerExplosion(dead_unit)
     local ability = self.ability
     if not ability then return end
     
+    local caster = ability:GetCaster()
+    if not caster or caster:IsNull() then return end
+    
     local explosion_damage = self.explosion_damage
     local explosion_radius = self.explosion_radius
     local explosion_pos = dead_unit:GetAbsOrigin()
+    
+    -- 获取死亡单位的阵营
+    local dead_unit_team = dead_unit:GetTeamNumber()
     
     -- 播放爆炸音效
     EmitSoundOn("Hero_Techies.Suicide", dead_unit)
@@ -64,29 +71,29 @@ function LivingBombListener:TriggerExplosion(dead_unit)
     ParticleManager:SetParticleControl(explosion_particle, 1, Vector(explosion_radius, 0, 0))
     ParticleManager:ReleaseParticleIndex(explosion_particle)
     
-    -- 查找爆炸范围内的所有单位
+    -- 查找爆炸范围内死亡单位所在阵营的其他单位
     local units_in_radius = FindUnitsInRadius(
-        DOTA_TEAM_GOODGUYS,  -- 使用任意有效的队伍编号，搜索范围由target_team控制
+        dead_unit_team,
         explosion_pos,
         nil,
         explosion_radius,
-        DOTA_UNIT_TARGET_TEAM_BOTH,  -- 对己方和敌方都造成伤害
+        DOTA_UNIT_TARGET_TEAM_FRIENDLY,  -- 对死亡单位所在阵营的单位造成伤害
         DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
         DOTA_UNIT_TARGET_FLAG_NONE,
         FIND_ANY_ORDER,
         false
     )
     
-    -- 对范围内的所有单位造成伤害
+    -- 对范围内的同阵营单位造成伤害（排除死亡单位本身）
     for _, unit in pairs(units_in_radius) do
-        if IsValidEntity(unit) and unit:IsAlive() then
+        if IsValidEntity(unit) and unit:IsAlive() and unit ~= dead_unit then
             -- Debug: 打印目标单位信息
             print("Living Bomb target: " .. unit:GetUnitName() .. " team: " .. unit:GetTeamNumber() .. " alive: " .. tostring(unit:IsAlive()))
             
             -- 创建伤害表
             local damage_table = {
                 victim = unit,
-                attacker = ability:GetCaster(),  -- 使用技能拥有者作为攻击者
+                attacker = caster,  -- 使用技能拥有者作为攻击者
                 damage = explosion_damage,
                 damage_type = DAMAGE_TYPE_MAGICAL,
                 ability = ability
@@ -101,7 +108,7 @@ function LivingBombListener:TriggerExplosion(dead_unit)
     end
     
     -- Debug信息
-    print("Living Bomb explosion triggered by: " .. dead_unit:GetUnitName() .. " at position: " .. tostring(explosion_pos))
+    print("Living Bomb explosion triggered by: " .. dead_unit:GetUnitName() .. " team: " .. dead_unit_team .. " at position: " .. tostring(explosion_pos))
     print("Units affected: " .. #units_in_radius)
 end
 
@@ -109,6 +116,10 @@ living_bomb = class({})
 
 function living_bomb:GetIntrinsicModifierName()
     return "modifier_living_bomb"
+end
+
+function living_bomb:GetAbilityTextureName()
+    return "centaur_khan_endurance_aura"
 end
 
 modifier_living_bomb = class({})

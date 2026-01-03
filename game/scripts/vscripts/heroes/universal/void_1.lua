@@ -13,6 +13,10 @@ function void_1:GetIntrinsicModifierName()
     return "modifier_void_1"
 end
 
+function void_1:GetAbilityTextureName()
+    return "dazzle_nothl_projection"
+end
+
 -- 全局虚空羁绊效果修饰符
 if modifier_void_1 == nil then
     modifier_void_1 = class({})
@@ -35,7 +39,7 @@ function modifier_void_1:IsPassive()
 end
 
 function modifier_void_1:GetTexture()
-    return "faceless_void_time_lock"
+    return "dazzle_nothl_projection"
 end
 
 -- 虚空单位列表
@@ -47,7 +51,8 @@ function modifier_void_1:IsVoidUnit(unit)
         "razor1",           -- 雷泽
         "death_prophet1",   -- 死亡先知
         "shadow_fiend1",    -- 影魔
-        "enigma1"           -- 谜团
+        "enigma1",          -- 谜团
+        "drow_ranger1"      -- 卓尔游侠
     }
     
     for _, void_name in pairs(void_units) do
