@@ -319,6 +319,9 @@ export class AutoChessMode {
                 // 部署玩家棋子到战斗位置（如果场上没有，会自动从背包部署并更新UI）
                 this.deployPlayerChessPieces(playerId);
                 
+                // 🔑 应用羁绊系统 - 在棋子部署后，战斗开始前
+                this.applySynergySystem(playerId);
+                
                 const benchAfter = (playerState.benchPieces || []).length;
                 print(`[AutoChessMode] 🔍 部署后，玩家 ${playerId} 背包剩余 ${benchAfter} 个棋子`);
             }
@@ -453,6 +456,168 @@ export class AutoChessMode {
         }
         
         print(`[AutoChessMode] ========== 玩家初始棋子检查完成 ==========`);
+    }
+
+    /**
+     * 计算并应用羁绊效果
+     * 在战斗阶段开始时调用，给满足条件的棋子添加羁绊能力
+     */
+    private applySynergySystem(playerId: PlayerID): void {
+        print(`[AutoChessMode] ========== 计算玩家 ${playerId} 的羁绊效果 ==========`);
+        
+        const deployedUnits = this.battleSystem.getPlayerPieces(playerId);
+        
+        if (!deployedUnits || deployedUnits.length === 0) {
+            print(`[AutoChessMode] 玩家 ${playerId} 场上没有棋子，跳过羁绊计算`);
+            return;
+        }
+        
+        // 从场上单位获取对应的ChessPiece数据
+        const chessPieces: ChessPiece[] = [];
+        for (const deployedPiece of deployedUnits) {
+            const unit = deployedPiece.unit;
+            if (!unit || unit.IsNull()) continue;
+            
+            const unitName = unit.GetUnitName();
+            // 根据unitName查找对应的ChessPiece数据
+            for (const piece of this.chessPieceDatabase.values()) {
+                if (piece.unitName === unitName) {
+                    chessPieces.push(piece);
+                    break;
+                }
+            }
+        }
+        
+        print(`[AutoChessMode] 场上有 ${chessPieces.length} 个棋子`);
+        
+        // 统计种族和职业数量
+        const raceCount = new Map<string, number>();
+        const classCount = new Map<string, number>();
+        
+        // 第一遍：统计所有棋子的种族和职业
+        for (const piece of chessPieces) {
+            // 统计种族
+            if (piece.race) {
+                for (const race of piece.race) {
+                    raceCount.set(race, (raceCount.get(race) || 0) + 1);
+                }
+            }
+            // 统计职业
+            if (piece.class) {
+                for (const cls of piece.class) {
+                    classCount.set(cls, (classCount.get(cls) || 0) + 1);
+                }
+            }
+        }
+        
+        // 🔑 特殊处理：创造羁绊（卡尔）- 为所有其他种族+1
+        const creationCount = raceCount.get('创造') || 0;
+        if (creationCount > 0) {
+            print(`[AutoChessMode] 🌟 检测到创造羁绊 ${creationCount} 个，所有种族计数+${creationCount}`);
+            for (const [race, count] of raceCount) {
+                if (race !== '创造') {
+                    raceCount.set(race, count + creationCount);
+                    print(`[AutoChessMode]   ${race}: ${count} → ${count + creationCount}`);
+                }
+            }
+        }
+        
+        print(`[AutoChessMode] 种族统计:`);
+        for (const [race, count] of raceCount) {
+            print(`[AutoChessMode]   ${race}: ${count}`);
+        }
+        
+        print(`[AutoChessMode] 职业统计:`);
+        for (const [cls, count] of classCount) {
+            print(`[AutoChessMode]   ${cls}: ${count}`);
+        }
+        
+        // 定义羁绊阈值和对应的能力（每个阈值对应不同层级的能力）
+        const synergyThresholds = [
+            // 种族羁绊
+            { type: 'race', name: '仙灵', abilities: ['sylph_1', 'sylph_2', 'sylph_3'], thresholds: [2, 3, 4] },
+            { type: 'race', name: '神将', abilities: ['divine_general_1', 'divine_general_2', 'divine_general_3'], thresholds: [2, 3, 5] },
+            { type: 'race', name: '狂野', abilities: ['wild_1', 'wild_2', 'wild_3'], thresholds: [3, 4, 5] },
+            { type: 'race', name: '虚空', abilities: ['void_1', 'void_2'], thresholds: [2, 5] },
+            { type: 'race', name: '战斗狂人', abilities: ['berserker_1', 'berserker_2'], thresholds: [2, 4] },
+            { type: 'race', name: '创造', abilities: ['creation'], thresholds: [1] },
+            // 职业羁绊
+            { type: 'class', name: '游侠', abilities: ['ranger_1', 'ranger_2', 'ranger_3'], thresholds: [2, 3, 5] },
+            { type: 'class', name: '骑士', abilities: ['knight_1', 'knight_2', 'knight_3'], thresholds: [2, 4, 5] },
+            { type: 'class', name: '斗士', abilities: ['warrior_1', 'warrior_2'], thresholds: [2, 4] },
+            { type: 'class', name: '法师', abilities: ['mage_1', 'mage_2'], thresholds: [2, 4] },
+            { type: 'class', name: '术士', abilities: ['warlock_1', 'warlock_2'], thresholds: [1, 3] },
+            { type: 'class', name: '毁灭者', abilities: ['destroyer_1', 'destroyer_2'], thresholds: [1, 2] },
+        ];
+        
+        // 应用羁绊buff
+        for (const synergy of synergyThresholds) {
+            // 🔑 跳过创造羁绊（它不添加能力，只用于计数）
+            if (synergy.name === '创造') {
+                continue;
+            }
+            
+            const count = synergy.type === 'race' ? raceCount.get(synergy.name) || 0 : classCount.get(synergy.name) || 0;
+            
+            if (count > 0) {
+                // 找到最高的已满足阈值及其对应的能力
+                let activeTierIndex = -1;
+                for (let i = 0; i < synergy.thresholds.length; i++) {
+                    if (count >= synergy.thresholds[i]) {
+                        activeTierIndex = i;
+                    }
+                }
+                
+                if (activeTierIndex >= 0) {
+                    const activeTier = synergy.thresholds[activeTierIndex];
+                    const abilityName = synergy.abilities[activeTierIndex];
+                    
+                    print(`[AutoChessMode] ✅ 羁绊激活: ${synergy.name} (${count}/${activeTier}) - 能力: ${abilityName} (Tier ${activeTierIndex + 1})`);
+                    
+                    // 给对应的单位添加羁绊能力
+                    for (let i = 0; i < deployedUnits.length; i++) {
+                        const deployedPiece = deployedUnits[i];
+                        const unit = deployedPiece.unit;
+                        const piece = chessPieces[i];
+                        
+                        if (!unit || unit.IsNull() || !piece) continue;
+                        
+                        // 检查该单位是否属于这个羁绊
+                        let belongsToSynergy = false;
+                        if (synergy.type === 'race' && piece.race) {
+                            belongsToSynergy = piece.race.includes(synergy.name);
+                            // 🔑 特殊处理：创造种族（卡尔）享受所有种族羁绊加成
+                            if (!belongsToSynergy && piece.race.includes('创造')) {
+                                belongsToSynergy = true;
+                                print(`[AutoChessMode]   🌟 ${unit.GetUnitName()} (创造) 享受 ${synergy.name} 羁绊加成`);
+                            }
+                        } else if (synergy.type === 'class' && piece.class) {
+                            belongsToSynergy = piece.class.includes(synergy.name);
+                        }
+                        
+                        if (belongsToSynergy) {
+                            // 先移除该羁绊的所有低级能力，再添加当前层级的能力
+                            for (const oldAbilityName of synergy.abilities) {
+                                const oldAbility = unit.FindAbilityByName(oldAbilityName);
+                                if (oldAbility) {
+                                    unit.RemoveAbility(oldAbilityName);
+                                }
+                            }
+                            
+                            // 添加当前层级的能力
+                            unit.AddAbility(abilityName);
+                            const ability = unit.FindAbilityByName(abilityName);
+                            if (ability) {
+                                ability.SetLevel(1);
+                                print(`[AutoChessMode]   ➕ ${unit.GetUnitName()} 获得羁绊能力: ${abilityName} (Tier ${activeTierIndex + 1})`);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        print(`[AutoChessMode] ========== 羁绊计算完成 ==========`);
     }
 
     /**
@@ -965,6 +1130,58 @@ export class AutoChessMode {
     }
 
     /**
+     * 清除玩家所有棋子的羁绊buff
+     * 在回合结束时调用，确保下一回合重新计算
+     */
+    private clearSynergyBuffs(playerId: PlayerID): void {
+        print(`[AutoChessMode] ========== 清除玩家 ${playerId} 的羁绊buff ==========`);
+        
+        const deployedPieces = this.battleSystem.getPlayerPieces(playerId);
+        
+        if (!deployedPieces || deployedPieces.length === 0) {
+            print(`[AutoChessMode] 玩家 ${playerId} 场上没有棋子，跳过清除`);
+            return;
+        }
+        
+        // 定义所有羁绊能力的列表（用于清除）
+        const synergyAbilities = [
+            // 种族羁绊
+            'sylph_1', 'sylph_2', 'sylph_3',
+            'divine_general_1', 'divine_general_2', 'divine_general_3',
+            'wild_1', 'wild_2', 'wild_3',
+            'void_1', 'void_2',
+            'berserker_1', 'berserker_2',
+            // 职业羁绊
+            'ranger_1', 'ranger_2', 'ranger_3',
+            'knight_1', 'knight_2', 'knight_3',
+            'warrior_1', 'warrior_2',
+            'mage_1', 'mage_2',
+            'warlock_1', 'warlock_2',
+            'destroyer_1', 'destroyer_2',
+        ];
+        
+        let removedCount = 0;
+        
+        // 遍历所有部署的棋子，移除羁绊能力
+        for (const deployedPiece of deployedPieces) {
+            const unit = deployedPiece.unit;
+            if (!unit || unit.IsNull()) continue;
+            
+            for (const abilityName of synergyAbilities) {
+                const ability = unit.FindAbilityByName(abilityName);
+                if (ability) {
+                    unit.RemoveAbility(abilityName);
+                    removedCount++;
+                    print(`[AutoChessMode]   ➖ ${unit.GetUnitName()} 移除羁绊能力: ${abilityName}`);
+                }
+            }
+        }
+        
+        print(`[AutoChessMode] 共移除 ${removedCount} 个羁绊能力`);
+        print(`[AutoChessMode] ========== 羁绊buff清除完成 ==========`);
+    }
+
+    /**
      * 将场上棋子回收到背包
      */
     private returnPiecesToBench(): void {
@@ -972,6 +1189,9 @@ export class AutoChessMode {
         
         for (const [playerId, playerState] of this.gameState.playerStates) {
             if (!playerState.isAlive) continue;
+            
+            // 🔑 先清除羁绊buff，再回收棋子
+            this.clearSynergyBuffs(playerId);
             
             // 获取场上部署的棋子
             const deployedPieces = this.battleSystem.getPlayerPieces(playerId);
