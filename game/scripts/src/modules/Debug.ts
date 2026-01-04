@@ -990,53 +990,6 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
             }
         },
     },
-    ['-buy']: {
-        desc: '购买棋子 buy <棋子ID>',
-        func: (hero, ...args: string[]) => {
-            const pieceId = args[0];
-            if (!pieceId) {
-                Say(hero, '用法: -buy <棋子ID>，例如: -buy anti_mage', true);
-                return;
-            }
-            
-            if (!GameRules.GameModeManager?.isAutoChessMode()) {
-                Say(hero, 'This command only works in autochess mode', true);
-                return;
-            }
-            
-            const autoChess = GameRules.AutoChessMode;
-            const playerId = hero.GetPlayerOwnerID();
-            const success = autoChess.buyChessPiece(playerId, pieceId);
-            
-            if (success) {
-                Say(hero, `成功购买棋子: ${pieceId}`, true);
-            } else {
-                Say(hero, `购买失败: ${pieceId} (金币不足/库存不足/备战席已满)`, true);
-            }
-        },
-    },
-    ['-shop']: {
-        desc: '商店操作 shop <refresh|show>',
-        func: (hero, ...args: string[]) => {
-            const action = args[0] || 'show';
-            
-            if (!GameRules.GameModeManager?.isAutoChessMode()) {
-                Say(hero, 'This command only works in autochess mode', true);
-                return;
-            }
-            
-            switch (action) {
-                case 'refresh':
-                    // TODO: 实现商店刷新功能
-                    Say(hero, '商店已刷新', true);
-                    break;
-                case 'show':
-                default:
-                    Say(hero, '请查看游戏界面中的商店信息', true);
-                    break;
-            }
-        },
-    },
     ['-chess_info']: {
         desc: '查看棋子信息 chess_info [棋子ID]',
         func: (hero, ...args: string[]) => {

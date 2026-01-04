@@ -266,9 +266,6 @@ export class AutoChessMode {
         // 发放回合收入
         this.distributeRoundIncome();
         
-        // 刷新商店
-        this.refreshAllPlayersShop();
-        
         // 为玩家创建初始棋子（准备阶段）
         this.createPlayerInitialPieces();
         
@@ -460,15 +457,17 @@ export class AutoChessMode {
 
     /**
      * 计算并应用羁绊效果
-     * 在战斗阶段开始时调用，给满足条件的棋子添加羁绊能力
+     * 在棋子部署时调用，给满足条件的棋子添加羁绊能力，并更新UI
      */
-    private applySynergySystem(playerId: PlayerID): void {
+    public applySynergySystem(playerId: PlayerID): void {
         print(`[AutoChessMode] ========== 计算玩家 ${playerId} 的羁绊效果 ==========`);
         
         const deployedUnits = this.battleSystem.getPlayerPieces(playerId);
         
         if (!deployedUnits || deployedUnits.length === 0) {
             print(`[AutoChessMode] 玩家 ${playerId} 场上没有棋子，跳过羁绊计算`);
+            // 🔑 即使没有棋子，也发送空的羁绊数据以清空UI
+            this.sendSynergyDataToUI(playerId, []);
             return;
         }
         
@@ -618,6 +617,67 @@ export class AutoChessMode {
         }
         
         print(`[AutoChessMode] ========== 羁绊计算完成 ==========`);
+        
+        // 🔑 收集羁绊数据并发送到UI
+        this.collectAndSendSynergyData(playerId, raceCount, classCount, synergyThresholds);
+    }
+    
+    /**
+     * 收集羁绊数据并发送到UI
+     */
+    private collectAndSendSynergyData(
+        playerId: PlayerID,
+        raceCount: Map<string, number>,
+        classCount: Map<string, number>,
+        synergyThresholds: any[]
+    ): void {
+        const synergyDataArray: any[] = [];
+        
+        for (const synergy of synergyThresholds) {
+            // 🔑 跳过创造羁绊（它不显示在UI中）
+            if (synergy.name === '创造') {
+                continue;
+            }
+            
+            const count = synergy.type === 'race' 
+                ? raceCount.get(synergy.name) || 0 
+                : classCount.get(synergy.name) || 0;
+            
+            // 找出已激活的阶梯
+            const activeTiers: number[] = [];
+            for (let i = 0; i < synergy.thresholds.length; i++) {
+                if (count >= synergy.thresholds[i]) {
+                    activeTiers.push(i);
+                }
+            }
+            
+            // 构建羁绊数据
+            const synergyData = {
+                id: synergy.abilities[0], // 使用第一个能力作为ID
+                name: synergy.name,
+                type: synergy.type,
+                currentCount: count,
+                activeTiers: activeTiers
+            };
+            
+            synergyDataArray.push(synergyData);
+            print(`[AutoChessMode] 📊 羁绊数据: ${synergy.name} - 数量:${count}, 激活层级:${activeTiers.join(',')}`);
+        }
+        
+        this.sendSynergyDataToUI(playerId, synergyDataArray);
+    }
+    
+    /**
+     * 发送羁绊数据到UI
+     */
+    private sendSynergyDataToUI(playerId: PlayerID, synergies: any[]): void {
+        print(`[AutoChessMode] 📤 发送羁绊数据到UI，玩家 ${playerId}，羁绊数量: ${synergies.length}`);
+        
+        // 通过事件发送到客户端
+        (CustomGameEventManager.Send_ServerToAllClients as any)('synergy_data_update', {
+            playerId: playerId,
+            synergies: synergies
+        });
     }
 
     /**
@@ -652,6 +712,10 @@ export class AutoChessMode {
         
         // 从背包移除选中的棋子
         benchPieces.splice(randomIndex, 1);
+        
+        // 🔑 自动部署后立即计算羁绊效果
+        print(`[AutoChessMode] 🎯 自动部署后触发羁绊计算（玩家 ${playerId}）...`);
+        this.applySynergySystem(playerId);
         
         // 🔑 通知客户端更新背包UI
         inventoryHandler.sendInventoryData(playerId);
@@ -2153,79 +2217,6 @@ export class AutoChessMode {
     }
 
     /**
-     * 刷新所有玩家商店
-     */
-    private refreshAllPlayersShop(): void {
-        for (const [playerId, playerState] of this.gameState.playerStates) {
-            if (!playerState.isAlive) continue;
-            
-            const shopPieces = this.generateShopPieces(playerState.level);
-            
-            // 通过网络表发送商店数据
-            if (GameRules.XNetTable) {
-                GameRules.XNetTable.SetTableValue('autochess_shop', `player_${playerId}`, {
-                    pieces: shopPieces,
-                    refreshCount: 0,
-                    timestamp: getTimestamp()
-                });
-            }
-        }
-    }
-
-    /**
-     * 生成商店棋子
-     */
-    private generateShopPieces(playerLevel: number): ChessPiece[] {
-        const shopPieces: ChessPiece[] = [];
-        const pieceCount = 5; // 商店显示5个棋子
-        
-        // 根据玩家等级计算各稀有度出现概率
-        const rarityChances = this.calculateRarityChances(playerLevel);
-        
-        for (let i = 0; i < pieceCount; i++) {
-            const rarity = this.selectRandomRarity(rarityChances);
-            const piece = this.selectRandomPieceByRarity(rarity);
-            if (piece) {
-                shopPieces.push(piece);
-            }
-        }
-        
-        return shopPieces;
-    }
-
-    /**
-     * 计算稀有度概率
-     */
-    private calculateRarityChances(playerLevel: number): Map<ChessRarity, number> {
-        const chances = new Map<ChessRarity, number>();
-        
-        // 根据等级设置概率 (示例数据)
-        switch (playerLevel) {
-            case 1:
-                chances.set(ChessRarity.COMMON, 100);
-                break;
-            case 2:
-                chances.set(ChessRarity.COMMON, 70);
-                chances.set(ChessRarity.UNCOMMON, 30);
-                break;
-            case 3:
-                chances.set(ChessRarity.COMMON, 60);
-                chances.set(ChessRarity.UNCOMMON, 35);
-                chances.set(ChessRarity.RARE, 5);
-                break;
-            // TODO: 添加更多等级...
-            default:
-                chances.set(ChessRarity.COMMON, 50);
-                chances.set(ChessRarity.UNCOMMON, 35);
-                chances.set(ChessRarity.RARE, 10);
-                chances.set(ChessRarity.EPIC, 4);
-                chances.set(ChessRarity.LEGENDARY, 1);
-        }
-        
-        return chances;
-    }
-
-    /**
      * 随机选择稀有度
      */
     private selectRandomRarity(chances: Map<ChessRarity, number>): ChessRarity {
@@ -2249,26 +2240,151 @@ export class AutoChessMode {
 
     /**
      * 根据稀有度随机选择棋子
+     * 🔑 直接从棋子数据库中随机选择，不受棋子池库存限制
      */
     private selectRandomPieceByRarity(rarity: ChessRarity): ChessPiece | null {
         const pieces: ChessPiece[] = [];
         
+        // 从棋子数据库中筛选对应稀有度的棋子
         for (const piece of this.chessPieceDatabase.values()) {
             if (piece.rarity === rarity) {
-                // 检查棋子池是否还有库存
-                const remaining = this.gameState.chessPool.get(piece.id) || 0;
-                if (remaining > 0) {
-                    pieces.push(piece);
-                }
+                pieces.push(piece);
             }
         }
         
         if (pieces.length === 0) {
+            print(`[AutoChessMode] ⚠️ 稀有度 ${ChessRarity[rarity]} 没有可用棋子`);
             return null;
         }
         
+        // 随机选择一个
         const randomIndex = RandomInt(0, pieces.length - 1);
         return pieces[randomIndex];
+    }
+
+    /**
+     * 根据关卡层级计算稀有度概率（基于Excel配置表）
+     * @param stageLevel 关卡层级（已完成关卡数量）
+     * @returns 稀有度概率映射
+     */
+    private calculateRarityChancesByStageLevel(stageLevel: number): Map<ChessRarity, number> {
+        const chances = new Map<ChessRarity, number>();
+        
+        // 根据关卡层级配置概率（来自Excel配置表）
+        if (stageLevel <= 1) {
+            // 第1层：100%普通
+            chances.set(ChessRarity.COMMON, 100);
+        } else if (stageLevel === 2) {
+            // 第2层：80%普通，20%不常见
+            chances.set(ChessRarity.COMMON, 80);
+            chances.set(ChessRarity.UNCOMMON, 20);
+        } else if (stageLevel === 3) {
+            // 第3层：75%普通，25%不常见
+            chances.set(ChessRarity.COMMON, 75);
+            chances.set(ChessRarity.UNCOMMON, 25);
+        } else if (stageLevel === 4 || stageLevel === 5) {
+            // 第4-5层：55%普通，30%不常见，15%稀有
+            chances.set(ChessRarity.COMMON, 55);
+            chances.set(ChessRarity.UNCOMMON, 30);
+            chances.set(ChessRarity.RARE, 15);
+        } else if (stageLevel === 6) {
+            // 第6层：45%普通，33%不常见，20%稀有，2%史诗
+            chances.set(ChessRarity.COMMON, 45);
+            chances.set(ChessRarity.UNCOMMON, 33);
+            chances.set(ChessRarity.RARE, 20);
+            chances.set(ChessRarity.EPIC, 2);
+        } else if (stageLevel === 7 || stageLevel === 8) {
+            // 第7-8层：30%普通，40%不常见，25%稀有，5%史诗
+            chances.set(ChessRarity.COMMON, 30);
+            chances.set(ChessRarity.UNCOMMON, 40);
+            chances.set(ChessRarity.RARE, 25);
+            chances.set(ChessRarity.EPIC, 5);
+        } else if (stageLevel === 9 || stageLevel === 10) {
+            // 第9-10层：25%普通，35%不常见，30%稀有，8%史诗，2%传奇
+            chances.set(ChessRarity.COMMON, 25);
+            chances.set(ChessRarity.UNCOMMON, 35);
+            chances.set(ChessRarity.RARE, 30);
+            chances.set(ChessRarity.EPIC, 8);
+            chances.set(ChessRarity.LEGENDARY, 2);
+        } else {
+            // 第11层及以上（Boss及更高）：25%普通，35%不常见，30%稀有，8%史诗，2%传奇
+            chances.set(ChessRarity.COMMON, 25);
+            chances.set(ChessRarity.UNCOMMON, 35);
+            chances.set(ChessRarity.RARE, 30);
+            chances.set(ChessRarity.EPIC, 8);
+            chances.set(ChessRarity.LEGENDARY, 2);
+        }
+        
+        return chances;
+    }
+
+    /**
+     * 通关后按概率解锁新棋子
+     * 🔑 每通过一关解锁一个棋子，概率根据关卡层级决定
+     * @param playerId 玩家ID
+     * @returns 解锁的棋子，如果没有解锁则返回null
+     */
+    private unlockRandomPieceAfterVictory(playerId: PlayerID): ChessPiece | null {
+        print(`[AutoChessMode] ========== 通关解锁新棋子 ==========`);
+        
+        const playerState = this.gameState.playerStates.get(playerId);
+        if (!playerState) {
+            print(`[AutoChessMode] ⚠️ 玩家状态不存在: ${playerId}`);
+            return null;
+        }
+        
+        // 🔑 每通过一关必定解锁一个棋子
+        const unlockChance = 100;
+        
+        // 🔑 根据已完成关卡数量确定当前关卡层级
+        const stageLevel = this.completedStages.size;
+        print(`[AutoChessMode] 📊 当前关卡层级: ${stageLevel} (已完成关卡数: ${this.completedStages.size})`);
+        
+        // 根据关卡层级计算稀有度概率
+        const rarityChances = this.calculateRarityChancesByStageLevel(stageLevel);
+        
+        // 输出当前层级的概率配置
+        print(`[AutoChessMode] 🎲 第${stageLevel}层稀有度概率:`);
+        for (const [rarity, chance] of rarityChances) {
+            print(`[AutoChessMode]   ${ChessRarity[rarity]}: ${chance}%`);
+        }
+        
+        const selectedRarity = this.selectRandomRarity(rarityChances);
+        print(`[AutoChessMode] 🎯 选中稀有度: ${ChessRarity[selectedRarity]}`);
+        
+        // 选择一个该稀有度的棋子
+        const unlockedPiece = this.selectRandomPieceByRarity(selectedRarity);
+        
+        if (!unlockedPiece) {
+            print(`[AutoChessMode] ⚠️ 该稀有度没有可用棋子`);
+            return null;
+        }
+        
+        print(`[AutoChessMode] ✨ 解锁新棋子: ${unlockedPiece.displayName} (${ChessRarity[unlockedPiece.rarity]})`);
+        
+        // 🔑 添加到玩家背包
+        playerState.benchPieces.push(unlockedPiece);
+        print(`[AutoChessMode] ➕ 已添加到背包，当前背包数量: ${playerState.benchPieces.length}`);
+        
+        // 🔑 更新背包UI
+        inventoryHandler.sendInventoryData(playerId);
+        
+        // 🔑 发送解锁事件到UI显示特效
+        (CustomGameEventManager.Send_ServerToAllClients as any)('piece_unlocked', {
+            playerId: playerId,
+            piece: {
+                id: unlockedPiece.id,
+                unitName: unlockedPiece.unitName,
+                displayName: unlockedPiece.displayName,
+                rarity: unlockedPiece.rarity,
+                cost: unlockedPiece.cost,
+                race: unlockedPiece.race,
+                class: unlockedPiece.class
+            }
+        });
+        
+        print(`[AutoChessMode] ========== 解锁完成 ==========`);
+        return unlockedPiece;
     }
 
     /**
@@ -2793,45 +2909,6 @@ export class AutoChessMode {
         };
     }
 
-    /**
-     * 购买棋子
-     */
-    public buyChessPiece(playerId: PlayerID, pieceId: string): boolean {
-        const playerState = this.gameState.playerStates.get(playerId);
-        const piece = this.chessPieceDatabase.get(pieceId);
-        
-        if (!playerState || !piece) {
-            return false;
-        }
-        
-        // 检查金币是否足够
-        if (playerState.gold < piece.cost) {
-            return false;
-        }
-        
-        // 检查棋子池是否有库存
-        const remaining = this.gameState.chessPool.get(pieceId) || 0;
-        if (remaining <= 0) {
-            return false;
-        }
-        
-        // 检查备战席是否有空位
-        if (playerState.benchPieces.length >= 8) {
-            return false;
-        }
-        
-        // 执行购买
-        playerState.gold -= piece.cost;
-        playerState.benchPieces.push(piece);
-        this.gameState.chessPool.set(pieceId, remaining - 1);
-        
-        print(`[AutoChessMode] Player ${playerId} bought ${piece.displayName}`);
-        
-        // 同步到客户端
-        this.syncPlayerState(playerId);
-        
-        return true;
-    }
 
     /**
      * 同步玩家状态到客户端
@@ -2938,6 +3015,17 @@ export class AutoChessMode {
             const isGameOver = !playerWon;  // 玩家输了就是游戏结束
             
             print(`[AutoChessMode] Player ${playerId}: isAlive=${playerState.isAlive}, winner=${winner}, isGameOver=${isGameOver}`);
+
+            // 🔑 玩家胜利时，按概率解锁新棋子
+            if (playerWon) {
+                print(`[AutoChessMode] 🎉 玩家 ${playerId} 胜利，尝试解锁新棋子...`);
+                const unlockedPiece = this.unlockRandomPieceAfterVictory(playerId);
+                if (unlockedPiece) {
+                    print(`[AutoChessMode] ✨ 成功解锁: ${unlockedPiece.displayName}`);
+                } else {
+                    print(`[AutoChessMode] 💫 本次未解锁新棋子`);
+                }
+            }
 
         const settlementData = {
             round: this.gameState.currentRound,

@@ -687,6 +687,117 @@ function addBattleLog(message: string, type: string = 'info'): void {
     }
 }
 
+// 🔑 更新羁绊UI显示
+function updateSynergyUI(synergiesData: any[]): void {
+    $.Msg(`[PlayingHUD] 🔄 Updating synergy UI with ${synergiesData.length} synergies`);
+    
+    const rootPanel = $.GetContextPanel();
+    if (!rootPanel) {
+        $.Msg('[PlayingHUD] ⚠️ Root panel not found');
+        return;
+    }
+    
+    // 遍历所有羁绊数据并更新UI
+    for (const synergyData of synergiesData) {
+        $.Msg(`[PlayingHUD] 📊 Updating ${synergyData.name}: count=${synergyData.currentCount}, active tiers=${synergyData.activeTiers.join(',')}`);
+        
+        // 查找对应的羁绊面板
+        const synergyItem = rootPanel.FindChildInLayoutFile(`Synergy_${synergyData.id}`);
+        if (!synergyItem) {
+            $.Msg(`[PlayingHUD] ⚠️ Synergy item not found: ${synergyData.id}`);
+            continue;
+        }
+        
+        // 更新羁绊计数显示
+        const countLabel = rootPanel.FindChildInLayoutFile(`SynergyCount_${synergyData.id}`);
+        if (countLabel) {
+            // 找到对应模板数据中的最大阶梯
+            const templateSynergy = TEMPLATE_SYNERGIES.find(s => s.id === synergyData.id);
+            if (templateSynergy) {
+                const maxCount = Math.max(...templateSynergy.tiers.map(t => t.count));
+                countLabel.text = `${synergyData.currentCount}/${maxCount}`;
+                
+                // 根据是否激活更新颜色
+                const hasActiveEffect = synergyData.activeTiers.length > 0;
+                countLabel.style.color = hasActiveEffect ? '#ffc57a' : '#94a3b8';
+            }
+        }
+        
+        // 更新名称颜色
+        const nameLabel = rootPanel.FindChildInLayoutFile(`SynergyName_${synergyData.id}`);
+        if (nameLabel) {
+            const hasActiveEffect = synergyData.activeTiers.length > 0;
+            nameLabel.style.color = hasActiveEffect ? '#ffd700' : '#ffffff';
+        }
+        
+        // 更新各个阶梯的激活状态
+        const templateSynergy = TEMPLATE_SYNERGIES.find(s => s.id === synergyData.id);
+        if (templateSynergy) {
+            templateSynergy.tiers.forEach((tier, index) => {
+                const isActive = synergyData.activeTiers.includes(index);
+                
+                // 更新阶梯项的样式
+                const tierItem = rootPanel.FindChildInLayoutFile(`SynergyTier_${index}`);
+                if (tierItem && tierItem.GetParent()?.id === `SynergyTiers_${synergyData.id}`) {
+                    if (isActive) {
+                        tierItem.RemoveClass('inactive');
+                        tierItem.AddClass('active');
+                    } else {
+                        tierItem.RemoveClass('active');
+                        tierItem.AddClass('inactive');
+                    }
+                }
+                
+                // 更新状态图标
+                const statusIcon = rootPanel.FindChildInLayoutFile(`TierStatus_${index}`);
+                if (statusIcon && statusIcon.GetParent()?.GetParent()?.id === `SynergyTiers_${synergyData.id}`) {
+                    statusIcon.text = isActive ? '✓' : '○';
+                    statusIcon.style.color = isActive ? '#ffd700' : '#64748b';
+                }
+                
+                // 更新需求数量颜色
+                const requirement = rootPanel.FindChildInLayoutFile(`TierRequirement_${index}`);
+                if (requirement && requirement.GetParent()?.GetParent()?.id === `SynergyTiers_${synergyData.id}`) {
+                    requirement.style.color = isActive ? '#ffd700' : '#94a3b8';
+                }
+                
+                // 更新效果描述颜色
+                const effect = rootPanel.FindChildInLayoutFile(`TierEffect_${index}`);
+                if (effect && effect.GetParent()?.GetParent()?.id === `SynergyTiers_${synergyData.id}`) {
+                    effect.style.color = isActive ? '#ffffff' : '#94a3b8';
+                }
+            });
+        }
+        
+        // 更新整个羁绊项的样式
+        const hasActiveEffect = synergyData.activeTiers.length > 0;
+        const allEffectsActive = templateSynergy && synergyData.activeTiers.length === templateSynergy.tiers.length;
+        
+        synergyItem.RemoveClass('inactive');
+        synergyItem.RemoveClass('partial');
+        synergyItem.RemoveClass('active');
+        
+        if (allEffectsActive) {
+            synergyItem.AddClass('active');
+            synergyItem.style.border = '2px solid rgba(255, 215, 0, 0.8)';
+            synergyItem.style.boxShadow = '0 0 15px rgba(255, 215, 0, 0.4)';
+            synergyItem.style.opacity = '1.0';
+        } else if (hasActiveEffect) {
+            synergyItem.AddClass('partial');
+            synergyItem.style.border = '2px solid rgba(59, 130, 246, 0.8)';
+            synergyItem.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.3)';
+            synergyItem.style.opacity = '1.0';
+        } else {
+            synergyItem.AddClass('inactive');
+            synergyItem.style.border = '2px solid rgba(100, 116, 139, 0.5)';
+            synergyItem.style.boxShadow = 'none';
+            synergyItem.style.opacity = '0.6';
+        }
+    }
+    
+    $.Msg('[PlayingHUD] ✅ Synergy UI updated');
+}
+
 // 监听游戏事件
 GameEvents.Subscribe('player_stats_update', (data: any) => {
     // 更新统计数据
@@ -753,6 +864,25 @@ GameEvents.Subscribe('show_playing_hud', () => {
     showPlayingHUD(true);
     hideNativeUI();
     hideMinimapElements();
+});
+
+// 🔑 监听羁绊数据更新事件
+GameEvents.Subscribe('synergy_data_update', (data: any) => {
+    $.Msg(`[PlayingHUD] 🎯 Synergy data update received for player ${data.playerId}`);
+    $.Msg(`[PlayingHUD] Synergies count: ${data.synergies.length}`);
+    
+    // 🔑 单机模式：检查是否为本地玩家的数据
+    const localPlayerId = Players.GetLocalPlayer();
+    $.Msg(`[PlayingHUD] Local player ID: ${localPlayerId}, Event player ID: ${data.playerId}`);
+    
+    // 单机模式下通常是玩家0，但也支持其他玩家ID
+    if (data.playerId === localPlayerId) {
+        $.Msg(`[PlayingHUD] ✅ 本地玩家数据，更新羁绊UI`);
+        // 更新羁绊UI
+        updateSynergyUI(data.synergies);
+    } else {
+        $.Msg(`[PlayingHUD] ⏭️ 非本地玩家数据，跳过UI更新`);
+    }
 });
 
 

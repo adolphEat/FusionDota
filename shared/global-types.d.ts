@@ -51,13 +51,14 @@ declare namespace CDOTAGameRules {
         deactivate(): void;
         startGame(): void;
         getStatus(): any;
-        buyChessPiece(playerId: PlayerID, pieceId: string): boolean;
         // 单机模式简化 API
         getPlayerState(playerId?: PlayerID): any | undefined;
         getCurrentPhase(): string;
         getCurrentRound(): number;
         getBenchPieces(): any[];
         getBoardPieces(): any[];
+        // 羁绊系统
+        applySynergySystem(playerId: PlayerID): void;
     }
     
     // 错误追踪器

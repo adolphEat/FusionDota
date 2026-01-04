@@ -67,6 +67,28 @@ declare interface CustomGameEventDeclarations {
         message?: string;
         slotIndex: number;
     };
+    synergy_data_update: {           // 服务端到客户端：羁绊数据更新
+        playerId: number;
+        synergies: Array<{
+            id: string;
+            name: string;
+            type: 'race' | 'class';
+            currentCount: number;
+            activeTiers: number[];      // 已激活的阶梯索引
+        }>;
+    };
+    piece_unlocked: {                // 服务端到客户端：通关解锁新棋子
+        playerId: number;
+        piece: {
+            id: string;
+            unitName: string;
+            displayName: string;
+            rarity: number;
+            cost: number;
+            race: string[];
+            class: string[];
+        };
+    };
     
     // 调试事件
     debug_autochess_activate: {};

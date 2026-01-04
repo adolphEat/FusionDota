@@ -188,6 +188,10 @@ export class InventoryHandler {
             return;
         }
 
+        // 🔑 单机模式：使用 playerState 中的 playerId 确保一致性
+        const actualPlayerId = playerState.playerId;
+        print(`[InventoryHandler] 🎮 单机模式 - 使用玩家ID: ${actualPlayerId}（传入ID: ${playerId}）`);
+
         const slotIndex = data.slotIndex;
         const benchPieces = playerState.benchPieces;
         
@@ -221,15 +225,15 @@ export class InventoryHandler {
         
         if (worldX === undefined || worldY === undefined) {
             print(`[InventoryHandler] ⚠️ Missing world coordinates`);
-            this.sendDeploymentFeedback(playerId, false, '坐标无效', slotIndex);
+            this.sendDeploymentFeedback(actualPlayerId, false, '坐标无效', slotIndex);
             return;
         }
         
-        const boardPosition = this.worldToBoardPosition(worldX, worldY, playerId);
+        const boardPosition = this.worldToBoardPosition(worldX, worldY, actualPlayerId);
         
         if (!boardPosition) {
             print(`[InventoryHandler] ⚠️ Position outside player's half`);
-            this.sendDeploymentFeedback(playerId, false, '只能放置在己方半场（下半区）', slotIndex);
+            this.sendDeploymentFeedback(actualPlayerId, false, '只能放置在己方半场（下半区）', slotIndex);
             return;
         }
 
@@ -241,13 +245,13 @@ export class InventoryHandler {
         // 如果需要限制，可以取消下面的注释
         // if (currentPhase !== 'preparation' && currentPhase !== 'planning') {
         //     print(`[InventoryHandler] ⚠️ Cannot deploy during ${currentPhase} phase`);
-        //     this.sendDeploymentFeedback(playerId, false, '只能在准备阶段部署');
+        //     this.sendDeploymentFeedback(actualPlayerId, false, '只能在准备阶段部署');
         //     return;
         // }
         print(`[InventoryHandler] 当前阶段: ${currentPhase}，允许部署`);
 
         // 部署棋子
-        const success = this.deployPieceToBoard(playerId, piece, boardPosition, slotIndex);
+        const success = this.deployPieceToBoard(actualPlayerId, piece, boardPosition, slotIndex);
         
         if (success) {
             // 从备战席移除 - 使用兼容 Lua 的方式
@@ -256,18 +260,24 @@ export class InventoryHandler {
             print(`[InventoryHandler] ✅ Piece deployed successfully`);
             
             // 🔑 先发送成功反馈，让客户端立即更新UI
-            this.sendDeploymentFeedback(playerId, true, `${piece.displayName} 已部署`, slotIndex);
+            this.sendDeploymentFeedback(actualPlayerId, true, `${piece.displayName} 已部署`, slotIndex);
+            
+            // 🔑 部署成功后立即计算羁绊效果
+            if (GameRules.AutoChessMode) {
+                print(`[InventoryHandler] 🎯 触发羁绊计算（玩家 ${actualPlayerId}）...`);
+                GameRules.AutoChessMode.applySynergySystem(actualPlayerId);
+            }
             
             // 🔑 延迟发送背包数据更新，确保数据已经正确移除
             // 使用延迟确保 removePieceFromBench 已经完成
             Timers.CreateTimer(0.1, () => {
                 print(`[InventoryHandler] 🔄 延迟发送背包数据更新`);
-                this.sendInventoryData(playerId);
+                this.sendInventoryData(actualPlayerId);
                 return; // 不重复执行
             });
         } else {
             print(`[InventoryHandler] ❌ Failed to deploy piece`);
-            this.sendDeploymentFeedback(playerId, false, '部署失败', slotIndex);
+            this.sendDeploymentFeedback(actualPlayerId, false, '部署失败', slotIndex);
         }
     }
     
