@@ -8,6 +8,7 @@ import { ChessBattleSystem } from './autochess/ChessBattleSystem';
 import { StageConfigManager, NodeType } from './autochess/StageConfigManager';
 import { getTimestamp } from '../utils/time_utils';
 import { inventoryHandler } from './InventoryHandler';
+import { saveDataManager } from '../utils/SaveDataManager';
 
 export enum ChessRarity {
     COMMON = 1,      // 普通 (白色)
@@ -211,6 +212,16 @@ export class AutoChessMode {
         // 初始化所有玩家状态
         this.initializePlayerStates();
         print(`[AutoChessMode] Player states initialized, count: ${this.gameState.playerStates.size}`);
+        
+        // 🔑 尝试从本地文件加载背包数据（如果存在存档）
+        for (const [playerId] of this.gameState.playerStates) {
+            if (saveDataManager.hasSaveData(playerId)) {
+                print(`[AutoChessMode] 检测到玩家 ${playerId} 的存档，尝试加载...`);
+                this.loadBackpackFromFile(playerId);
+            } else {
+                print(`[AutoChessMode] 玩家 ${playerId} 没有存档，将使用默认初始化`);
+            }
+        }
         
         // 🔑 不在这里创建初始棋子，在准备阶段创建
         
@@ -3614,5 +3625,318 @@ export class AutoChessMode {
         });
 
         print(`[AutoChessMode] ========== 战斗已开始 ==========`);
+    }
+
+    /**
+     * 保存背包数据到本地文件（同步）
+     */
+    private saveBackpackToFile(playerId: PlayerID): boolean {
+        const playerState = this.gameState.playerStates.get(playerId);
+        if (!playerState || !playerState.benchPieces) {
+            print(`[AutoChessMode] 玩家 ${playerId} 没有背包数据，跳过保存`);
+            return false;
+        }
+
+        // 转换ChessPiece为ChessPieceData（只保存必要字段）
+        const benchData = playerState.benchPieces.map(piece => ({
+            id: piece.id,
+            unitName: piece.unitName,
+            displayName: piece.displayName,
+            rarity: piece.rarity,
+            cost: piece.cost,
+            health: piece.health,
+            maxHealth: piece.health, // 使用当前health作为maxHealth
+            damage: piece.damage,
+            armor: piece.armor,
+            attackRange: piece.attackRange
+        }));
+
+        const success = saveDataManager.saveBackpackData(playerId, benchData);
+        if (success) {
+            print(`[AutoChessMode] 💾 玩家 ${playerId} 背包数据已保存到本地文件（${benchData.length} 个棋子）`);
+        } else {
+            print(`[AutoChessMode] ⚠️ 玩家 ${playerId} 背包数据保存失败`);
+        }
+        return success;
+    }
+
+    /**
+     * 从本地文件加载背包数据（同步）
+     */
+    private loadBackpackFromFile(playerId: PlayerID): void {
+        const playerState = this.gameState.playerStates.get(playerId);
+        if (!playerState) {
+            print(`[AutoChessMode] 玩家 ${playerId} 状态不存在，无法加载`);
+            return;
+        }
+
+        const loadedData = saveDataManager.loadBackpackData(playerId);
+        if (loadedData && loadedData.length > 0) {
+            // 从数据库中获取完整的ChessPiece数据
+            const fullPieces: ChessPiece[] = [];
+            for (const data of loadedData) {
+                const fullPiece = this.chessPieceDatabase.get(data.id);
+                if (fullPiece) {
+                    // 复制一份并保留存档中的health值
+                    fullPieces.push({
+                        ...fullPiece,
+                        health: data.health
+                    });
+                } else {
+                    print(`[AutoChessMode] ⚠️ 存档中的棋子ID ${data.id} 在数据库中不存在`);
+                }
+            }
+            
+            playerState.benchPieces = fullPieces;
+            print(`[AutoChessMode] 📂 玩家 ${playerId} 背包数据已从本地文件加载（${fullPieces.length} 个棋子）`);
+            
+            // 通知客户端更新UI
+            inventoryHandler.sendInventoryData(playerId);
+        } else {
+            print(`[AutoChessMode] ℹ️ 玩家 ${playerId} 没有存档数据，使用默认初始化`);
+        }
+    }
+
+    /**
+     * 重启游戏（保存背包数据后重置）
+     */
+    public restartGame(): void {
+        print('[AutoChessMode] ========== 🔄 重启游戏 ==========');
+        
+        // 1. 保存所有玩家背包数据到本地文件（同步）
+        for (const [playerId] of this.gameState.playerStates) {
+            this.saveBackpackToFile(playerId);
+        }
+        
+        // 2. 清理战斗系统中所有玩家的棋子
+        for (const [playerId] of this.gameState.playerStates) {
+            this.battleSystem.clearPlayerPieces(playerId);
+        }
+        // 清理敌人棋子（playerId为-1）
+        this.battleSystem.clearPlayerPieces(-1);
+        
+        // 3. 清理所有棋盘上的单位（保险起见）
+        const allUnits = Entities.FindAllByClassname('npc_dota_creature');
+        for (const unit of allUnits) {
+            if (unit && !unit.IsNull()) {
+                unit.RemoveSelf();
+            }
+        }
+        
+        // 4. 重置游戏状态
+        this.gameState.currentRound = 0;
+        this.gameState.currentPhase = RoundPhase.PREPARATION;
+        this.gameState.isGameActive = false;
+        this.resetWaveSettlementState();
+        this.completedStages.clear();
+        this.availableStages.clear();
+        this.initializeStageUnlock();
+        
+        // 5. 重置所有玩家状态（暂时清空背包）
+        for (const [playerId, playerState] of this.gameState.playerStates) {
+            playerState.health = 100;
+            playerState.gold = 0;
+            playerState.level = 1;
+            playerState.benchPieces = [];
+            playerState.boardPieces = [];
+            playerState.isAlive = true;
+            playerState.winStreak = 0;
+            playerState.lossStreak = 0;
+        }
+        
+        // 6. 从本地文件重新加载背包数据（同步）
+        for (const [playerId] of this.gameState.playerStates) {
+            this.loadBackpackFromFile(playerId);
+        }
+        
+        // 7. 延迟1秒后重新开始游戏
+        Timers.CreateTimer(1, () => {
+            this.startGame();
+            return undefined;
+        });
+        
+        // 8. 通知客户端游戏已重置
+        (CustomGameEventManager.Send_ServerToAllClients as any)('game_reset', {});
+        print('[AutoChessMode] ✅ 游戏重启完成，背包数据已恢复');
+    }
+
+    /**
+     * 从保存的背包中随机抽取指定数量的棋子
+     */
+    private loadRandomPiecesFromBackpack(playerId: PlayerID, count: number): void {
+        const playerState = this.gameState.playerStates.get(playerId);
+        if (!playerState) {
+            print(`[AutoChessMode] ⚠️ 玩家 ${playerId} 状态不存在，无法加载`);
+            return;
+        }
+
+        // 从本地文件加载背包数据
+        const loadedPieces = saveDataManager.loadBackpackData(playerId);
+        if (!loadedPieces || loadedPieces.length === 0) {
+            print(`[AutoChessMode] ℹ️ 玩家 ${playerId} 没有存档数据，背包为空`);
+            playerState.benchPieces = [];
+            inventoryHandler.sendInventoryData(playerId);
+            return;
+        }
+
+        // 将存档数据转换为完整的ChessPiece对象
+        const fullPieces: ChessPiece[] = [];
+        for (const data of loadedPieces) {
+            const fullPiece = this.chessPieceDatabase.get(data.id);
+            if (fullPiece) {
+                fullPieces.push({
+                    ...fullPiece,
+                    health: data.health
+                });
+            } else {
+                print(`[AutoChessMode] ⚠️ 存档中的棋子ID ${data.id} 在数据库中不存在`);
+            }
+        }
+
+        // 随机抽取指定数量的棋子
+        const selectedPieces: ChessPiece[] = [];
+        const remainingPieces: ChessPiece[] = [...fullPieces]; // 复制一份用于追踪剩余棋子
+        const actualCount = Math.min(count, fullPieces.length);
+        
+        if (actualCount >= fullPieces.length) {
+            // 如果数量不足，全部使用
+            selectedPieces.push(...fullPieces);
+            remainingPieces.length = 0; // 清空剩余棋子
+            print(`[AutoChessMode] 📦 玩家 ${playerId} 背包棋子不足${count}个，全部消耗（${fullPieces.length} 个）`);
+        } else {
+            // 随机抽取
+            for (let i = 0; i < actualCount; i++) {
+                const randomIndex = Math.floor(Math.random() * remainingPieces.length);
+                const selectedPiece = remainingPieces[randomIndex];
+                selectedPieces.push(selectedPiece);
+                remainingPieces.splice(randomIndex, 1); // 从剩余列表中移除
+            }
+            print(`[AutoChessMode] 🎲 玩家 ${playerId} 从背包随机抽取并消耗 ${actualCount} 个棋子，剩余 ${remainingPieces.length} 个`);
+        }
+
+        // 将剩余的棋子重新保存回存档（消耗已抽取的）
+        const remainingData = remainingPieces.map(piece => ({
+            id: piece.id,
+            unitName: piece.unitName,
+            displayName: piece.displayName,
+            rarity: piece.rarity,
+            cost: piece.cost,
+            health: piece.health,
+            maxHealth: piece.health,
+            damage: piece.damage,
+            armor: piece.armor,
+            attackRange: piece.attackRange
+        }));
+        saveDataManager.saveBackpackData(playerId, remainingData);
+        print(`[AutoChessMode] 💾 已更新存档，剩余 ${remainingData.length} 个棋子`);
+
+        // 设置到玩家背包
+        playerState.benchPieces = selectedPieces;
+        
+        // 通知客户端更新UI
+        inventoryHandler.sendInventoryData(playerId);
+        
+        print(`[AutoChessMode] ✅ 玩家 ${playerId} 背包已更新（${selectedPieces.length} 个棋子）`);
+    }
+
+    /**
+     * 追加背包数据到存档（用于累积棋子）
+     */
+    private appendBackpackToFile(playerId: PlayerID): boolean {
+        const playerState = this.gameState.playerStates.get(playerId);
+        if (!playerState || !playerState.benchPieces) {
+            print(`[AutoChessMode] 玩家 ${playerId} 没有背包数据，跳过追加`);
+            return false;
+        }
+
+        // 先加载存档中的剩余棋子
+        const existingData = saveDataManager.loadBackpackData(playerId) || [];
+        print(`[AutoChessMode] 📂 加载现有存档：${existingData.length} 个棋子`);
+
+        // 转换当前背包为数据格式
+        const currentData = playerState.benchPieces.map(piece => ({
+            id: piece.id,
+            unitName: piece.unitName,
+            displayName: piece.displayName,
+            rarity: piece.rarity,
+            cost: piece.cost,
+            health: piece.health,
+            maxHealth: piece.health,
+            damage: piece.damage,
+            armor: piece.armor,
+            attackRange: piece.attackRange
+        }));
+
+        // 合并：存档中的剩余棋子 + 本局获得的棋子
+        const mergedData = [...existingData, ...currentData];
+        print(`[AutoChessMode] 🔗 合并数据：${existingData.length} (旧) + ${currentData.length} (新) = ${mergedData.length} (总)`);
+
+        // 保存合并后的数据
+        const success = saveDataManager.saveBackpackData(playerId, mergedData);
+        if (success) {
+            print(`[AutoChessMode] 💾 玩家 ${playerId} 背包数据已累积保存（总计 ${mergedData.length} 个棋子）`);
+        } else {
+            print(`[AutoChessMode] ⚠️ 玩家 ${playerId} 背包数据追加失败`);
+        }
+        return success;
+    }
+
+    /**
+     * 退出到主菜单（保存背包数据，重新开始游戏并随机抽取3个棋子）
+     */
+    public exitToMenu(): void {
+        print('[AutoChessMode] ========== 🔄 重新开始游戏 ==========');
+        
+        // 1. 追加所有玩家背包数据到本地文件（累积模式）
+        for (const [playerId] of this.gameState.playerStates) {
+            this.appendBackpackToFile(playerId);
+        }
+        
+        // 2. 清理战斗系统
+        for (const [playerId] of this.gameState.playerStates) {
+            this.battleSystem.clearPlayerPieces(playerId);
+        }
+        this.battleSystem.clearPlayerPieces(-1);
+        
+        // 3. 清理所有棋盘上的单位
+        const allUnits = Entities.FindAllByClassname('npc_dota_creature');
+        for (const unit of allUnits) {
+            if (unit && !unit.IsNull()) {
+                unit.RemoveSelf();
+            }
+        }
+        
+        // 4. 重置游戏状态
+        this.gameState.currentRound = 0;
+        this.gameState.currentPhase = RoundPhase.PREPARATION;
+        this.gameState.isGameActive = false;
+        this.resetWaveSettlementState();
+        
+        // 5. 重置所有玩家状态（清空背包和棋盘）
+        for (const [playerId, playerState] of this.gameState.playerStates) {
+            playerState.health = 100;
+            playerState.gold = 0;
+            playerState.level = 1;
+            playerState.benchPieces = [];
+            playerState.boardPieces = [];
+            playerState.isAlive = true;
+            playerState.winStreak = 0;
+            playerState.lossStreak = 0;
+        }
+        
+        // 6. 从保存的背包中随机抽取3个棋子
+        for (const [playerId] of this.gameState.playerStates) {
+            this.loadRandomPiecesFromBackpack(playerId, 3);
+        }
+        
+        // 7. 延迟1秒后重新开始游戏（进入准备阶段）
+        Timers.CreateTimer(1, () => {
+            this.startGame();
+            return undefined;
+        });
+        
+        // 8. 通知客户端游戏已重置
+        (CustomGameEventManager.Send_ServerToAllClients as any)('game_reset', {});
+        print('[AutoChessMode] ✅ 游戏重新开始，已从背包随机抽取3个棋子');
     }
 }

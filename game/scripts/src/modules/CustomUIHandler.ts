@@ -71,6 +71,21 @@ export class CustomUIHandler {
         CustomGameEventManager.RegisterListener('toggle_inventory_request', (_, data) => {
             this.onToggleInventoryRequest(data);
         });
+
+        // 注册重启游戏事件（从 end_screen 触发）
+        CustomGameEventManager.RegisterListener('restart_game', (_, data) => {
+            this.onRestartGame(data);
+        });
+
+        // 注册返回主菜单事件（从 end_screen 触发）
+        CustomGameEventManager.RegisterListener('return_to_menu', (_, data) => {
+            this.onReturnToMenu(data);
+        });
+
+        // 注册退出游戏事件（从 battleendview 触发）
+        CustomGameEventManager.RegisterListener('quit_to_menu', (_, data) => {
+            this.onReturnToMenu(data);
+        });
     }
 
     /**
@@ -520,6 +535,34 @@ export class CustomUIHandler {
         (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_wave_settlement', settlementData);
         print(`[CustomUIHandler] Sent settlement event to all clients`);
         print(`[CustomUIHandler] Settlement data - round: ${settlementData.round}, winner: ${settlementData.winner}, duration: ${settlementData.duration}`);
+    }
+
+    /**
+     * 处理重启游戏请求
+     */
+    private onRestartGame(data: any): void {
+        const playerId = data.PlayerID || 0;
+        print(`[CustomUIHandler] 🔄 收到重启游戏请求（玩家 ${playerId}）`);
+        
+        if ((GameRules as any).AutoChessMode) {
+            (GameRules as any).AutoChessMode.restartGame();
+        } else {
+            print('[CustomUIHandler] ⚠️ AutoChessMode 未初始化');
+        }
+    }
+
+    /**
+     * 处理返回主菜单请求
+     */
+    private onReturnToMenu(data: any): void {
+        const playerId = data.PlayerID || 0;
+        print(`[CustomUIHandler] 🏠 收到返回主菜单请求（玩家 ${playerId}）`);
+        
+        if ((GameRules as any).AutoChessMode) {
+            (GameRules as any).AutoChessMode.exitToMenu();
+        } else {
+            print('[CustomUIHandler] ⚠️ AutoChessMode 未初始化');
+        }
     }
 }
 
