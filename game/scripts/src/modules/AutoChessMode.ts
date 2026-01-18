@@ -2825,16 +2825,22 @@ export class AutoChessMode {
         const stateName = stateNames[gameState] || `UNKNOWN_${gameState}`;
         
         print(`[AutoChessMode] ========== 游戏状态变化: ${gameState} (${stateName}) ==========`);
+        print(`[AutoChessMode] 当前 isActive 状态: ${this.isActive}`);
+        print(`[AutoChessMode] 当前 isGameActive 状态: ${this.gameState.isGameActive}`);
         
         // 根据实际状态名称判断
-        // PRE_GAME = 5 (从日志看，这个阶段在后面，可能是状态8)
-        // GAME_IN_PROGRESS = 6 (需要确认)
+        // PRE_GAME = 5 (某些环境)
+        // CUSTOM_GAME_SETUP_2 = 10 (开发和发布环境)
+        // GAME_IN_PROGRESS = 6
         
-        // 在 PRE_GAME 或更晚的阶段激活自走棋
-        if (gameState === 5 || gameState === 8) { // PRE_GAME
+        // 在 PRE_GAME 或 CUSTOM_GAME_SETUP_2 阶段激活自走棋（兼容所有环境）
+        if (gameState === 5 || gameState === 10) { // PRE_GAME or CUSTOM_GAME_SETUP_2
+            print(`[AutoChessMode] ✅ 检测到目标状态 ${stateName}`);
             if (!this.isActive) {
-                print('[AutoChessMode] 📍 PRE_GAME 阶段 - 准备激活自走棋');
+                print(`[AutoChessMode] 📍 ${stateName} 阶段 - 准备激活自走棋`);
                 this.onPreGame();
+            } else {
+                print(`[AutoChessMode] ⚠️ 自走棋已激活，跳过重复激活`);
             }
         }
         
@@ -2870,9 +2876,12 @@ export class AutoChessMode {
         // 激活后等待2秒开始游戏（给游戏环境一点时间初始化）
         print('[AutoChessMode] 📍 将在2秒后开始游戏...');
         Timers.CreateTimer(2.0, () => {
+            print(`[AutoChessMode] 定时器触发: isActive=${this.isActive}, isGameActive=${this.gameState.isGameActive}`);
             if (this.isActive && !this.gameState.isGameActive) {
-                print('[AutoChessMode] ✅ 自动开始游戏...');
+                print('[AutoChessMode] ✅ 定时器: 自动开始游戏...');
                 this.startGame();
+            } else {
+                print(`[AutoChessMode] ⚠️ 定时器: 游戏已启动或模式未激活，跳过启动`);
             }
             return undefined;
         });
@@ -2882,8 +2891,15 @@ export class AutoChessMode {
      * 游戏开始阶段处理
      */
     private onGameStart(): void {
+        print(`[AutoChessMode] onGameStart called, isActive: ${this.isActive}, isGameActive: ${this.gameState.isGameActive}`);
+        
         if (!this.isActive) {
             print('[AutoChessMode] ⚠️ 自走棋模式未激活，跳过游戏开始');
+            return;
+        }
+        
+        if (this.gameState.isGameActive) {
+            print('[AutoChessMode] ⚠️ 游戏已经在运行中，跳过重复启动');
             return;
         }
         

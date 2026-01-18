@@ -731,6 +731,17 @@ function handleWaveSettlement(data: any): void {
     showView(battleResult);
 }
 
+// 处理游戏重置事件（从服务器收到退出游戏后的重置通知）
+function handleGameReset(data: any): void {
+    $.Msg('[BattleEndView] Game reset event received, hiding battle end view');
+    hideView();
+    
+    // 可选：显示一个简短的提示
+    $.Schedule(0.1, () => {
+        $.Msg('[BattleEndView] Game has been reset, ready for new game');
+    });
+}
+
 // 初始化事件订阅
 function initializeEventListeners(): void {
     $.Msg('📡 Initializing battle end view event listeners...');
@@ -744,6 +755,9 @@ function initializeEventListeners(): void {
     // 监听关闭事件
     GameEvents.Subscribe('battle_end_dismiss', hideView);
     GameEvents.Subscribe('autochess_wave_settlement_dismiss', hideView);
+    
+    // 监听游戏重置事件（退出游戏后服务器重置）
+    GameEvents.Subscribe('game_reset', handleGameReset);
     
     $.Msg('✅ Event listeners initialized');
 }

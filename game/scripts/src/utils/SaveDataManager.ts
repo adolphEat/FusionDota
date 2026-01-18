@@ -39,118 +39,58 @@ export class SaveDataManager {
 
     /**
      * 确保存档目录存在
+     * DOTA2环境中此功能不可用
      */
     private ensureSaveDirectory(): void {
-        // Lua: os.execute("mkdir saves") 在Windows/Linux下创建目录
-        // 注意：这在Dota 2环境中可能受限，需要测试
-        try {
-            const [testFile] = io.open(`${this.SAVE_DIR}/test.txt`, 'w');
-            if (testFile) {
-                testFile.close();
-                os.remove(`${this.SAVE_DIR}/test.txt`);
-            }
-        } catch (error) {
-            print(`[SaveDataManager] ⚠️ 无法访问存档目录，尝试创建: ${this.SAVE_DIR}`);
-        }
+        // DOTA2环境禁用了io库，跳过目录检查
+        // print(`[SaveDataManager] ⚠️ DOTA2环境不支持文件系统操作`);
     }
 
     /**
      * 保存背包数据到本地JSON文件
+     * ⚠️ DOTA2环境中此功能不可用（io库被禁用）
      */
     public saveBackpackData(playerId: PlayerID, benchPieces: ChessPieceData[]): boolean {
-        try {
-            const saveData: SaveData = {
-                playerId: playerId,
-                benchPieces: benchPieces,
-                timestamp: Date.now()
-            };
-            
-            const jsonData = json.encode(saveData);
-            const filePath = `${this.SAVE_DIR}/player_${playerId}_backpack.json`;
-            
-            // 使用Lua文件IO
-            const [file] = io.open(filePath, 'w');
-            if (file) {
-                file.write(jsonData);
-                file.close();
-                print(`[SaveDataManager] 💾 保存成功: ${filePath} (${benchPieces.length} 个棋子)`);
-                return true;
-            } else {
-                print(`[SaveDataManager] ❌ 无法打开文件: ${filePath}`);
-                return false;
-            }
-        } catch (error) {
-            print(`[SaveDataManager] ❌ 保存失败: ${error}`);
-            return false;
-        }
+        // DOTA2环境禁用了io库，无法保存到文件
+        // print(`[SaveDataManager] ⚠️ DOTA2环境不支持文件保存，跳过`);
+        return false;
     }
 
     /**
      * 从本地JSON文件加载背包数据
+     * ⚠️ DOTA2环境中此功能不可用（io库被禁用）
      */
     public loadBackpackData(playerId: PlayerID): ChessPieceData[] | null {
-        try {
-            const filePath = `${this.SAVE_DIR}/player_${playerId}_backpack.json`;
-            const [file] = io.open(filePath, 'r');
-            
-            if (file) {
-                const jsonData = file.read('*a' as any) as string;
-                file.close();
-                
-                if (jsonData && jsonData.length > 0) {
-                    const [saveData] = json.decode(jsonData);
-                    if (saveData && (saveData as any).benchPieces) {
-                        const typedData = saveData as any as SaveData;
-                        print(`[SaveDataManager] 📂 加载成功: ${filePath} (${typedData.benchPieces.length} 个棋子)`);
-                        return typedData.benchPieces;
-                    } else {
-                        print(`[SaveDataManager] ⚠️ 数据格式错误: ${filePath}`);
-                        return null;
-                    }
-                } else {
-                    print(`[SaveDataManager] ⚠️ 文件为空: ${filePath}`);
-                    return null;
-                }
-            } else {
-                print(`[SaveDataManager] ℹ️ 存档文件不存在: ${filePath}`);
-                return null;
-            }
-        } catch (error) {
-            print(`[SaveDataManager] ⚠️ 加载失败: ${error}`);
-            return null;
-        }
+        // DOTA2环境禁用了io库，无法从文件加载
+        // print(`[SaveDataManager] ⚠️ DOTA2环境不支持文件加载，返回null`);
+        return null;
     }
 
     /**
      * 删除存档文件
+     * ⚠️ DOTA2环境中此功能不可用（io库被禁用）
      */
     public deleteBackpackData(playerId: PlayerID): boolean {
-        try {
-            const filePath = `${this.SAVE_DIR}/player_${playerId}_backpack.json`;
-            const success = os.remove(filePath);
-            if (success) {
-                print(`[SaveDataManager] 🗑️ 已删除存档: ${filePath}`);
-                return true;
-            } else {
-                print(`[SaveDataManager] ⚠️ 删除失败（文件可能不存在）: ${filePath}`);
-                return false;
-            }
-        } catch (error) {
-            print(`[SaveDataManager] ⚠️ 删除失败: ${error}`);
-            return false;
-        }
+        // DOTA2环境禁用了io库，无法删除文件
+        // print(`[SaveDataManager] ⚠️ DOTA2环境不支持文件删除，跳过`);
+        return false;
     }
 
     /**
      * 检查存档文件是否存在
+     * 
+     * ⚠️ DOTA2限制说明：
+     * DOTA2环境禁用了Lua的io库，无法直接访问文件系统
+     * 目前暂时禁用存档功能，总是返回false
+     * 
+     * 未来可选方案：
+     * 1. 使用Steam云存储API（需要额外配置）
+     * 2. 使用外部HTTP服务器存储数据
+     * 3. 使用XNetTable进行会话内持久化（游戏重启后丢失）
      */
     public hasSaveData(playerId: PlayerID): boolean {
-        const filePath = `${this.SAVE_DIR}/player_${playerId}_backpack.json`;
-        const [file] = io.open(filePath, 'r');
-        if (file) {
-            file.close();
-            return true;
-        }
+        // DOTA2环境中io库被禁用，文件系统不可用
+        // 返回false表示没有存档，游戏将使用默认初始化
         return false;
     }
 }
