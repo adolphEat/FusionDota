@@ -18,6 +18,15 @@ const BATTLE_END_THEME = {
     defeatGlow: '#ff4444',
 };
 
+// 海克斯强化选项接口
+interface HextechAugmentOption {
+    id: string;
+    displayName: string;
+    description: string;
+    icon: string;
+    rarity: 'common' | 'rare' | 'epic';
+}
+
 // 战斗结果数据接口
 interface BattleResult {
     winner: 'player' | 'enemy' | 'draw';  // 胜利方
@@ -31,6 +40,8 @@ interface BattleResult {
     };
     levelId?: string;                     // 关卡ID
     levelName?: string;                   // 关卡名称
+    isEventNode?: boolean;                // 是否为事件节点
+    augmentOptions?: HextechAugmentOption[];  // 海克斯强化选项
 }
 
 // 获取根面板
@@ -375,19 +386,54 @@ function updateButtonsSection(buttonsSection: Panel, result: BattleResult): void
         buttonsSection.style.verticalAlign = 'center';
         buttonsSection.style.width = '100%';
         
-        // 选择关卡按钮
-        const selectBtn = createStyledButton(
-            buttonsSection, 
-            'SelectLevelButton', 
-            '选择关卡',
-            () => {
-                $.Msg('Opening level selection...');
-                Game.EmitSound('ui.button_click');
-                hideView();
-                GameEvents.SendCustomGameEventToServer('open_level_selection', {});
-            }
-        );
-        selectBtn.style.marginRight = '40px';  // 按钮之间的间距
+        // 检查是否有海克斯强化选项
+        const hasAugments = result.augmentOptions && result.augmentOptions.length > 0;
+        
+        if (hasAugments) {
+            // 有海克斯强化时，显示"确认选择"按钮
+            const confirmBtn = createStyledButton(
+                buttonsSection, 
+                'ConfirmAugmentButton', 
+                '确认选择',
+                () => {
+                    if (!selectedAugmentId) {
+                        $.Msg('[BattleEndView] No augment selected!');
+                        Game.EmitSound('General.Cancel');
+                        return;
+                    }
+                    
+                    $.Msg(`[BattleEndView] Confirming augment selection: ${selectedAugmentId}`);
+                    Game.EmitSound('ui.button_click');
+                    
+                    // 发送选择事件到服务器
+                    GameEvents.SendCustomGameEventToServer('select_hextech_augment', {
+                        augmentId: selectedAugmentId
+                    });
+                    
+                    // 隐藏结算界面
+                    hideView();
+                    
+                    // 打开关卡选择
+                    $.Msg('[BattleEndView] Opening level selection...');
+                    GameEvents.SendCustomGameEventToServer('open_level_selection', {});
+                }
+            );
+            confirmBtn.style.marginRight = '40px';
+        } else {
+            // 没有海克斯强化时，直接显示"选择关卡"按钮
+            const selectBtn = createStyledButton(
+                buttonsSection, 
+                'SelectLevelButton', 
+                '选择关卡',
+                () => {
+                    $.Msg('[BattleEndView] Opening level selection...');
+                    Game.EmitSound('ui.button_click');
+                    hideView();
+                    GameEvents.SendCustomGameEventToServer('open_level_selection', {});
+                }
+            );
+            selectBtn.style.marginRight = '40px';
+        }
         
         // 退出游戏按钮
         createStyledButton(
@@ -430,19 +476,55 @@ function createButtonsSection(parent: Panel, result: BattleResult): Panel {
     if (result.winner === 'player') {
         // 胜利时显示两个按钮，水平排列，居中对齐
         
-        // 选择关卡按钮
-        const selectBtn = createStyledButton(
-            buttonsSection, 
-            'SelectLevelButton', 
-            '选择关卡',
-            () => {
-                $.Msg('[BattleEndView] Opening level selection...');
-                Game.EmitSound('ui.button_click');
-                hideView();
-                GameEvents.SendCustomGameEventToServer('open_level_selection', {});
-            }
-        );
-        selectBtn.style.marginRight = '40px';  // 按钮之间的间距
+        // 检查是否有海克斯强化选项
+        const hasAugments = result.augmentOptions && result.augmentOptions.length > 0;
+        
+        if (hasAugments) {
+            // 有海克斯强化时，显示"确认选择"按钮
+            const confirmBtn = createStyledButton(
+                buttonsSection, 
+                'ConfirmAugmentButton', 
+                '确认选择',
+                () => {
+                    if (!selectedAugmentId) {
+                        $.Msg('[BattleEndView] No augment selected!');
+                        Game.EmitSound('General.Cancel');
+                        // TODO: 显示提示消息
+                        return;
+                    }
+                    
+                    $.Msg(`[BattleEndView] Confirming augment selection: ${selectedAugmentId}`);
+                    Game.EmitSound('ui.button_click');
+                    
+                    // 发送选择事件到服务器
+                    GameEvents.SendCustomGameEventToServer('select_hextech_augment', {
+                        augmentId: selectedAugmentId
+                    });
+                    
+                    // 隐藏结算界面
+                    hideView();
+                    
+                    // 打开关卡选择
+                    $.Msg('[BattleEndView] Opening level selection...');
+                    GameEvents.SendCustomGameEventToServer('open_level_selection', {});
+                }
+            );
+            confirmBtn.style.marginRight = '40px';
+        } else {
+            // 没有海克斯强化时，直接显示"选择关卡"按钮
+            const selectBtn = createStyledButton(
+                buttonsSection, 
+                'SelectLevelButton', 
+                '选择关卡',
+                () => {
+                    $.Msg('[BattleEndView] Opening level selection...');
+                    Game.EmitSound('ui.button_click');
+                    hideView();
+                    GameEvents.SendCustomGameEventToServer('open_level_selection', {});
+                }
+            );
+            selectBtn.style.marginRight = '40px';
+        }
         
         // 退出游戏按钮
         createStyledButton(
@@ -531,14 +613,206 @@ function formatNumber(num: number): string {
     return num.toString();
 }
 
+// 海克斯强化选择相关
+let selectedAugmentId: string | null = null;
+
+// 创建海克斯强化选择区域
+function createAugmentSection(parent: Panel, augmentOptions: HextechAugmentOption[]): Panel {
+    $.Msg(`[BattleEndView] 🎁 ========== Creating augment section ==========`);
+    $.Msg(`[BattleEndView] 🎁 Options count: ${augmentOptions.length}`);
+    $.Msg(`[BattleEndView] 🎁 Parent panel: ${parent.id}`);
+    
+    const augmentSection = $.CreatePanel('Panel', parent, 'AugmentSection');
+    if (!augmentSection) {
+        $.Msg('[BattleEndView] ❌ Failed to create augment section!');
+        return parent;
+    }
+    
+    augmentSection.style.width = '100%';
+    augmentSection.style.flowChildren = 'down';
+    augmentSection.style.marginBottom = '30px';
+    augmentSection.style.padding = '20px';
+    augmentSection.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+    augmentSection.style.borderRadius = '10px';
+    
+    $.Msg(`[BattleEndView] 🎁 Augment section created successfully`);
+    
+    // 标题
+    const title = $.CreatePanel('Label', augmentSection, 'AugmentTitle');
+    title.text = '选择海克斯强化';
+    title.style.fontSize = '32px';
+    title.style.color = BATTLE_END_THEME.textAccent;
+    title.style.fontWeight = 'bold';
+    title.style.textAlign = 'center';
+    title.style.marginBottom = '20px';
+    title.style.width = '100%';
+    
+    $.Msg(`[BattleEndView] 🎁 Title created`);
+    
+    // 提示文字
+    const hint = $.CreatePanel('Label', augmentSection, 'AugmentHint');
+    hint.text = '选择一个强化来增强你的实力';
+    hint.style.fontSize = '18px';
+    hint.style.color = BATTLE_END_THEME.textSecondary;
+    hint.style.textAlign = 'center';
+    hint.style.marginBottom = '30px';
+    hint.style.width = '100%';
+    hint.style.opacity = '0.8';
+    
+    $.Msg(`[BattleEndView] 🎁 Hint created`);
+    
+    // 卡片容器
+    const cardsContainer = $.CreatePanel('Panel', augmentSection, 'AugmentCards');
+    cardsContainer.style.width = '100%';
+    cardsContainer.style.height = '300px';
+    cardsContainer.style.flowChildren = 'right';
+    cardsContainer.style.horizontalAlign = 'center';
+    
+    $.Msg(`[BattleEndView] 🎁 Cards container created`);
+    
+    // 创建每个强化卡片
+    for (let i = 0; i < augmentOptions.length; i++) {
+        const augment = augmentOptions[i];
+        $.Msg(`[BattleEndView] 🎁 Creating card ${i}: ${augment.displayName} (${augment.id})`);
+        createAugmentCard(cardsContainer, augment, i);
+    }
+    
+    $.Msg(`[BattleEndView] 🎁 ========== Augment section complete ==========`);
+    
+    return augmentSection;
+}
+
+// 创建单个海克斯强化卡片
+function createAugmentCard(parent: Panel, augment: HextechAugmentOption, index: number): void {
+    $.Msg(`[BattleEndView] 🃏 Creating card ${index}: ${augment.displayName}`);
+    
+    const card = $.CreatePanel('Panel', parent, `AugmentCard_${index}`);
+    if (!card) {
+        $.Msg(`[BattleEndView] ❌ Failed to create card ${index}!`);
+        return;
+    }
+    
+    card.style.width = '280px';
+    card.style.height = '280px';  // 增加高度
+    card.style.flowChildren = 'down';
+    card.style.marginLeft = index > 0 ? '20px' : '0px';
+    card.style.padding = '15px';
+    card.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+    card.style.borderRadius = '12px';
+    card.style.border = '3px solid rgba(255, 255, 255, 0.3)';
+    card.style.boxShadow = '0px 4px 15px rgba(0, 0, 0, 0.5)';
+    
+    $.Msg(`[BattleEndView] 🃏 Card ${index} panel created`);
+    
+    // 根据稀有度设置边框颜色
+    let borderColor = '#ffffff';
+    if (augment.rarity === 'common') {
+        borderColor = '#aaaaaa';  // 灰色
+    } else if (augment.rarity === 'rare') {
+        borderColor = '#4a9eff';  // 蓝色
+    } else if (augment.rarity === 'epic') {
+        borderColor = '#a335ee';  // 紫色
+    }
+    
+    $.Msg(`[BattleEndView] 🃏 Card ${index} border color: ${borderColor} (rarity: ${augment.rarity})`);
+    
+    // 图标
+    const icon = $.CreatePanel('Image', card, `AugmentIcon_${index}`);
+    icon.SetImage(augment.icon);
+    icon.style.width = '80px';
+    icon.style.height = '80px';
+    icon.style.horizontalAlign = 'center';
+    icon.style.marginBottom = '10px';
+    icon.hittest = false;
+    
+    // 名称
+    const name = $.CreatePanel('Label', card, `AugmentName_${index}`);
+    name.text = augment.displayName;
+    name.style.fontSize = '22px';
+    name.style.color = borderColor;
+    name.style.fontWeight = 'bold';
+    name.style.textAlign = 'center';
+    name.style.marginBottom = '10px';
+    name.style.width = '100%';
+    name.hittest = false;
+    
+    // 稀有度标签
+    const rarityLabel = $.CreatePanel('Label', card, `AugmentRarity_${index}`);
+    let rarityText = '';
+    if (augment.rarity === 'common') rarityText = '普通';
+    else if (augment.rarity === 'rare') rarityText = '稀有';
+    else if (augment.rarity === 'epic') rarityText = '史诗';
+    rarityLabel.text = rarityText;
+    rarityLabel.style.fontSize = '16px';
+    rarityLabel.style.color = borderColor;
+    rarityLabel.style.textAlign = 'center';
+    rarityLabel.style.marginBottom = '10px';
+    rarityLabel.style.width = '100%';
+    rarityLabel.hittest = false;
+    
+    // 描述
+    const desc = $.CreatePanel('Label', card, `AugmentDesc_${index}`);
+    desc.text = augment.description;
+    desc.style.fontSize = '16px';
+    desc.style.color = BATTLE_END_THEME.textSecondary;
+    desc.style.textAlign = 'center';
+    desc.style.width = '100%';
+    desc.style.opacity = '0.9';
+    desc.hittest = false;
+    
+    // 点击事件
+    card.SetPanelEvent('onactivate', () => {
+        $.Msg(`[BattleEndView] Selected augment: ${augment.id}`);
+        Game.EmitSound('ui.button_click');
+        selectedAugmentId = augment.id;
+        
+        // 更新所有卡片的选中状态
+        for (let i = 0; i < 3; i++) {
+            const otherCard = parent.FindChild(`AugmentCard_${i}`);
+            if (otherCard) {
+                if (i === index) {
+                    otherCard.style.border = `3px solid ${borderColor}`;
+                    otherCard.style.boxShadow = `0px 0px 20px ${borderColor}`;
+                    otherCard.style.transform = 'scale3d(1.05, 1.05, 1.0)';
+                } else {
+                    otherCard.style.border = '3px solid rgba(255, 255, 255, 0.3)';
+                    otherCard.style.boxShadow = '0px 4px 15px rgba(0, 0, 0, 0.5)';
+                    otherCard.style.transform = 'scale3d(1.0, 1.0, 1.0)';
+                }
+            }
+        }
+    });
+    
+    // 悬停效果
+    card.SetPanelEvent('onmouseover', () => {
+        if (selectedAugmentId !== augment.id) {
+            card.style.border = `3px solid ${borderColor}`;
+            card.style.transform = 'scale3d(1.03, 1.03, 1.0)';
+            Game.EmitSound('ui.button_over');
+        }
+    });
+    
+    card.SetPanelEvent('onmouseout', () => {
+        if (selectedAugmentId !== augment.id) {
+            card.style.border = '3px solid rgba(255, 255, 255, 0.3)';
+            card.style.transform = 'scale3d(1.0, 1.0, 1.0)';
+        }
+    });
+    
+    $.Msg(`[BattleEndView] 🃏 Card ${index} completed: ${augment.displayName}`);
+}
+
 // 显示结算界面（完全动态创建，像 playing-hud 一样）
 function showView(result: BattleResult): void {
-    $.Msg('🏆 Showing battle end view with result:', result);
+    $.Msg('[BattleEndView] ========== showView() called ==========');
+    $.Msg('[BattleEndView] Result:', JSON.stringify(result));
+    $.Msg('[BattleEndView] Winner:', result.winner);
+    $.Msg('[BattleEndView] Round:', result.round);
     
     // 获取根面板（与 playing-hud 完全一致）
     const rootPanel = $.GetContextPanel();
     if (!rootPanel) {
-        $.Msg('❌ Root panel not found');
+        $.Msg('[BattleEndView] ❌ Root panel not found');
         return;
     }
     
@@ -610,8 +884,20 @@ function showView(result: BattleResult): void {
     
     // 创建主面板（完全动态创建）
     const main = $.CreatePanel('Panel', container, 'BattleEndMain');
-    main.style.width = '800px';
-    main.style.height = '600px';
+    main.style.width = '900px';
+    
+    // 检查是否有海克斯强化
+    const hasAugments = result.augmentOptions && result.augmentOptions.length > 0;
+    
+    // 根据是否有海克斯强化调整高度
+    if (hasAugments) {
+        main.style.height = '700px';  // 有海克斯强化时增加高度
+        $.Msg('[BattleEndView] Setting panel height to 700px (with augments)');
+    } else {
+        main.style.height = '600px';  // 没有海克斯强化时使用默认高度
+        $.Msg('[BattleEndView] Setting panel height to 600px (no augments)');
+    }
+    
     main.style.backgroundColor = BATTLE_END_THEME.panelBg;
     main.style.border = `2px solid ${BATTLE_END_THEME.borderColor}`;
     main.style.borderRadius = '20px';
@@ -623,7 +909,23 @@ function showView(result: BattleResult): void {
     
     // 创建各个区域（完全动态创建）
     createTitleSection(main, result);
-    createStatsSection(main, result);
+    
+    // 只有在没有海克斯强化时才显示战斗统计
+    if (!hasAugments) {
+        $.Msg('[BattleEndView] Creating stats section (no augments)');
+        createStatsSection(main, result);
+    } else {
+        $.Msg('[BattleEndView] Skipping stats section (has augments)');
+    }
+    
+    // 如果有海克斯强化选项，显示选择区域
+    if (hasAugments) {
+        $.Msg(`[BattleEndView] 🎁 Creating augment section with ${result.augmentOptions.length} options`);
+        createAugmentSection(main, result.augmentOptions);
+        // 重置选择状态
+        selectedAugmentId = null;
+    }
+    
     createButtonsSection(main, result);
     
     // 确保容器在根面板的最后（最上层）
@@ -650,10 +952,22 @@ function showView(result: BattleResult): void {
     }
     $.Msg(`[BattleEndView] ✅ Main panel children: ${main.Children().length}`);
     
+    // 强制设置可见性（确保界面显示）
+    container.style.visibility = 'visible';
+    container.style.opacity = '1';
+    container.RemoveClass('hidden');
+    container.SetHasClass('battle_end_container', true);
+    
+    $.Msg(`[BattleEndView] Container visibility: ${container.style.visibility}`);
+    $.Msg(`[BattleEndView] Container opacity: ${container.style.opacity}`);
+    $.Msg(`[BattleEndView] Container z-index: ${container.style.zIndex}`);
+    
     // 延迟检查实际尺寸（Panorama 需要时间计算布局）
     $.Schedule(0.1, () => {
         const actualWidth = container.actuallayoutwidth;
         const actualHeight = container.actuallayoutheight;
+        $.Msg(`[BattleEndView] Container size after 0.1s: ${actualWidth}x${actualHeight}`);
+        
         // 如果尺寸仍然为 0，使用屏幕分辨率
         if (actualWidth === 0 || actualHeight === 0) {
             $.Msg('[BattleEndView] ⚠️ Container size is still 0, using screen resolution...');
@@ -661,6 +975,7 @@ function showView(result: BattleResult): void {
             const screenHeight = Game.GetScreenHeight();
             container.style.width = `${screenWidth}px`;
             container.style.height = `${screenHeight}px`;
+            container.style.visibility = 'visible';
             $.Msg(`[BattleEndView] Set container size to ${screenWidth}x${screenHeight}px`);
             
             // 再次检查
@@ -668,6 +983,7 @@ function showView(result: BattleResult): void {
                 const newWidth = container.actuallayoutwidth;
                 const newHeight = container.actuallayoutheight;
                 $.Msg(`[BattleEndView] ✅ Container size after fix: ${newWidth}x${newHeight}`);
+                $.Msg(`[BattleEndView] Container visibility: ${container.style.visibility}`);
             });
         }
     });
@@ -678,6 +994,8 @@ function showView(result: BattleResult): void {
     } else if (result.winner === 'enemy') {
         Game.EmitSound('ui.defeat');
     }
+    
+    $.Msg('[BattleEndView] ========== showView() completed ==========');
 }
 
 // 隐藏结算界面
@@ -713,33 +1031,67 @@ function handleBattleEnded(data: any): void {
     });
 }
 
-// 处理波次结算事件（自走棋模式）
-function handleWaveSettlement(data: any): void {
-    $.Msg('[BattleEndView] Wave settlement event received:', data);
+// 将 Lua 对象数组转换为 JavaScript 数组
+function convertLuaArrayToJSArray(luaArray: any): any[] {
+    if (!luaArray) {
+        return [];
+    }
     
-    // 从 AutoChessMode 获取胜负信息
-    // 注意：stats 应该来自 data.stats，而不是 data.playerSummary
-    const battleResult: BattleResult = {
-        winner: data.winner || 'player',  // 默认玩家胜利
-        round: data.round || 1,
-        duration: data.duration || 0,
-        stats: data.stats || {},  // 使用 data.stats 而不是 data.playerSummary
-        levelName: data.levelName || undefined
-    };
+    // 如果已经是数组，直接返回
+    if (Array.isArray(luaArray)) {
+        return luaArray;
+    }
     
-    $.Msg('[BattleEndView] Processed battle result:', battleResult);
-    showView(battleResult);
+    // 如果是对象，转换为数组（Lua 数组在传输过程中会变成 {1: {...}, 2: {...}, 3: {...}}）
+    if (typeof luaArray === 'object') {
+        const result: any[] = [];
+        const keys = Object.keys(luaArray).map(k => parseInt(k)).filter(k => !isNaN(k)).sort((a, b) => a - b);
+        for (const key of keys) {
+            result.push(luaArray[key]);
+        }
+        $.Msg(`[BattleEndView] 🔄 Converted Lua array (${keys.length} items) to JS array`);
+        return result;
+    }
+    
+    return [];
 }
 
-// 处理游戏重置事件（从服务器收到退出游戏后的重置通知）
-function handleGameReset(data: any): void {
-    $.Msg('[BattleEndView] Game reset event received, hiding battle end view');
-    hideView();
+// 处理波次结算事件（自走棋模式）
+function handleWaveSettlement(data: any): void {
+    $.Msg('[BattleEndView] ========== Wave settlement event received ==========');
+    $.Msg('[BattleEndView] Event data:', JSON.stringify(data));
     
-    // 可选：显示一个简短的提示
-    $.Schedule(0.1, () => {
-        $.Msg('[BattleEndView] Game has been reset, ready for new game');
-    });
+    // 🔑 转换 augmentOptions（Lua 数组 -> JS 数组）
+    const augmentOptions = convertLuaArrayToJSArray(data.augmentOptions);
+    $.Msg(`[BattleEndView] 🎯 Converted augmentOptions: ${augmentOptions.length} items`);
+    if (augmentOptions.length > 0) {
+        $.Msg('[BattleEndView] Augment options:', JSON.stringify(augmentOptions));
+    }
+    
+    // 从 AutoChessMode 获取胜负信息
+    const battleResult: BattleResult = {
+        winner: data.winner || 'player',
+        round: data.round || 1,
+        duration: data.duration || 0,
+        stats: data.stats || {},
+        levelName: data.levelName || undefined,
+        isEventNode: data.isEventNode || false,
+        augmentOptions: augmentOptions
+    };
+    
+    $.Msg('[BattleEndView] Processed battle result:', JSON.stringify(battleResult));
+    $.Msg('[BattleEndView] Winner:', battleResult.winner);
+    $.Msg('[BattleEndView] Round:', battleResult.round);
+    $.Msg('[BattleEndView] isEventNode:', battleResult.isEventNode);
+    $.Msg('[BattleEndView] augmentOptions count:', battleResult.augmentOptions?.length || 0);
+    
+    // 确保界面显示
+    try {
+        showView(battleResult);
+        $.Msg('[BattleEndView] ✅ showView() called successfully');
+    } catch (e) {
+        $.Msg('[BattleEndView] ❌ Error calling showView():', e);
+    }
 }
 
 // 初始化事件订阅
@@ -755,9 +1107,6 @@ function initializeEventListeners(): void {
     // 监听关闭事件
     GameEvents.Subscribe('battle_end_dismiss', hideView);
     GameEvents.Subscribe('autochess_wave_settlement_dismiss', hideView);
-    
-    // 监听游戏重置事件（退出游戏后服务器重置）
-    GameEvents.Subscribe('game_reset', handleGameReset);
     
     $.Msg('✅ Event listeners initialized');
 }

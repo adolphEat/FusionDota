@@ -9,6 +9,8 @@ import { StageConfigManager, NodeType } from './autochess/StageConfigManager';
 import { getTimestamp } from '../utils/time_utils';
 import { inventoryHandler } from './InventoryHandler';
 import { saveDataManager } from '../utils/SaveDataManager';
+import { HextechAugmentConfig } from './autochess/HextechAugmentConfig';
+import { PlayerAugmentManager } from './autochess/PlayerAugmentManager';
 
 export enum ChessRarity {
     COMMON = 1,      // 普通 (白色)
@@ -103,9 +105,19 @@ export class AutoChessMode {
     private completedStages: Set<string> = new Set(); // 已完成的关卡ID
     private availableStages: Set<string> = new Set(); // 可用的关卡ID（初始为第一层）
 
+    // 海克斯强化系统
+    private augmentManager: PlayerAugmentManager;
+
     private constructor() {
         // 初始化关卡配置和英雄费用配置
         StageConfigManager.initialize();
+        
+        // 初始化海克斯强化系统
+        print('[AutoChessMode] 🎁 Initializing HextechAugmentConfig...');
+        HextechAugmentConfig.initialize();
+        print('[AutoChessMode] 🎁 HextechAugmentConfig initialized successfully');
+        this.augmentManager = new PlayerAugmentManager();
+        print('[AutoChessMode] 🎁 PlayerAugmentManager created');
         
         this.chessPieceDatabase = this.initializeChessDatabase();
         this.gameState = this.initializeGameState();
@@ -119,15 +131,13 @@ export class AutoChessMode {
 
     /**
      * 初始化关卡解锁系统
-     * 第一层关卡（n2, n3）初始可用，起始点（n1）已完成
+     * 第1层关卡（L1_1）初始可用
      */
     private initializeStageUnlock(): void {
-        // 起始点已完成
-        this.completedStages.add('n1');
+        // 第1层关卡初始可用
+        this.availableStages.add('L1_1');
         
-        // 第一层关卡初始可用（从起始点连接的关卡）
-        this.availableStages.add('n2'); // 森林小径
-        this.availableStages.add('n3'); // 危险矿洞
+        print('[AutoChessMode] 初始化关卡解锁系统: 第1层可用');
     }
 
     public static getInstance(): AutoChessMode {
@@ -243,11 +253,11 @@ export class AutoChessMode {
             
             // 第一回合也进入准备阶段，而不是直接战斗
             // 设置当前关卡选择
-            this.currentWaveStageSelection = 'n1';
-            print(`[AutoChessMode] 📝 第一关自动设置: currentWaveStageSelection = n1`);
+            this.currentWaveStageSelection = 'L1_1';
+            print(`[AutoChessMode] 📝 第一关自动设置: currentWaveStageSelection = L1_1`);
             
             // 开始准备阶段倒计时（10秒）
-            this.startPreparationCountdown(playerId, 1);
+            this.startPreparationCountdown(playerId, 'L1_1');
             
             return undefined;
         });
@@ -285,9 +295,9 @@ export class AutoChessMode {
             // 发送可用的关卡列表到客户端（让玩家选择）
             this.sendAvailableStages();
         } else {
-            // 第一关使用 n1 格式，与关卡解锁系统保持一致
-            this.currentWaveStageSelection = 'n1';
-            print(`[AutoChessMode] 📝 第一关自动设置: currentWaveStageSelection = n1`);
+            // 第一关使用 L1_1 格式，与关卡解锁系统保持一致
+            this.currentWaveStageSelection = 'L1_1';
+            print(`[AutoChessMode] 📝 第一关自动设置: currentWaveStageSelection = L1_1`);
         }
         
         // 启动计时器
@@ -937,21 +947,23 @@ export class AutoChessMode {
     /**
      * 在准备阶段创建敌人棋子（禁用攻击）
      */
-    private createEnemyPiecesForPreparation(stageId: number): void {
+    private createEnemyPiecesForPreparation(stageIdOrNodeId: string | number): void {
         print(`[AutoChessMode] ========== 准备阶段：创建敌人棋子（禁用攻击） ==========`);
-        print(`[AutoChessMode] 使用关卡: ${stageId}`);
+        print(`[AutoChessMode] 使用节点/关卡: ${stageIdOrNodeId}`);
         
-        const stageConfig = StageConfigManager.getStageConfig(stageId);
+        const stageConfig = StageConfigManager.getStageConfig(stageIdOrNodeId);
         if (!stageConfig) {
-            print(`[AutoChessMode] ERROR: 关卡${stageId}配置不存在，使用关卡1`);
-            stageId = 1;
+            print(`[AutoChessMode] ERROR: 节点 ${stageIdOrNodeId} 配置不存在`);
+            return;
         }
+        
+        print(`[AutoChessMode] 关卡类型: ${stageConfig.primaryNodeType}`);
         
         // 为每个玩家创建对应的敌人
         for (const [playerId, playerState] of this.gameState.playerStates) {
             if (playerState.isAlive) {
-                print(`[AutoChessMode] 为玩家 ${playerId} 创建敌人棋子（准备阶段）...`);
-                this.createEnemyForPlayer(playerId, stageId, true); // true = 准备阶段，禁用攻击
+                print(`[AutoChessMode] 为玩家 ${playerId} 创建敌人棋子（准备阶段，节点: ${stageIdOrNodeId}）...`);
+                this.createEnemyForPlayer(playerId, stageIdOrNodeId, true); // true = 准备阶段，禁用攻击
             }
         }
         
@@ -1001,7 +1013,7 @@ export class AutoChessMode {
         // 为每个玩家创建对应的敌人
         for (const [playerId, playerState] of this.gameState.playerStates) {
             if (playerState.isAlive) {
-                print(`[AutoChessMode] 为玩家 ${playerId} 创建敌人棋子...`);
+                print(`[AutoChessMode] 为玩家 ${playerId} 创建敌人棋子（节点: ${stageId}）...`);
                 this.createEnemyForPlayer(playerId, stageId);
             }
         }
@@ -1013,21 +1025,37 @@ export class AutoChessMode {
      * 为特定玩家创建敌人棋子（根据关卡配置）
      * @param isPreparationPhase 是否为准备阶段（准备阶段禁用攻击）
      */
-    private createEnemyForPlayer(playerId: PlayerID, stageId: number, isPreparationPhase: boolean = false): void {
-        const stageConfig = StageConfigManager.getStageConfig(stageId);
+    private createEnemyForPlayer(playerId: PlayerID, stageIdOrNodeId: string | number, isPreparationPhase: boolean = false): void {
+        const stageConfig = StageConfigManager.getStageConfig(stageIdOrNodeId);
         if (!stageConfig) {
-            print(`[AutoChessMode] ERROR: 关卡${stageId}配置不存在`);
+            print(`[AutoChessMode] ERROR: 关卡${stageIdOrNodeId}配置不存在`);
             return;
         }
         
-        print(`[AutoChessMode] 为玩家 ${playerId} 创建敌人，使用关卡${stageId}配置`);
+        print(`[AutoChessMode] 为玩家 ${playerId} 创建敌人，使用关卡${stageIdOrNodeId}配置`);
         print(`[AutoChessMode] 关卡类型: ${stageConfig.primaryNodeType}`);
         
+        // 🔑 获取怪物强度配置
+        const monsterStrength = StageConfigManager.getMonsterStrength(stageIdOrNodeId);
+        if (monsterStrength) {
+            print(`[AutoChessMode] ========================================`);
+            print(`[AutoChessMode] 🔥 关卡 ${stageIdOrNodeId} 怪物强度配置:`);
+            print(`[AutoChessMode]    生命值倍率: ${(monsterStrength.healthMultiplier * 100).toFixed(0)}%`);
+            print(`[AutoChessMode]    攻击力倍率: ${(monsterStrength.damageMultiplier * 100).toFixed(0)}%`);
+            print(`[AutoChessMode]    基础强度值: ${(monsterStrength.baseValue * 100).toFixed(0)}%`);
+            if (monsterStrength.armorBonus) {
+                print(`[AutoChessMode]    护甲加成: +${monsterStrength.armorBonus}`);
+            }
+            print(`[AutoChessMode] ========================================`);
+        } else {
+            print(`[AutoChessMode] ⚠️ 警告: 未找到关卡 ${stageIdOrNodeId} 的强度配置`);
+        }
+        
         // 根据关卡配置的怪物数量生成敌人
-        const monsterCount = StageConfigManager.rollMonsterCount(stageId);
+        const monsterCount = StageConfigManager.rollMonsterCount(stageIdOrNodeId);
         const totalMonsters = monsterCount.normalCount + (monsterCount.specialCount || 0);
         
-        print(`[AutoChessMode] 关卡${stageId}怪物数量: 普通${monsterCount.normalCount}个, 特殊${monsterCount.specialCount || 0}个, 总计${totalMonsters}个`);
+        print(`[AutoChessMode] 关卡${stageIdOrNodeId}怪物数量: 普通${monsterCount.normalCount}个, 特殊${monsterCount.specialCount || 0}个, 总计${totalMonsters}个`);
         
         // 判断是否为精英节点（根据关卡类型）
         const isElite = stageConfig.primaryNodeType === NodeType.ELITE_BATTLE || 
@@ -1035,7 +1063,7 @@ export class AutoChessMode {
         
         // 创建普通怪物
         for (let i = 0; i < monsterCount.normalCount; i++) {
-            const heroId = StageConfigManager.rollHeroByStage(stageId, isElite);
+            const heroId = StageConfigManager.rollHeroByStage(stageIdOrNodeId, isElite);
             if (heroId) {
                 const pieceId = this.convertHeroIdToPieceId(heroId);
                 const piece = this.chessPieceDatabase.get(pieceId);
@@ -1050,7 +1078,21 @@ export class AutoChessMode {
                     
                     print(`[AutoChessMode] 创建敌人棋子: ${piece.displayName}(${pieceId}) 在位置 (${position.x}, ${position.y})`);
                     // 使用战斗系统创建敌人（playerId=-1表示AI敌人）
-                    this.battleSystem.deployPiece(-1, pieceId, position);
+                    const deployedPiece = this.battleSystem.deployPiece(-1, pieceId, position);
+                    
+                    // 🔑 应用怪物强度倍率
+                    if (deployedPiece && deployedPiece.unit && monsterStrength) {
+                        print(`[AutoChessMode] 📊 准备应用强度到 ${piece.displayName}: 基础生命=${piece.health}, 基础攻击=${piece.damage}`);
+                        this.applyMonsterStrength(deployedPiece.unit, piece, monsterStrength);
+                    } else {
+                        if (!deployedPiece) {
+                            print(`[AutoChessMode] ❌ 部署失败: deployedPiece 为空`);
+                        } else if (!deployedPiece.unit) {
+                            print(`[AutoChessMode] ❌ 单位创建失败: deployedPiece.unit 为空`);
+                        } else if (!monsterStrength) {
+                            print(`[AutoChessMode] ❌ 强度配置为空`);
+                        }
+                    }
                 } else {
                     print(`[AutoChessMode] 警告: 棋子 ${pieceId} 不存在，使用同费用替代`);
                     const heroConfig = StageConfigManager.getHeroConfig(heroId);
@@ -1069,7 +1111,7 @@ export class AutoChessMode {
         if (monsterCount.specialCount && monsterCount.specialCount > 0) {
             for (let i = 0; i < monsterCount.specialCount; i++) {
                 // Boss使用精英节点掉落概率
-                const heroId = StageConfigManager.rollHeroByStage(stageId, true);
+                const heroId = StageConfigManager.rollHeroByStage(stageIdOrNodeId, true);
                 if (heroId) {
                     const pieceId = this.convertHeroIdToPieceId(heroId);
                     const piece = this.chessPieceDatabase.get(pieceId);
@@ -1082,7 +1124,20 @@ export class AutoChessMode {
                         };
                         
                         print(`[AutoChessMode] 创建特殊敌人: ${piece.displayName}(${pieceId}) [${monsterCount.specialType}] 在位置 (${position.x}, ${position.y})`);
-                        this.battleSystem.deployPiece(-1, pieceId, position);
+                        const deployedPiece = this.battleSystem.deployPiece(-1, pieceId, position);
+                        
+                        // 🔑 应用怪物强度倍率（Boss使用更高倍率）
+                        if (deployedPiece && deployedPiece.unit && monsterStrength) {
+                            // Boss的强度额外提升50%
+                            const bossStrength = {
+                                healthMultiplier: monsterStrength.healthMultiplier * 1.5,
+                                damageMultiplier: monsterStrength.damageMultiplier * 1.5,
+                                armorBonus: (monsterStrength.armorBonus || 0) + 5,
+                                baseValue: monsterStrength.baseValue
+                            };
+                            this.applyMonsterStrength(deployedPiece.unit, piece, bossStrength);
+                            print(`[AutoChessMode] 💀 Boss强度额外提升50%`);
+                        }
                     }
                 }
             }
@@ -2638,6 +2693,23 @@ export class AutoChessMode {
             print(`[AutoChessMode] battle_completed from client! userId: ${userId}`);
             this.handleBattleCompleted(data);
         });
+
+        // 监听强化选择事件
+        CustomGameEventManager.RegisterListener('player_select_augment', (userId, data) => {
+            const playerId = data.PlayerID as PlayerID;
+            const augmentId = data.augmentId as string;
+            print(`[AutoChessMode] 🎯 Received augment selection from player ${playerId}: ${augmentId}`);
+            this.handleAugmentSelection(playerId, augmentId);
+        });
+        
+        // 监听海克斯强化选择事件（从战斗结算界面）
+        CustomGameEventManager.RegisterListener('select_hextech_augment', (userId, data) => {
+            const augmentId = (data as any).augmentId as string;
+            // 从 userId 获取 playerId
+            const playerId = userId as unknown as PlayerID;
+            print(`[AutoChessMode] 🎯 Received hextech augment selection from player ${playerId}: ${augmentId}`);
+            this.handleAugmentSelection(playerId, augmentId);
+        });
         
         print('[AutoChessMode] Events registered successfully');
     }
@@ -2665,9 +2737,42 @@ export class AutoChessMode {
         print(`[AutoChessMode] playerWon: ${playerWon}, winner: ${winner}`);
         print(`[AutoChessMode] isActive: ${this.isActive}, currentPhase: ${this.gameState.currentPhase}`);
         
-        // 如果当前不在战斗阶段，直接触发结算（适用于 normal 模式）
+        // 如果当前不在战斗阶段，直接触发结算（适用于 normal 模式/单机模式）
         if (this.gameState.currentPhase !== RoundPhase.BATTLE) {
-            print(`[AutoChessMode] Not in battle phase, triggering settlement directly`);
+            print(`[AutoChessMode] Not in battle phase, triggering settlement directly (单机模式)`);
+            
+            // 🔑 检查当前节点是否为事件节点或第一关（单机模式也需要强化选项）
+            const currentNodeId = this.currentWaveStageSelection || 'L1_1';
+            const isEvent = StageConfigManager.isEventNode(currentNodeId);
+            const isFirstStage = currentNodeId === 'L1_1';  // 第一关
+            
+            print(`[AutoChessMode] 🔍 单机模式 - Checking augment conditions:`);
+            print(`[AutoChessMode]   - currentNodeId: ${currentNodeId}`);
+            print(`[AutoChessMode]   - isEvent: ${isEvent}`);
+            print(`[AutoChessMode]   - isFirstStage: ${isFirstStage}`);
+            print(`[AutoChessMode]   - playerWon: ${playerWon}`);
+            
+            let augmentOptions: any[] = [];
+            // 如果是事件节点或第一关，且玩家获胜，显示强化选项
+            if ((isEvent || isFirstStage) && playerWon) {
+                print(`[AutoChessMode] ✅ 单机模式 - Conditions met! Generating augment options...`);
+                // 生成3个随机强化选项
+                const excludeIds = this.augmentManager.getPlayerAugments(player1);
+                const options = HextechAugmentConfig.getRandomAugments(excludeIds, 3);
+                augmentOptions = options.map(aug => ({
+                    id: aug.id,
+                    displayName: aug.displayName,
+                    description: aug.description,
+                    icon: aug.icon,
+                    rarity: aug.rarity
+                }));
+                print(`[AutoChessMode] 🎲 单机模式 - Generated ${augmentOptions.length} augment options:`);
+                for (const opt of augmentOptions) {
+                    print(`[AutoChessMode]   - ${opt.displayName} (${opt.id})`);
+                }
+            } else {
+                print(`[AutoChessMode] ❌ 单机模式 - Conditions NOT met for augment generation`);
+            }
             
             // 构建结算数据
             const settlementData = {
@@ -2678,10 +2783,16 @@ export class AutoChessMode {
                 playerSummary: {},
                 stats: {},
                 levelName: undefined,
-                isGameOver: !playerWon  // 玩家输了就是游戏结束
+                isGameOver: !playerWon,  // 玩家输了就是游戏结束
+                isEventNode: isEvent || isFirstStage,    // 新增：标记是否为事件节点或第一关
+                augmentOptions: augmentOptions  // 新增：强化选项
             };
             
+            print(`[AutoChessMode] 📦 单机模式 - Settlement data prepared:`);
+            print(`[AutoChessMode]   - isEventNode: ${settlementData.isEventNode}`);
+            print(`[AutoChessMode]   - augmentOptions count: ${settlementData.augmentOptions.length}`);
             print(`[AutoChessMode] 📤 Sending settlement to player ${player1} (winner: ${winner}, gameOver: ${!playerWon})`);
+            
             const player = PlayerResource.GetPlayer(player1);
             if (player) {
                 (CustomGameEventManager.Send_ServerToPlayer as any)(player, 'autochess_wave_settlement', settlementData);
@@ -2712,7 +2823,7 @@ export class AutoChessMode {
                 // 注意：棋子血量恢复已在 ChessBattleSystem.onBattleComplete 中完成
                 
                 // 战斗胜利后，解锁下一层关卡
-                const currentSelection = this.currentWaveStageSelection || 'n1'; // 如果为空，默认使用 n1
+                const currentSelection = this.currentWaveStageSelection || 'L1_1'; // 如果为空，默认使用 L1_1
                 print(`[AutoChessMode] 🔍 检查关卡解锁: currentWaveStageSelection = ${currentSelection}`);
                 print(`[AutoChessMode] ✅ 将解锁关卡: ${currentSelection}`);
                 this.unlockNextStages(currentSelection);
@@ -3054,6 +3165,39 @@ export class AutoChessMode {
                 }
             }
 
+            // 检查当前节点是否为事件节点或第一关
+            const currentNodeId = this.currentWaveStageSelection || 'L1_1';
+            const isEvent = StageConfigManager.isEventNode(currentNodeId);
+            const isFirstStage = currentNodeId === 'L1_1';  // 第一关
+            
+            print(`[AutoChessMode] 🔍 Checking augment conditions:`);
+            print(`[AutoChessMode]   - currentNodeId: ${currentNodeId}`);
+            print(`[AutoChessMode]   - isEvent: ${isEvent}`);
+            print(`[AutoChessMode]   - isFirstStage: ${isFirstStage}`);
+            print(`[AutoChessMode]   - playerWon: ${playerWon}`);
+            
+            let augmentOptions: any[] = [];
+            // 如果是事件节点或第一关，且玩家获胜，显示强化选项
+            if ((isEvent || isFirstStage) && playerWon) {
+                print(`[AutoChessMode] ✅ Conditions met! Generating augment options...`);
+                // 生成3个随机强化选项
+                const excludeIds = this.augmentManager.getPlayerAugments(playerId);
+                const options = HextechAugmentConfig.getRandomAugments(excludeIds, 3);
+                augmentOptions = options.map(aug => ({
+                    id: aug.id,
+                    displayName: aug.displayName,
+                    description: aug.description,
+                    icon: aug.icon,
+                    rarity: aug.rarity
+                }));
+                print(`[AutoChessMode] 🎲 Generated ${augmentOptions.length} augment options for player ${playerId}:`);
+                for (const opt of augmentOptions) {
+                    print(`[AutoChessMode]   - ${opt.displayName} (${opt.id})`);
+                }
+            } else {
+                print(`[AutoChessMode] ❌ Conditions NOT met for augment generation`);
+            }
+
         const settlementData = {
             round: this.gameState.currentRound,
                 winner: winner,
@@ -3062,13 +3206,46 @@ export class AutoChessMode {
                 playerSummary: this.buildPlayerSummary(),
                 stats: {},
                 levelName: undefined as string | undefined,
-                isGameOver: isGameOver  // 玩家输了就是游戏结束
+                isGameOver: isGameOver,  // 玩家输了就是游戏结束
+                isEventNode: isEvent || isFirstStage,    // 新增：标记是否为事件节点或第一关
+                augmentOptions: augmentOptions  // 新增：强化选项
             };
+
+            print(`[AutoChessMode] 📦 Settlement data prepared:`);
+            print(`[AutoChessMode]   - isEventNode: ${settlementData.isEventNode}`);
+            print(`[AutoChessMode]   - augmentOptions count: ${settlementData.augmentOptions.length}`);
+            
+            // 打印每个强化选项的详细信息
+            if (settlementData.augmentOptions.length > 0) {
+                print(`[AutoChessMode] 📋 Augment options details:`);
+                for (let i = 0; i < settlementData.augmentOptions.length; i++) {
+                    const opt = settlementData.augmentOptions[i];
+                    print(`[AutoChessMode]   [${i}] id: ${opt.id}, name: ${opt.displayName}, rarity: ${opt.rarity}`);
+                }
+            }
 
             // 如果有选择的关卡，添加关卡名称
             if (this.currentWaveStageSelection) {
-                const stageId = parseInt(this.currentWaveStageSelection);
-                settlementData.levelName = `关卡${stageId}`;
+                // currentWaveStageSelection 是节点ID（如 "L1_1"），需要提取层级
+                const nodeId = this.currentWaveStageSelection;
+                
+                // 从节点ID提取层级（例如 "L1_1" -> 1）
+                // 使用Lua兼容的字符串操作
+                const lPos = nodeId.indexOf('L');
+                const underscorePos = nodeId.indexOf('_');
+                if (lPos !== -1 && underscorePos !== -1 && lPos < underscorePos) {
+                    const layerStr = nodeId.substring(lPos + 1, underscorePos);
+                    const layerId = parseInt(layerStr);
+                    if (!isNaN(layerId)) {
+                        settlementData.levelName = `第${layerId}层`;
+                    } else {
+                        settlementData.levelName = nodeId;
+                    }
+                } else {
+                    settlementData.levelName = nodeId;
+                }
+                
+                print(`[AutoChessMode] 📝 关卡名称: ${settlementData.levelName} (节点ID: ${nodeId})`);
             }
 
             print(`[AutoChessMode] 📤 Sending wave settlement to player ${playerId} (winner: ${winner}, gameOver: ${isGameOver})`);
@@ -3250,21 +3427,29 @@ export class AutoChessMode {
 
     /**
      * 将关卡ID转换为节点ID
-     * 例如: "2" -> "n2", "1" -> "n1"
+     * 例如: "2" -> "L2_1", "1" -> "L1_1"
      */
     private stageIdToNodeId(stageId: string): string | null {
-        // 如果已经是节点ID格式（n开头），直接返回
-        if (stageId.startsWith('n')) {
+        // 如果已经是节点ID格式（L开头），直接返回
+        if (stageId.startsWith('L')) {
             return stageId;
         }
         
-        // 否则转换为节点ID格式
+        // 兼容旧格式：如果是n开头，转换为L格式
+        if (stageId.startsWith('n')) {
+            const num = parseInt(stageId.substring(1));
+            if (!isNaN(num)) {
+                return `L${num}_1`;
+            }
+        }
+        
+        // 否则转换为节点ID格式（假设是纯数字）
         const num = parseInt(stageId);
         if (isNaN(num)) {
             return null;
         }
         
-        return `n${num}`;
+        return `L${num}_1`;
     }
 
     /**
@@ -3272,18 +3457,30 @@ export class AutoChessMode {
      * 根据节点连接关系返回
      */
     private getConnectedNodes(nodeId: string): string[] {
-        // 节点连接关系（与客户端保持一致）
+        // 节点连接关系（新的层级结构）
+        // 只有第2层和第5层是分支点，其他层顺序解锁
         const nodeConnections: { [key: string]: string[] } = {
-            'n1': ['n2', 'n3'],      // 起始点 -> 森林小径, 危险矿洞
-            'n2': ['n4', 'n5'],      // 森林小径 -> 神秘商人, 野兽巢穴
-            'n3': ['n5', 'n6'],      // 危险矿洞 -> 野兽巢穴, 精英守卫
-            'n4': ['n7'],            // 神秘商人 -> 休息营地
-            'n5': ['n7', 'n8'],      // 野兽巢穴 -> 休息营地, 古老遗迹
-            'n6': ['n8'],            // 精英守卫 -> 古老遗迹
-            'n7': ['n9'],            // 休息营地 -> 黑暗前厅
-            'n8': ['n9', 'n10'],     // 古老遗迹 -> 黑暗前厅, 远古巨龙
-            'n9': ['n10'],           // 黑暗前厅 -> 远古巨龙
-            'n10': []                // 远古巨龙（Boss，无后续）
+            'L1_1': ['L2_1', 'L2_2', 'L2_3'],           // 第1层 -> 第2层（分支点1：可选3条路线）
+            'L2_1': ['L3_1'],                            // 第2层 -> 第3层（各走各的路）
+            'L2_2': ['L3_2'],
+            'L2_3': ['L3_3'],
+            'L3_1': ['L4_1'],                            // 第3层 -> 第4层（继续各自路线）
+            'L3_2': ['L4_2'],
+            'L3_3': ['L4_3'],
+            'L4_1': ['L5_1'],                            // 第4层 -> 第5层（到达分支点2）
+            'L4_2': ['L5_2'],
+            'L4_3': ['L5_3'],
+            'L5_1': ['L6_1', 'L6_2', 'L6_3'],           // 第5层 -> 第6层（分支点2：又可选3条路线）
+            'L5_2': ['L6_1', 'L6_2', 'L6_3'],
+            'L5_3': ['L6_1', 'L6_2', 'L6_3'],
+            'L6_1': ['L7_1'],                           // 第6层 -> 第7层（汇聚到单一路线）
+            'L6_2': ['L7_1'],
+            'L6_3': ['L7_1'],
+            'L7_1': ['L8_1'],                           // 第7层 -> 第8层
+            'L8_1': ['L9_1'],                           // 第8层 -> 第9层
+            'L9_1': ['L10_1'],                          // 第9层 -> 第10层
+            'L10_1': ['L11_1'],                         // 第10层 -> 第11层
+            'L11_1': []                                 // 第11层（Boss，无后续）
         };
         
         return nodeConnections[nodeId] || [];
@@ -3298,8 +3495,20 @@ export class AutoChessMode {
         // 构建节点状态数据
         const nodes: any[] = [];
         
-        // 获取所有节点（与客户端节点数据保持一致）
-        const allNodeIds = ['n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9', 'n10'];
+        // 获取所有节点（新的层级结构）
+        const allNodeIds = [
+            'L1_1',
+            'L2_1', 'L2_2', 'L2_3',
+            'L3_1', 'L3_2', 'L3_3',
+            'L4_1', 'L4_2', 'L4_3',
+            'L5_1', 'L5_2', 'L5_3',
+            'L6_1', 'L6_2', 'L6_3',
+            'L7_1',
+            'L8_1',
+            'L9_1',
+            'L10_1',
+            'L11_1'
+        ];
         
         for (const nodeId of allNodeIds) {
             let status: 'locked' | 'available' | 'current' | 'completed' = 'locked';
@@ -3398,12 +3607,11 @@ export class AutoChessMode {
             return;
         }
         
-        // 验证关卡ID是否有效
-        const stageIdNum = parseInt(stageId);
-        const stageConfig = StageConfigManager.getStageConfig(stageIdNum);
+        // 使用nodeId获取关卡配置
+        const stageConfig = StageConfigManager.getStageConfig(nodeId);
         
         if (!stageConfig) {
-            print(`[AutoChessMode] ERROR: 无效的关卡ID: ${stageId}`);
+            print(`[AutoChessMode] ERROR: 无效的关卡ID: ${stageId} (nodeId: ${nodeId})`);
             // 通知客户端选择失败
             (CustomGameEventManager.Send_ServerToPlayer as any)(
                 PlayerResource.GetPlayer(playerId),
@@ -3418,7 +3626,7 @@ export class AutoChessMode {
         }
         
         print(`[AutoChessMode] ========== 玩家选择关卡 ==========`);
-        print(`[AutoChessMode] Player ${playerId} selected stage: ${stageId} (${stageConfig.primaryNodeType})`);
+        print(`[AutoChessMode] Player ${playerId} selected stage: ${stageId} -> nodeId: ${nodeId} (${stageConfig.primaryNodeType})`);
 
         // 清理当前状态（如果有正在进行的战斗阶段，先停止）
         if (this.phaseTimer) {
@@ -3434,8 +3642,8 @@ export class AutoChessMode {
         // 重置结算状态
         this.resetWaveSettlementState();
 
-        // 记录选择
-        this.currentWaveStageSelection = stageId;
+        // 记录选择（使用nodeId）
+        this.currentWaveStageSelection = nodeId;
         print(`[AutoChessMode] 📝 已设置 currentWaveStageSelection = ${this.currentWaveStageSelection}`);
 
         // 通知客户端确认，进入准备阶段
@@ -3443,23 +3651,23 @@ export class AutoChessMode {
             'autochess_wave_stage_ack',
             {
                 playerId: playerId,
-                stageId: stageId,
+                stageId: nodeId,
                 success: true,
-                stageName: `关卡${stageId}`,
+                stageName: `关卡${nodeId}`,
                 stageType: stageConfig.primaryNodeType,
-                message: `已选择关卡${stageId}，准备开始...`
+                message: `已选择关卡${nodeId}，准备开始...`
             }
         );
 
-        // 开始10秒准备阶段
+        // 开始10秒准备阶段（使用nodeId）
         print(`[AutoChessMode] 开始10秒准备阶段...`);
-        this.startPreparationCountdown(playerId, stageIdNum);
+        this.startPreparationCountdown(playerId, nodeId);
     }
 
     /**
      * 开始准备阶段倒计时
      */
-    private startPreparationCountdown(playerId: PlayerID, stageId: number): void {
+    private startPreparationCountdown(playerId: PlayerID, stageIdOrNodeId: string | number): void {
         const PREP_TIME = 10;  // 准备阶段时长：10秒
         let timeLeft = PREP_TIME;
         
@@ -3484,7 +3692,7 @@ export class AutoChessMode {
             
             // 在准备阶段创建敌人棋子（但禁用攻击）
             print(`[AutoChessMode] 准备阶段：创建敌人棋子（禁用攻击）...`);
-            this.createEnemyPiecesForPreparation(stageId);
+            this.createEnemyPiecesForPreparation(stageIdOrNodeId);
             
             // 单机模式：准备阶段显示背包
             (CustomGameEventManager.Send_ServerToAllClients as any)('show_inventory', {});
@@ -3492,13 +3700,13 @@ export class AutoChessMode {
         } else {
             // 后续回合：在准备阶段也创建敌人棋子（但禁用攻击）
             print(`[AutoChessMode] 准备阶段：创建敌人棋子（禁用攻击）...`);
-            this.createEnemyPiecesForPreparation(stageId);
+            this.createEnemyPiecesForPreparation(stageIdOrNodeId);
         }
 
         // 通知客户端准备阶段开始
         (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_preparation_started', {
             timeLeft: timeLeft,
-            stageId: stageId
+            stageId: stageIdOrNodeId
         });
 
         // 创建倒计时计时器
@@ -3507,7 +3715,7 @@ export class AutoChessMode {
         const countdownTimer = Timers.CreateTimer(1.0, () => {
             timeLeft--;
             
-            print(`[AutoChessMode] 准备阶段倒计时: ${timeLeft}秒 (stageId: ${stageId}, playerId: ${playerId})`);
+            print(`[AutoChessMode] 准备阶段倒计时: ${timeLeft}秒 (stageId: ${stageIdOrNodeId}, playerId: ${playerId})`);
             
             // 🔑 剩余3秒时，检查并自动部署（在背包UI还可见时）
             if (timeLeft === 3 && !autoDeployTriggered) {
@@ -3530,14 +3738,14 @@ export class AutoChessMode {
             // 同步倒计时到客户端
             (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_preparation_countdown', {
                 timeLeft: timeLeft,
-                stageId: stageId
+                stageId: stageIdOrNodeId
             });
 
             if (timeLeft <= 0) {
                 // 准备阶段结束，开始战斗
                 print(`[AutoChessMode] ========== 准备阶段结束，开始生成怪物并战斗 ==========`);
-                print(`[AutoChessMode] 调用 startBattleWithStage(playerId: ${playerId}, stageId: ${stageId})`);
-                this.startBattleWithStage(playerId, stageId);
+                print(`[AutoChessMode] 调用 startBattleWithStage(playerId: ${playerId}, stageId: ${stageIdOrNodeId})`);
+                this.startBattleWithStage(playerId, stageIdOrNodeId);
                 return undefined; // 停止计时器
             }
 
@@ -3554,9 +3762,9 @@ export class AutoChessMode {
     /**
      * 使用选定的关卡开始战斗（单机模式）
      */
-    private startBattleWithStage(playerId: PlayerID, stageId: number): void {
+    private startBattleWithStage(playerId: PlayerID, stageIdOrNodeId: string | number): void {
         print(`[AutoChessMode] ========== 单机模式 - 开始战斗 ==========`);
-        print(`[AutoChessMode] 使用关卡: ${stageId}`);
+        print(`[AutoChessMode] 使用关卡: ${stageIdOrNodeId}`);
         print(`[AutoChessMode] 选关前回合: ${this.gameState.currentRound}`);
 
         // 设置游戏状态 - 先增加回合数，再设置阶段
@@ -3580,10 +3788,10 @@ export class AutoChessMode {
             this.battleSystem.clearPlayerPieces(-1);
             
             // 根据关卡配置生成敌人
-            print(`[AutoChessMode] 根据关卡 ${stageId} 配置生成敌人...`);
+            print(`[AutoChessMode] 根据关卡 ${stageIdOrNodeId} 配置生成敌人...`);
             for (const [pid, playerState] of this.gameState.playerStates) {
                 if (playerState.isAlive) {
-                    this.createEnemyForPlayer(pid, stageId, false); // false = 战斗阶段，启用攻击
+                    this.createEnemyForPlayer(pid, stageIdOrNodeId, false); // false = 战斗阶段，启用攻击
                 }
             }
         }
@@ -3624,6 +3832,19 @@ export class AutoChessMode {
         print(`[AutoChessMode] 启用所有单位攻击能力...`);
         this.battleSystem.enableAllAttacks();
 
+        // 给所有玩家的棋子添加强化技能
+        print(`[AutoChessMode] 🔮 应用海克斯强化技能...`);
+        for (const [pid, playerState] of this.gameState.playerStates) {
+            if (playerState.isAlive) {
+                const deployedPieces = this.battleSystem.getPlayerPieces(pid);
+                for (const piece of deployedPieces) {
+                    if (piece.unit && !piece.unit.IsNull()) {
+                        this.applyAugmentsToUnit(piece.unit, pid);
+                    }
+                }
+            }
+        }
+
         // 开始战斗
         this.startAllBattles();
 
@@ -3635,7 +3856,7 @@ export class AutoChessMode {
 
         // 通知客户端战斗开始
         (CustomGameEventManager.Send_ServerToAllClients as any)('autochess_battle_started', {
-            stageId: stageId,
+            stageId: stageIdOrNodeId,
             round: this.gameState.currentRound,
             timeLeft: this.gameState.phaseTimeLeft
         });
@@ -3928,6 +4149,12 @@ export class AutoChessMode {
         this.gameState.isGameActive = false;
         this.resetWaveSettlementState();
         
+        // 4.5. 重置关卡解锁状态（和 restartGame 保持一致）
+        this.completedStages.clear();
+        this.availableStages.clear();
+        this.initializeStageUnlock();
+        print('[AutoChessMode] ✅ 关卡解锁状态已重置');
+        
         // 5. 重置所有玩家状态（清空背包和棋盘）
         for (const [playerId, playerState] of this.gameState.playerStates) {
             playerState.health = 100;
@@ -3954,5 +4181,140 @@ export class AutoChessMode {
         // 8. 通知客户端游戏已重置
         (CustomGameEventManager.Send_ServerToAllClients as any)('game_reset', {});
         print('[AutoChessMode] ✅ 游戏重新开始，已从背包随机抽取3个棋子');
+    }
+
+    /**
+     * 处理玩家选择强化
+     */
+    public handleAugmentSelection(playerId: PlayerID, augmentId: string): void {
+        print(`[AutoChessMode] Player ${playerId} selected augment: ${augmentId}`);
+        
+        // 验证强化是否有效
+        const augment = HextechAugmentConfig.getAugment(augmentId);
+        if (!augment) {
+            Warning(`Invalid augment ID: ${augmentId}`);
+            return;
+        }
+        
+        // 验证玩家是否已有该强化
+        if (this.augmentManager.hasAugment(playerId, augmentId)) {
+            Warning(`Player ${playerId} already has augment: ${augmentId}`);
+            return;
+        }
+        
+        // 添加强化到玩家
+        this.augmentManager.addAugment(playerId, augmentId);
+        
+        // 同步到客户端（更新UI显示）
+        this.syncPlayerAugments(playerId);
+        
+        print(`[AutoChessMode] ✅ Augment ${augmentId} added to player ${playerId}`);
+    }
+
+    /**
+     * 处理自动选择强化（玩家未选择时）
+     */
+    public handleAutoSelectAugment(playerId: PlayerID, optionIds: string[]): void {
+        if (optionIds.length === 0) {
+            print(`[AutoChessMode] No augment options to auto-select for player ${playerId}`);
+            return;
+        }
+        
+        // 从选项中随机选一个
+        const randomIndex = RandomInt(0, optionIds.length - 1);
+        const selectedId = optionIds[randomIndex];
+        
+        print(`[AutoChessMode] Auto-selecting augment for player ${playerId}: ${selectedId} (from ${optionIds.length} options)`);
+        this.handleAugmentSelection(playerId, selectedId);
+    }
+
+    /**
+     * 同步玩家强化到客户端
+     */
+    private syncPlayerAugments(playerId: PlayerID): void {
+        const augments = this.augmentManager.getPlayerAugments(playerId);
+        const augmentData = augments.map(id => {
+            const aug = HextechAugmentConfig.getAugment(id);
+            return aug ? {
+                id: aug.id,
+                displayName: aug.displayName,
+                icon: aug.icon,
+                rarity: aug.rarity
+            } : null;
+        }).filter(a => a !== null);
+        
+        const player = PlayerResource.GetPlayer(playerId);
+        if (player) {
+            (CustomGameEventManager.Send_ServerToPlayer as any)(
+                player,
+                'update_player_augments',
+                { augments: augmentData }
+            );
+            print(`[AutoChessMode] Synced ${augmentData.length} augments to player ${playerId}`);
+        }
+    }
+
+    /**
+     * 给单位添加玩家的所有强化技能
+     */
+    private applyAugmentsToUnit(unit: CDOTA_BaseNPC, playerId: PlayerID): void {
+        const augmentIds = this.augmentManager.getPlayerAugments(playerId);
+        
+        if (augmentIds.length === 0) {
+            return;
+        }
+        
+        print(`[AutoChessMode] Applying ${augmentIds.length} augments to unit ${unit.GetUnitName()}`);
+        
+        for (const augmentId of augmentIds) {
+            unit.AddAbility(augmentId);
+            const ability = unit.FindAbilityByName(augmentId);
+            if (ability) {
+                ability.SetLevel(1);
+                print(`[AutoChessMode]   ✅ Added augment: ${augmentId}`);
+            } else {
+                print(`[AutoChessMode]   ❌ Failed to add augment: ${augmentId}`);
+            }
+        }
+    }
+
+    /**
+     * 应用怪物强度倍率到单位
+     */
+    private applyMonsterStrength(
+        unit: CDOTA_BaseNPC, 
+        piece: ChessPiece, 
+        strength: { healthMultiplier: number; damageMultiplier: number; armorBonus?: number; baseValue: number }
+    ): void {
+        print(`[AutoChessMode] ========================================`);
+        print(`[AutoChessMode] 💪 应用强度倍率到 ${unit.GetUnitName()}`);
+        
+        // 应用生命值倍率
+        const baseHealth = piece.health;
+        const newMaxHealth = Math.floor(baseHealth * strength.healthMultiplier);
+        unit.SetBaseMaxHealth(newMaxHealth);
+        unit.SetMaxHealth(newMaxHealth);
+        unit.SetHealth(newMaxHealth);
+        print(`[AutoChessMode]    ❤️ 生命值: ${baseHealth} → ${newMaxHealth} (×${(strength.healthMultiplier * 100).toFixed(0)}%)`);
+        
+        // 应用攻击力倍率
+        const baseDamage = piece.damage;
+        const newDamage = Math.floor(baseDamage * strength.damageMultiplier);
+        unit.SetBaseDamageMin(newDamage);
+        unit.SetBaseDamageMax(newDamage);
+        print(`[AutoChessMode]    ⚔️ 攻击力: ${baseDamage} → ${newDamage} (×${(strength.damageMultiplier * 100).toFixed(0)}%)`);
+        
+        // 应用护甲加成
+        if (strength.armorBonus) {
+            const currentArmor = unit.GetPhysicalArmorValue(false);
+            unit.SetPhysicalArmorBaseValue(currentArmor + strength.armorBonus);
+            print(`[AutoChessMode]    🛡️ 护甲加成: +${strength.armorBonus}`);
+        }
+        
+        // 验证最终属性
+        const finalHealth = unit.GetMaxHealth();
+        const finalDamage = unit.GetBaseDamageMin();
+        print(`[AutoChessMode]    ✅ 最终属性: HP=${finalHealth}, DMG=${finalDamage}`);
+        print(`[AutoChessMode] ========================================`);
     }
 }

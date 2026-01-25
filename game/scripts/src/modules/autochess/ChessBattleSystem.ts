@@ -213,25 +213,26 @@ export class ChessBattleSystem {
 
     /**
      * 部署棋子到棋盘
+     * @returns 部署的棋子对象，失败时返回 null
      */
-    public deployPiece(playerId: PlayerID, pieceId: string, position: BoardPosition): boolean {
+    public deployPiece(playerId: PlayerID, pieceId: string, position: BoardPosition): DeployedPiece | null {
         // 验证位置
         if (!this.isValidPosition(position)) {
             print(`[ChessBattleSystem] Invalid position: ${position.x}, ${position.y}`);
-            return false;
+            return null;
         }
 
         // 检查位置是否已占用
         if (this.isPieceAtPosition(playerId, position)) {
             print(`[ChessBattleSystem] Position already occupied`);
-            return false;
+            return null;
         }
 
         // 获取棋子定义（从AutoChessMode的数据库）
         const chessPiece = this.getChessPieceDefinition(pieceId);
         if (!chessPiece) {
             print(`[ChessBattleSystem] Chess piece not found: ${pieceId}`);
-            return false;
+            return null;
         }
 
         // 创建单位
@@ -256,7 +257,7 @@ export class ChessBattleSystem {
 
         if (!unit || unit.IsNull()) {
             print(`[ChessBattleSystem] Failed to create unit: ${chessPiece.unitName}`);
-            return false;
+            return null;
         }
 
         // 应用棋子属性
@@ -317,7 +318,7 @@ export class ChessBattleSystem {
         this.playerDeployedPieces.set(playerId, playerPieces);
 
         print(`[ChessBattleSystem] Player ${playerId} deployed ${pieceId} at (${position.x}, ${position.y})`);
-        return true;
+        return deployed;
     }
 
     /**
@@ -929,7 +930,7 @@ export class ChessBattleSystem {
                 this.drawHexAt(center, r, duration, colorR, colorG, colorB);
             }
         }
-        // print('[ChessBattleSystem] Recreated pointy-top blue hex grid.');
+        print(`[ChessBattleSystem] ✨ Recreated ${rows * cols} hex cells (pointy-top blue grid)`);
     }
 
     private drawHexAt(center: Vector, radius: number, duration: number, r: number, g: number, b: number): void {

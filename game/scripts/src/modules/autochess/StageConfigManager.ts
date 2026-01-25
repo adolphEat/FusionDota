@@ -75,9 +75,47 @@ export interface MonsterCountConfig {
 }
 
 /**
+ * 层级配置接口
+ */
+export interface LayerConfig {
+    layerId: number;           // 层级ID (1-11)
+    nodes: LayerNodeConfig[];  // 该层的所有节点选项
+}
+
+/**
+ * 怪物强度配置
+ */
+export interface MonsterStrengthConfig {
+    healthMultiplier: number;  // 生命值倍数 (例如: 0.45 表示基础值的45%)
+    damageMultiplier: number;  // 攻击力倍数 (例如: 0.45 表示基础值的45%)
+    armorBonus?: number;       // 护甲加成 (可选)
+    baseValue: number;         // 基础强度值 (0.45 - 0.80)
+}
+
+/**
+ * 层级节点配置接口
+ */
+export interface LayerNodeConfig {
+    nodeId: string;            // 节点ID，格式: L{layer}_{index}，如 L1_1, L2_1
+    layerId: number;           // 所属层级
+    nodeIndex: number;         // 节点在该层的索引
+    nodeType: NodeType;        // 节点类型
+    isEventNode: boolean;      // 是否为事件节点
+    healPercentage?: number;   // 事件节点回血百分比
+    dropRates: CardDropRates;  // 掉落概率
+    monsterCountConfig: MonsterCountConfig; // 怪物数量配置
+    monsterStrength: MonsterStrengthConfig; // 怪物强度配置
+}
+
+/**
  * 关卡配置管理器
  */
 export class StageConfigManager {
+    // 层级配置（新）
+    private static layerConfigs: Map<number, LayerConfig> = new Map();
+    private static nodeConfigs: Map<string, LayerNodeConfig> = new Map();
+    
+    // 保留旧的关卡配置以保证兼容性
     private static stageConfigs: Map<number, StageNodeConfig> = new Map();
     
     // 英雄费用配置
@@ -148,6 +186,328 @@ export class StageConfigManager {
 
         print(`[StageConfigManager] Initialized ${allHeroes.length} hero cost configurations`);
         print(`[StageConfigManager] Cost distribution: 1费=${cost1Heroes.length}, 2费=${cost2Heroes.length}, 3费=${cost3Heroes.length}, 4费=${cost4Heroes.length}, 5费=${cost5Heroes.length}`);
+    }
+
+    /**
+     * 初始化层级配置（新）
+     */
+    public static initializeLayerConfigs(): void {
+        const emptyDropRates: CardDropRates = { cost1: 0, cost2: 0, cost3: 0, cost4: 0, cost5: 0 };
+        const emptyMonsterConfig: MonsterCountConfig = { options: [{ count: 0, probability: 100 }] };
+        const emptyStrength: MonsterStrengthConfig = { healthMultiplier: 1.0, damageMultiplier: 1.0, baseValue: 0.0 };
+
+        // 第1层: 1个节点 - 基础强度 45%
+        const layer1Nodes: LayerNodeConfig[] = [
+            {
+                nodeId: 'L1_1',
+                layerId: 1,
+                nodeIndex: 1,
+                nodeType: NodeType.NORMAL_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 100, cost2: 0, cost3: 0, cost4: 0, cost5: 0 },
+                monsterCountConfig: { options: [{ count: 1, probability: 100 }] },
+                monsterStrength: { healthMultiplier: 0.45, damageMultiplier: 0.45, baseValue: 0.45 }
+            }
+        ];
+        this.layerConfigs.set(1, { layerId: 1, nodes: layer1Nodes });
+        layer1Nodes.forEach(node => this.nodeConfigs.set(node.nodeId, node));
+
+        // 第2层: 3个节点 (精英战斗/普通战斗/普通战斗) - 基础强度 45%
+        const layer2Nodes: LayerNodeConfig[] = [
+            {
+                nodeId: 'L2_1',
+                layerId: 2,
+                nodeIndex: 1,
+                nodeType: NodeType.ELITE_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 70, cost2: 27, cost3: 3, cost4: 0, cost5: 0 },
+                monsterCountConfig: { options: [{ count: 2, probability: 100 }] },
+                monsterStrength: { healthMultiplier: 0.45, damageMultiplier: 0.45, baseValue: 0.45 }
+            },
+            {
+                nodeId: 'L2_2',
+                layerId: 2,
+                nodeIndex: 2,
+                nodeType: NodeType.NORMAL_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 100, cost2: 0, cost3: 0, cost4: 0, cost5: 0 },
+                monsterCountConfig: { options: [{ count: 2, probability: 100 }] },
+                monsterStrength: { healthMultiplier: 0.45, damageMultiplier: 0.45, baseValue: 0.45 }
+            },
+            {
+                nodeId: 'L2_3',
+                layerId: 2,
+                nodeIndex: 3,
+                nodeType: NodeType.NORMAL_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 100, cost2: 0, cost3: 0, cost4: 0, cost5: 0 },
+                monsterCountConfig: { options: [{ count: 2, probability: 100 }] },
+                monsterStrength: { healthMultiplier: 0.45, damageMultiplier: 0.45, baseValue: 0.45 }
+            }
+        ];
+        this.layerConfigs.set(2, { layerId: 2, nodes: layer2Nodes });
+        layer2Nodes.forEach(node => this.nodeConfigs.set(node.nodeId, node));
+
+        // 第3层: 3个节点 (普通战斗/事件/事件) - 基础强度 50%
+        const layer3Nodes: LayerNodeConfig[] = [
+            {
+                nodeId: 'L3_1',
+                layerId: 3,
+                nodeIndex: 1,
+                nodeType: NodeType.NORMAL_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 100, cost2: 0, cost3: 0, cost4: 0, cost5: 0 },
+                monsterCountConfig: {
+                    options: [
+                        { count: 3, probability: 40 },
+                        { count: 2, probability: 60 }
+                    ]
+                },
+                monsterStrength: { healthMultiplier: 0.50, damageMultiplier: 0.50, baseValue: 0.50 }
+            },
+            {
+                nodeId: 'L3_2',
+                layerId: 3,
+                nodeIndex: 2,
+                nodeType: NodeType.EVENT,
+                isEventNode: true,
+                healPercentage: 20,
+                dropRates: emptyDropRates,
+                monsterCountConfig: emptyMonsterConfig,
+                monsterStrength: emptyStrength
+            },
+            {
+                nodeId: 'L3_3',
+                layerId: 3,
+                nodeIndex: 3,
+                nodeType: NodeType.EVENT,
+                isEventNode: true,
+                healPercentage: 20,
+                dropRates: emptyDropRates,
+                monsterCountConfig: emptyMonsterConfig,
+                monsterStrength: emptyStrength
+            }
+        ];
+        this.layerConfigs.set(3, { layerId: 3, nodes: layer3Nodes });
+        layer3Nodes.forEach(node => this.nodeConfigs.set(node.nodeId, node));
+
+        // 第4层: 3个节点 (事件/精英战斗/普通战斗) - 基础强度 50%
+        const layer4Nodes: LayerNodeConfig[] = [
+            {
+                nodeId: 'L4_1',
+                layerId: 4,
+                nodeIndex: 1,
+                nodeType: NodeType.EVENT,
+                isEventNode: true,
+                healPercentage: 20,
+                dropRates: emptyDropRates,
+                monsterCountConfig: emptyMonsterConfig,
+                monsterStrength: emptyStrength
+            },
+            {
+                nodeId: 'L4_2',
+                layerId: 4,
+                nodeIndex: 2,
+                nodeType: NodeType.ELITE_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 50, cost2: 35, cost3: 10, cost4: 4, cost5: 1 },
+                monsterCountConfig: {
+                    options: [
+                        { count: 4, probability: 50 },
+                        { count: 3, probability: 50 }
+                    ]
+                },
+                monsterStrength: { healthMultiplier: 0.50, damageMultiplier: 0.50, baseValue: 0.50 }
+            },
+            {
+                nodeId: 'L4_3',
+                layerId: 4,
+                nodeIndex: 3,
+                nodeType: NodeType.NORMAL_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 100, cost2: 0, cost3: 0, cost4: 0, cost5: 0 },
+                monsterCountConfig: {
+                    options: [
+                        { count: 4, probability: 50 },
+                        { count: 3, probability: 50 }
+                    ]
+                },
+                monsterStrength: { healthMultiplier: 0.50, damageMultiplier: 0.50, baseValue: 0.50 }
+            }
+        ];
+        this.layerConfigs.set(4, { layerId: 4, nodes: layer4Nodes });
+        layer4Nodes.forEach(node => this.nodeConfigs.set(node.nodeId, node));
+
+        // 第5层: 3个节点 (精英战斗/事件/精英战斗) - 基础强度 55%
+        const layer5Nodes: LayerNodeConfig[] = [
+            {
+                nodeId: 'L5_1',
+                layerId: 5,
+                nodeIndex: 1,
+                nodeType: NodeType.ELITE_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 50, cost2: 35, cost3: 10, cost4: 4, cost5: 1 },
+                monsterCountConfig: {
+                    options: [
+                        { count: 4, probability: 50 },
+                        { count: 3, probability: 50 }
+                    ]
+                },
+                monsterStrength: { healthMultiplier: 0.55, damageMultiplier: 0.55, baseValue: 0.55 }
+            },
+            {
+                nodeId: 'L5_2',
+                layerId: 5,
+                nodeIndex: 2,
+                nodeType: NodeType.EVENT,
+                isEventNode: true,
+                healPercentage: 20,
+                dropRates: emptyDropRates,
+                monsterCountConfig: emptyMonsterConfig,
+                monsterStrength: emptyStrength
+            },
+            {
+                nodeId: 'L5_3',
+                layerId: 5,
+                nodeIndex: 3,
+                nodeType: NodeType.ELITE_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 50, cost2: 35, cost3: 10, cost4: 4, cost5: 1 },
+                monsterCountConfig: {
+                    options: [
+                        { count: 4, probability: 50 },
+                        { count: 3, probability: 50 }
+                    ]
+                },
+                monsterStrength: { healthMultiplier: 0.55, damageMultiplier: 0.55, baseValue: 0.55 }
+            }
+        ];
+        this.layerConfigs.set(5, { layerId: 5, nodes: layer5Nodes });
+        layer5Nodes.forEach(node => this.nodeConfigs.set(node.nodeId, node));
+
+        // 第6层: 3个节点 (普通战斗/普通战斗/事件) - 基础强度 55%
+        const layer6Nodes: LayerNodeConfig[] = [
+            {
+                nodeId: 'L6_1',
+                layerId: 6,
+                nodeIndex: 1,
+                nodeType: NodeType.NORMAL_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 60, cost2: 35, cost3: 5, cost4: 0, cost5: 0 },
+                monsterCountConfig: { options: [{ count: 5, probability: 100 }] },
+                monsterStrength: { healthMultiplier: 0.55, damageMultiplier: 0.55, baseValue: 0.55 }
+            },
+            {
+                nodeId: 'L6_2',
+                layerId: 6,
+                nodeIndex: 2,
+                nodeType: NodeType.NORMAL_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 60, cost2: 35, cost3: 5, cost4: 0, cost5: 0 },
+                monsterCountConfig: { options: [{ count: 5, probability: 100 }] },
+                monsterStrength: { healthMultiplier: 0.55, damageMultiplier: 0.55, baseValue: 0.55 }
+            },
+            {
+                nodeId: 'L6_3',
+                layerId: 6,
+                nodeIndex: 3,
+                nodeType: NodeType.EVENT,
+                isEventNode: true,
+                healPercentage: 20,
+                dropRates: emptyDropRates,
+                monsterCountConfig: emptyMonsterConfig,
+                monsterStrength: emptyStrength
+            }
+        ];
+        this.layerConfigs.set(6, { layerId: 6, nodes: layer6Nodes });
+        layer6Nodes.forEach(node => this.nodeConfigs.set(node.nodeId, node));
+
+        // 第7层: 1个节点 (普通战斗) - 基础强度 60%
+        const layer7Nodes: LayerNodeConfig[] = [
+            {
+                nodeId: 'L7_1',
+                layerId: 7,
+                nodeIndex: 1,
+                nodeType: NodeType.NORMAL_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 50, cost2: 35, cost3: 10, cost4: 4, cost5: 1 },
+                monsterCountConfig: { options: [{ count: 6, probability: 100 }] },
+                monsterStrength: { healthMultiplier: 0.60, damageMultiplier: 0.60, baseValue: 0.60 }
+            }
+        ];
+        this.layerConfigs.set(7, { layerId: 7, nodes: layer7Nodes });
+        layer7Nodes.forEach(node => this.nodeConfigs.set(node.nodeId, node));
+
+        // 第8层: 1个节点 (精英战斗) - 基础强度 65%
+        const layer8Nodes: LayerNodeConfig[] = [
+            {
+                nodeId: 'L8_1',
+                layerId: 8,
+                nodeIndex: 1,
+                nodeType: NodeType.ELITE_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 25, cost2: 30, cost3: 30, cost4: 12, cost5: 3 },
+                monsterCountConfig: { options: [{ count: 7, probability: 100 }] },
+                monsterStrength: { healthMultiplier: 0.65, damageMultiplier: 0.65, baseValue: 0.65 }
+            }
+        ];
+        this.layerConfigs.set(8, { layerId: 8, nodes: layer8Nodes });
+        layer8Nodes.forEach(node => this.nodeConfigs.set(node.nodeId, node));
+
+        // 第9层: 1个节点 (事件/撤离 - 不回血) - 基础强度 70%
+        const layer9Nodes: LayerNodeConfig[] = [
+            {
+                nodeId: 'L9_1',
+                layerId: 9,
+                nodeIndex: 1,
+                nodeType: NodeType.EVENT_EVACUATE,
+                isEventNode: true,
+                healPercentage: 0, // 特殊事件，不回血
+                dropRates: emptyDropRates,
+                monsterCountConfig: emptyMonsterConfig,
+                monsterStrength: emptyStrength
+            }
+        ];
+        this.layerConfigs.set(9, { layerId: 9, nodes: layer9Nodes });
+        layer9Nodes.forEach(node => this.nodeConfigs.set(node.nodeId, node));
+
+        // 第10层: 1个节点 (精英战斗) - 基础强度 75%
+        const layer10Nodes: LayerNodeConfig[] = [
+            {
+                nodeId: 'L10_1',
+                layerId: 10,
+                nodeIndex: 1,
+                nodeType: NodeType.ELITE_BATTLE,
+                isEventNode: false,
+                dropRates: { cost1: 20, cost2: 25, cost3: 30, cost4: 20, cost5: 5 },
+                monsterCountConfig: { options: [{ count: 8, probability: 100 }] },
+                monsterStrength: { healthMultiplier: 0.75, damageMultiplier: 0.75, baseValue: 0.75 }
+            }
+        ];
+        this.layerConfigs.set(10, { layerId: 10, nodes: layer10Nodes });
+        layer10Nodes.forEach(node => this.nodeConfigs.set(node.nodeId, node));
+
+        // 第11层: 1个节点 (Boss) - 基础强度 80%
+        const layer11Nodes: LayerNodeConfig[] = [
+            {
+                nodeId: 'L11_1',
+                layerId: 11,
+                nodeIndex: 1,
+                nodeType: NodeType.BOSS,
+                isEventNode: false,
+                dropRates: { cost1: 15, cost2: 20, cost3: 25, cost4: 30, cost5: 10 },
+                monsterCountConfig: {
+                    options: [{ count: 7, probability: 100 }],
+                    specialCount: 1,
+                    specialType: 'boss'
+                },
+                monsterStrength: { healthMultiplier: 0.80, damageMultiplier: 0.80, baseValue: 0.80 }
+            }
+        ];
+        this.layerConfigs.set(11, { layerId: 11, nodes: layer11Nodes });
+        layer11Nodes.forEach(node => this.nodeConfigs.set(node.nodeId, node));
+
+        print(`[StageConfigManager] Initialized ${this.layerConfigs.size} layers with ${this.nodeConfigs.size} nodes`);
     }
 
     /**
@@ -327,7 +687,38 @@ export class StageConfigManager {
      */
     public static initialize(): void {
         this.initializeHeroCostConfigs();
+        this.initializeLayerConfigs();
         this.initializeStageConfigs();
+    }
+
+    /**
+     * 获取层级配置
+     */
+    public static getLayerConfig(layerId: number): LayerConfig | null {
+        return this.layerConfigs.get(layerId) || null;
+    }
+
+    /**
+     * 获取节点配置（主要使用）
+     */
+    public static getNodeConfig(nodeId: string): LayerNodeConfig | null {
+        return this.nodeConfigs.get(nodeId) || null;
+    }
+
+    /**
+     * 获取层级的所有节点
+     */
+    public static getLayerNodes(layerId: number): LayerNodeConfig[] {
+        const layerConfig = this.getLayerConfig(layerId);
+        return layerConfig ? layerConfig.nodes : [];
+    }
+
+    /**
+     * 检查节点是否为事件节点
+     */
+    public static isEventNode(nodeId: string): boolean {
+        const nodeConfig = this.getNodeConfig(nodeId);
+        return nodeConfig ? nodeConfig.isEventNode : false;
     }
 
     /**
@@ -364,10 +755,10 @@ export class StageConfigManager {
     }
 
     /**
-     * 根据关卡和节点类型随机获取一个英雄ID
+     * 根据关卡和节点类型随机获取一个英雄ID（兼容性方法）
      */
-    public static rollHeroByStage(stageId: number, isElite: boolean): string | null {
-        const cost = this.rollCardCost(stageId, isElite);
+    public static rollHeroByStage(stageIdOrNodeId: number | string, isElite: boolean): string | null {
+        const cost = this.rollCardCost(stageIdOrNodeId, isElite);
         return this.getRandomHeroByCost(cost);
     }
 
@@ -390,10 +781,47 @@ export class StageConfigManager {
     }
 
     /**
-     * 获取关卡配置
+     * 获取关卡配置（兼容性方法）
+     * 支持旧的stageId(number)和新的nodeId(string)格式
      */
-    public static getStageConfig(stageId: number): StageNodeConfig | null {
-        return this.stageConfigs.get(stageId) || null;
+    public static getStageConfig(stageIdOrNodeId: number | string): StageNodeConfig | null {
+        // 如果是string，尝试从新的nodeConfigs中获取
+        if (typeof stageIdOrNodeId === 'string') {
+            const nodeConfig = this.getNodeConfig(stageIdOrNodeId);
+            if (nodeConfig) {
+                // 转换为StageNodeConfig格式
+                return {
+                    stageId: nodeConfig.layerId,
+                    nodeLevel: nodeConfig.layerId,
+                    primaryNodeType: nodeConfig.nodeType,
+                    secondaryNodeType: nodeConfig.nodeType,
+                    normalNodeDropRates: nodeConfig.dropRates,
+                    eliteNodeDropRates: nodeConfig.dropRates,
+                    averageDropRates: nodeConfig.dropRates,
+                    monsterCountConfig: nodeConfig.monsterCountConfig
+                };
+            }
+            return null;
+        }
+        
+        // 如果是number，尝试转换为nodeId格式
+        const nodeId = `L${stageIdOrNodeId}_1`;
+        const nodeConfig = this.getNodeConfig(nodeId);
+        if (nodeConfig) {
+            return {
+                stageId: nodeConfig.layerId,
+                nodeLevel: nodeConfig.layerId,
+                primaryNodeType: nodeConfig.nodeType,
+                secondaryNodeType: nodeConfig.nodeType,
+                normalNodeDropRates: nodeConfig.dropRates,
+                eliteNodeDropRates: nodeConfig.dropRates,
+                averageDropRates: nodeConfig.dropRates,
+                monsterCountConfig: nodeConfig.monsterCountConfig
+            };
+        }
+        
+        // 后备：从旧的stageConfigs中获取
+        return this.stageConfigs.get(stageIdOrNodeId) || null;
     }
 
     /**
@@ -404,22 +832,35 @@ export class StageConfigManager {
     }
 
     /**
-     * 根据节点类型和关卡ID获取掉落概率
+     * 根据节点类型和关卡ID获取掉落概率（兼容性方法）
      */
-    public static getDropRates(stageId: number, isElite: boolean): CardDropRates | null {
-        const config = this.getStageConfig(stageId);
+    public static getDropRates(stageIdOrNodeId: number | string, isElite: boolean): CardDropRates | null {
+        // 如果是string，直接从nodeConfig获取
+        if (typeof stageIdOrNodeId === 'string') {
+            const nodeConfig = this.getNodeConfig(stageIdOrNodeId);
+            return nodeConfig ? nodeConfig.dropRates : null;
+        }
+        
+        // 如果是number，尝试转换为nodeId
+        const nodeId = `L${stageIdOrNodeId}_1`;
+        const nodeConfig = this.getNodeConfig(nodeId);
+        if (nodeConfig) {
+            return nodeConfig.dropRates;
+        }
+        
+        // 后备：使用旧逻辑
+        const config = this.stageConfigs.get(stageIdOrNodeId);
         if (!config) {
             return null;
         }
-
         return isElite ? config.eliteNodeDropRates : config.normalNodeDropRates;
     }
 
     /**
-     * 根据概率随机获取费用卡
+     * 根据概率随机获取费用卡（兼容性方法）
      */
-    public static rollCardCost(stageId: number, isElite: boolean): number {
-        const dropRates = this.getDropRates(stageId, isElite);
+    public static rollCardCost(stageIdOrNodeId: number | string, isElite: boolean): number {
+        const dropRates = this.getDropRates(stageIdOrNodeId, isElite);
         if (!dropRates) {
             return 1; // 默认返回1费卡
         }
@@ -456,10 +897,10 @@ export class StageConfigManager {
     }
 
     /**
-     * 根据关卡配置随机获取怪物数量
+     * 根据关卡配置随机获取怪物数量（兼容性方法）
      */
-    public static rollMonsterCount(stageId: number): { normalCount: number; specialCount?: number; specialType?: string } {
-        const config = this.getStageConfig(stageId);
+    public static rollMonsterCount(stageIdOrNodeId: number | string): { normalCount: number; specialCount?: number; specialType?: string } {
+        const config = this.getStageConfig(stageIdOrNodeId);
         if (!config || !config.monsterCountConfig) {
             return { normalCount: 1 }; // 默认返回1个
         }
@@ -505,19 +946,113 @@ export class StageConfigManager {
     }
 
     /**
-     * 获取关卡的怪物数量配置
+     * 获取关卡的怪物数量配置（兼容性方法）
      */
-    public static getMonsterCountConfig(stageId: number): MonsterCountConfig | null {
-        const config = this.getStageConfig(stageId);
+    public static getMonsterCountConfig(stageIdOrNodeId: number | string): MonsterCountConfig | null {
+        const config = this.getStageConfig(stageIdOrNodeId);
         return config ? config.monsterCountConfig : null;
     }
 
     /**
-     * 获取关卡的怪物总数（普通怪物 + 特殊怪物）
+     * 获取关卡的怪物总数（普通怪物 + 特殊怪物）（兼容性方法）
      */
-    public static getTotalMonsterCount(stageId: number): number {
-        const result = this.rollMonsterCount(stageId);
+    public static getTotalMonsterCount(stageIdOrNodeId: number | string): number {
+        const result = this.rollMonsterCount(stageIdOrNodeId);
         return result.normalCount + (result.specialCount || 0);
+    }
+
+    /**
+     * 获取节点的怪物强度配置（兼容性方法）
+     * @param stageIdOrNodeId 节点ID（如 "L1_1"）或关卡ID（数字）
+     * @returns 怪物强度配置，如果节点不存在则返回默认配置
+     */
+    public static getMonsterStrength(stageIdOrNodeId: string | number): MonsterStrengthConfig {
+        // 如果是数字，转换为节点ID格式
+        let nodeId: string;
+        if (typeof stageIdOrNodeId === 'number') {
+            nodeId = `L${stageIdOrNodeId}_1`;
+            print(`[StageConfigManager] Converting stage ID ${stageIdOrNodeId} to node ID: ${nodeId}`);
+        } else {
+            nodeId = stageIdOrNodeId;
+        }
+
+        const nodeConfig = this.getNodeConfig(nodeId);
+        if (nodeConfig && nodeConfig.monsterStrength) {
+            print(`[StageConfigManager] ✅ Found monster strength for ${nodeId}: HP=${nodeConfig.monsterStrength.healthMultiplier}, DMG=${nodeConfig.monsterStrength.damageMultiplier}`);
+            return nodeConfig.monsterStrength;
+        }
+        
+        // 如果是数字类型，尝试从旧的 stageConfigs 中获取
+        if (typeof stageIdOrNodeId === 'number') {
+            const stageConfig = this.stageConfigs.get(stageIdOrNodeId);
+            if (stageConfig) {
+                print(`[StageConfigManager] ⚠️ Using fallback: stage ${stageIdOrNodeId} found in old configs, returning default strength`);
+            }
+        }
+        
+        // 返回默认配置（100%基础强度）
+        print(`[StageConfigManager] ⚠️ Node ${nodeId} not found, returning default strength (100%)`);
+        return { healthMultiplier: 1.0, damageMultiplier: 1.0, baseValue: 1.0 };
+    }
+
+    /**
+     * 获取层级的平均怪物强度配置
+     * @param layerId 层级ID（1-11）
+     * @returns 该层所有战斗节点的平均强度配置
+     */
+    public static getLayerAverageStrength(layerId: number): MonsterStrengthConfig {
+        const layerNodes = this.getLayerNodes(layerId);
+        const battleNodes = layerNodes.filter(node => !node.isEventNode);
+        
+        if (battleNodes.length === 0) {
+            return { healthMultiplier: 1.0, damageMultiplier: 1.0, baseValue: 1.0 };
+        }
+
+        let totalHealth = 0;
+        let totalDamage = 0;
+        let totalBase = 0;
+
+        for (const node of battleNodes) {
+            totalHealth += node.monsterStrength.healthMultiplier;
+            totalDamage += node.monsterStrength.damageMultiplier;
+            totalBase += node.monsterStrength.baseValue;
+        }
+
+        const count = battleNodes.length;
+        return {
+            healthMultiplier: totalHealth / count,
+            damageMultiplier: totalDamage / count,
+            baseValue: totalBase / count
+        };
+    }
+
+    /**
+     * 应用怪物强度倍数到单位属性
+     * @param unit 要应用的单位
+     * @param baseHealth 基础生命值
+     * @param baseDamage 基础攻击力
+     * @param strength 强度配置
+     */
+    public static applyMonsterStrength(
+        unit: CDOTA_BaseNPC, 
+        baseHealth: number, 
+        baseDamage: number, 
+        strength: MonsterStrengthConfig
+    ): void {
+        const finalHealth = Math.floor(baseHealth * strength.healthMultiplier);
+        const finalDamage = Math.floor(baseDamage * strength.damageMultiplier);
+
+        unit.SetMaxHealth(finalHealth);
+        unit.SetHealth(finalHealth);
+        unit.SetBaseDamageMin(finalDamage);
+        unit.SetBaseDamageMax(finalDamage);
+
+        if (strength.armorBonus) {
+            const currentArmor = unit.GetPhysicalArmorBaseValue();
+            unit.SetPhysicalArmorBaseValue(currentArmor + strength.armorBonus);
+        }
+
+        print(`[StageConfigManager] Applied strength: HP ${baseHealth} → ${finalHealth} (${(strength.healthMultiplier * 100).toFixed(0)}%), DMG ${baseDamage} → ${finalDamage} (${(strength.damageMultiplier * 100).toFixed(0)}%)`);
     }
 }
 

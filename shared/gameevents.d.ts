@@ -48,6 +48,20 @@ declare interface CustomGameEventDeclarations {
     autochess_end_game: {};
     autochess_surrender: { playerId: number; };
     
+    // 海克斯强化系统事件
+    player_select_augment: {         // 客户端到服务端：玩家选择强化
+        PlayerID: PlayerID;
+        augmentId: string;
+    };
+    update_player_augments: {        // 服务端到客户端：更新玩家强化列表
+        augments: Array<{
+            id: string;
+            displayName: string;
+            icon: string;
+            rarity: string;
+        }>;
+    };
+    
     // 背包系统事件
     inventory_deploy_piece: {        // 客户端到服务端：部署棋子到棋盘
         playerId: number;

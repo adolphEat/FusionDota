@@ -422,23 +422,23 @@ function createTopInfoBar(parent: Panel): void {
     topBar.style.boxShadow = '0px 4px 20px rgba(0, 0, 0, 0.5)';
     topBar.style.flowChildren = 'right';
     
-    // 游戏时间
-    const timePanel = $.CreatePanel('Panel', topBar, 'GameTimePanel');
-    timePanel.style.width = '150px';
-    timePanel.style.height = '100%';
-    timePanel.style.flowChildren = 'down';
+    // 1. 当前游戏状态
+    const statePanel = $.CreatePanel('Panel', topBar, 'GameStatePanel');
+    statePanel.style.width = '150px';
+    statePanel.style.height = '100%';
+    statePanel.style.flowChildren = 'down';
     
-    const timeLabel = $.CreatePanel('Label', timePanel, 'GameTimeLabel');
-    timeLabel.text = '⏰ 游戏时间';
-    timeLabel.style.fontSize = '12px';
-    timeLabel.style.color = PLAYING_HUD_THEME.textSecondary;
-    timeLabel.style.opacity = '0.7';
+    const stateLabel = $.CreatePanel('Label', statePanel, 'GameStateLabel');
+    stateLabel.text = '游戏状态';
+    stateLabel.style.fontSize = '12px';
+    stateLabel.style.color = PLAYING_HUD_THEME.textSecondary;
+    stateLabel.style.opacity = '0.7';
     
-    const timeValue = $.CreatePanel('Label', timePanel, 'GameTimeValue');
-    timeValue.text = '00:00';
-    timeValue.style.fontSize = '20px';
-    timeValue.style.fontWeight = 'bold';
-    timeValue.style.color = PLAYING_HUD_THEME.textPrimary;
+    const stateValue = $.CreatePanel('Label', statePanel, 'GameStateValue');
+    stateValue.text = '等待中';
+    stateValue.style.fontSize = '20px';
+    stateValue.style.fontWeight = 'bold';
+    stateValue.style.color = PLAYING_HUD_THEME.textPrimary;
     
     // 分隔线
     const divider1 = $.CreatePanel('Panel', topBar, 'Divider1');
@@ -448,23 +448,23 @@ function createTopInfoBar(parent: Panel): void {
     divider1.style.opacity = '0.3';
     divider1.style.verticalAlign = 'center';
     
-    // 金币信息
-    const goldPanel = $.CreatePanel('Panel', topBar, 'GoldPanel');
-    goldPanel.style.width = '150px';
-    goldPanel.style.height = '100%';
-    goldPanel.style.flowChildren = 'down';
+    // 2. 备战倒计时
+    const countdownPanel = $.CreatePanel('Panel', topBar, 'PreparationCountdownPanel');
+    countdownPanel.style.width = '150px';
+    countdownPanel.style.height = '100%';
+    countdownPanel.style.flowChildren = 'down';
     
-    const goldLabel = $.CreatePanel('Label', goldPanel, 'GoldLabel');
-    goldLabel.text = '💰 金币';
-    goldLabel.style.fontSize = '12px';
-    goldLabel.style.color = PLAYING_HUD_THEME.textSecondary;
-    goldLabel.style.opacity = '0.7';
+    const countdownLabel = $.CreatePanel('Label', countdownPanel, 'CountdownLabel');
+    countdownLabel.text = '⏳ 备战倒计时';
+    countdownLabel.style.fontSize = '12px';
+    countdownLabel.style.color = PLAYING_HUD_THEME.textSecondary;
+    countdownLabel.style.opacity = '0.7';
     
-    const goldValue = $.CreatePanel('Label', goldPanel, 'GoldValue');
-    goldValue.text = '500';
-    goldValue.style.fontSize = '20px';
-    goldValue.style.fontWeight = 'bold';
-    goldValue.style.color = PLAYING_HUD_THEME.warning;
+    const countdownValue = $.CreatePanel('Label', countdownPanel, 'CountdownValue');
+    countdownValue.text = '--';
+    countdownValue.style.fontSize = '20px';
+    countdownValue.style.fontWeight = 'bold';
+    countdownValue.style.color = PLAYING_HUD_THEME.warning;
     
     // 分隔线
     const divider2 = $.CreatePanel('Panel', topBar, 'Divider2');
@@ -474,23 +474,23 @@ function createTopInfoBar(parent: Panel): void {
     divider2.style.opacity = '0.3';
     divider2.style.verticalAlign = 'center';
     
-    // 击杀信息
-    const killPanel = $.CreatePanel('Panel', topBar, 'KillPanel');
-    killPanel.style.width = 'fill-parent-flow(1)';
-    killPanel.style.height = '100%';
-    killPanel.style.flowChildren = 'down';
+    // 3. 当前游戏时长
+    const durationPanel = $.CreatePanel('Panel', topBar, 'GameDurationPanel');
+    durationPanel.style.width = 'fill-parent-flow(1)';
+    durationPanel.style.height = '100%';
+    durationPanel.style.flowChildren = 'down';
     
-    const killLabel = $.CreatePanel('Label', killPanel, 'KillLabel');
-    killLabel.text = '⚔️ 击杀/死亡/助攻';
-    killLabel.style.fontSize = '12px';
-    killLabel.style.color = PLAYING_HUD_THEME.textSecondary;
-    killLabel.style.opacity = '0.7';
+    const durationLabel = $.CreatePanel('Label', durationPanel, 'GameDurationLabel');
+    durationLabel.text = '⏰ 游戏时长';
+    durationLabel.style.fontSize = '12px';
+    durationLabel.style.color = PLAYING_HUD_THEME.textSecondary;
+    durationLabel.style.opacity = '0.7';
     
-    const killValue = $.CreatePanel('Label', killPanel, 'KillValue');
-    killValue.text = '0 / 0 / 0';
-    killValue.style.fontSize = '20px';
-    killValue.style.fontWeight = 'bold';
-    killValue.style.color = PLAYING_HUD_THEME.textAccent;
+    const durationValue = $.CreatePanel('Label', durationPanel, 'GameDurationValue');
+    durationValue.text = '00:00';
+    durationValue.style.fontSize = '20px';
+    durationValue.style.fontWeight = 'bold';
+    durationValue.style.color = PLAYING_HUD_THEME.textAccent;
 }
 
 // 旧的英雄信息面板函数已删除，替换为羁绊面板

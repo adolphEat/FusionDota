@@ -89,6 +89,13 @@ let selectedNode: StageNode | null = null;
 let currentStageData: StageData | null = null;
 let isVisible = false;
 
+// Drag scroll state
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let scrollStartX = 0;
+let scrollStartY = 0;
+
 // ============================================================================
 // Mock Data (for testing)
 // ============================================================================
@@ -96,29 +103,50 @@ let isVisible = false;
 function getMockStageData(): StageData {
     return {
         currentStage: 1,
-        maxStages: 10,
+        maxStages: 11,
         nodes: [
-            // Row 1 - Starting area (y: 25-65, 中心45，在屏幕中间)
-            { id: 'n1', name: '起始点', type: 'normal', status: 'completed', x: 10, y: 45, description: '旅程的起点', rewards: '无', icon: '', connections: ['n2', 'n3'] },
+            // 第1层 - 起始点
+            { id: 'L1_1', name: '起始点', type: 'normal', status: 'available', x: 8, y: 50, description: '旅程的起点', rewards: '无', icon: '', connections: ['L2_1', 'L2_2', 'L2_3'] },
             
-            // Row 2
-            { id: 'n2', name: '森林小径', type: 'normal', status: 'available', x: 25, y: 30, description: '穿越茂密的森林', rewards: '金币 +50', icon: '', connections: ['n4', 'n5'] },
-            { id: 'n3', name: '危险矿洞', type: 'hard', status: 'available', x: 25, y: 60, description: '充满危险的矿洞', rewards: '稀有装备', icon: '', connections: ['n5', 'n6'] },
+            // 第2层 - 3个节点（分支点1：可以选择3条路线）
+            { id: 'L2_1', name: '精英战斗', type: 'hard', status: 'locked', x: 18, y: 30, description: '精英怪物战斗', rewards: '高级奖励', icon: '', connections: ['L3_1'] },
+            { id: 'L2_2', name: '普通战斗', type: 'normal', status: 'locked', x: 18, y: 50, description: '普通怪物战斗', rewards: '基础奖励', icon: '', connections: ['L3_2'] },
+            { id: 'L2_3', name: '普通战斗', type: 'normal', status: 'locked', x: 18, y: 70, description: '普通怪物战斗', rewards: '基础奖励', icon: '', connections: ['L3_3'] },
             
-            // Row 3
-            { id: 'n4', name: '神秘商人', type: 'event', status: 'locked', x: 40, y: 20, description: '遇到神秘的商人', rewards: '特殊物品', icon: '', connections: ['n7'] },
-            { id: 'n5', name: '野兽巢穴', type: 'normal', status: 'locked', x: 40, y: 45, description: '野兽的栖息地', rewards: '经验 +100', icon: '', connections: ['n7', 'n8'] },
-            { id: 'n6', name: '精英守卫', type: 'hard', status: 'locked', x: 40, y: 70, description: '强力的精英怪物', rewards: '史诗装备', icon: '', connections: ['n8'] },
+            // 第3层 - 3个节点（各走各的路线）
+            { id: 'L3_1', name: '普通战斗', type: 'normal', status: 'locked', x: 28, y: 30, description: '普通怪物战斗', rewards: '基础奖励', icon: '', connections: ['L4_1'] },
+            { id: 'L3_2', name: '回血事件', type: 'event', status: 'locked', x: 28, y: 50, description: '恢复生命值', rewards: '回血20%', icon: '', connections: ['L4_2'] },
+            { id: 'L3_3', name: '回血事件', type: 'event', status: 'locked', x: 28, y: 70, description: '恢复生命值', rewards: '回血20%', icon: '', connections: ['L4_3'] },
             
-            // Row 4
-            { id: 'n7', name: '休息营地', type: 'event', status: 'locked', x: 55, y: 28, description: '可以恢复和升级', rewards: '恢复生命', icon: '', connections: ['n9'] },
-            { id: 'n8', name: '古老遗迹', type: 'normal', status: 'locked', x: 55, y: 58, description: '探索古老的遗迹', rewards: '金币 +100', icon: '', connections: ['n9', 'n10'] },
+            // 第4层 - 3个节点（继续各自路线）
+            { id: 'L4_1', name: '回血事件', type: 'event', status: 'locked', x: 38, y: 30, description: '恢复生命值', rewards: '回血20%', icon: '', connections: ['L5_1'] },
+            { id: 'L4_2', name: '精英战斗', type: 'hard', status: 'locked', x: 38, y: 50, description: '精英怪物战斗', rewards: '高级奖励', icon: '', connections: ['L5_2'] },
+            { id: 'L4_3', name: '普通战斗', type: 'normal', status: 'locked', x: 38, y: 70, description: '普通怪物战斗', rewards: '基础奖励', icon: '', connections: ['L5_3'] },
             
-            // Row 5 - Pre-boss
-            { id: 'n9', name: '黑暗前厅', type: 'hard', status: 'locked', x: 70, y: 40, description: 'Boss前的最后挑战', rewards: '大量经验', icon: '', connections: ['n10'] },
+            // 第5层 - 3个节点（分支点2：又可以选择3条路线）
+            { id: 'L5_1', name: '精英战斗', type: 'hard', status: 'locked', x: 48, y: 30, description: '精英怪物战斗', rewards: '高级奖励', icon: '', connections: ['L6_1', 'L6_2', 'L6_3'] },
+            { id: 'L5_2', name: '回血事件', type: 'event', status: 'locked', x: 48, y: 50, description: '恢复生命值', rewards: '回血20%', icon: '', connections: ['L6_1', 'L6_2', 'L6_3'] },
+            { id: 'L5_3', name: '精英战斗', type: 'hard', status: 'locked', x: 48, y: 70, description: '精英怪物战斗', rewards: '高级奖励', icon: '', connections: ['L6_1', 'L6_2', 'L6_3'] },
             
-            // Boss
-            { id: 'n10', name: '远古巨龙', type: 'boss', status: 'locked', x: 88, y: 40, description: '本章节最终Boss', rewards: '传说装备', icon: '', connections: [] }
+            // 第6层 - 3个节点（选择后各走各的路，然后汇聚）
+            { id: 'L6_1', name: '普通战斗', type: 'normal', status: 'locked', x: 58, y: 30, description: '普通怪物战斗', rewards: '基础奖励', icon: '', connections: ['L7_1'] },
+            { id: 'L6_2', name: '普通战斗', type: 'normal', status: 'locked', x: 58, y: 50, description: '普通怪物战斗', rewards: '基础奖励', icon: '', connections: ['L7_1'] },
+            { id: 'L6_3', name: '回血事件', type: 'event', status: 'locked', x: 58, y: 70, description: '恢复生命值', rewards: '回血20%', icon: '', connections: ['L7_1'] },
+            
+            // 第7层 - 1个节点（汇聚点，后续是单一路线）
+            { id: 'L7_1', name: '普通战斗', type: 'normal', status: 'locked', x: 68, y: 50, description: '普通怪物战斗', rewards: '基础奖励', icon: '', connections: ['L8_1'] },
+            
+            // 第8层 - 1个节点
+            { id: 'L8_1', name: '精英战斗', type: 'hard', status: 'locked', x: 75, y: 50, description: '精英怪物战斗', rewards: '高级奖励', icon: '', connections: ['L9_1'] },
+            
+            // 第9层 - 1个节点（撤离事件）
+            { id: 'L9_1', name: '撤离事件', type: 'event', status: 'locked', x: 82, y: 50, description: '决定是否继续前进', rewards: '特殊选择', icon: '', connections: ['L10_1'] },
+            
+            // 第10层 - 1个节点
+            { id: 'L10_1', name: '精英战斗', type: 'hard', status: 'locked', x: 89, y: 50, description: '强力精英战斗', rewards: '史诗奖励', icon: '', connections: ['L11_1'] },
+            
+            // 第11层 - Boss
+            { id: 'L11_1', name: 'Boss战', type: 'boss', status: 'locked', x: 96, y: 50, description: '最终Boss战斗', rewards: '传说装备', icon: '', connections: [] }
         ]
     };
 }
@@ -280,11 +308,12 @@ function createMapArea(parent: Panel): void {
     mapContainer.style.height = '100%';
     mapContainer.style.horizontalAlign = 'center';
     mapContainer.style.verticalAlign = 'center';
+    mapContainer.hittest = true;  // 确保可以接收鼠标事件
     
     // Map content with background
     const mapContent = $.CreatePanel('Panel', mapContainer, 'StageMapContent');
     mapContent.AddClass('stage_map_content');
-    mapContent.style.width = '1200px';
+    mapContent.style.width = '1800px';
     mapContent.style.height = '700px';
     mapContent.style.horizontalAlign = 'center';
     mapContent.style.verticalAlign = 'center';
@@ -292,11 +321,49 @@ function createMapArea(parent: Panel): void {
     mapContent.style.borderRadius = '20px';
     mapContent.style.border = '3px solid rgba(139, 90, 43, 0.5)';
     
+    // 添加背景拖拽层（在节点层之前创建，这样节点会在上层）
+    const dragBg = $.CreatePanel('Panel', mapContent, 'DragBackground');
+    dragBg.style.width = '100%';
+    dragBg.style.height = '100%';
+    dragBg.hittest = true;
+    dragBg.SetPanelEvent('onmousedown', () => {
+        isDragging = true;
+        const cursorPos = GameUI.GetCursorPosition();
+        dragStartX = cursorPos[0];
+        dragStartY = cursorPos[1];
+        scrollStartX = mapContainer.scrollLeft || 0;
+        scrollStartY = mapContainer.scrollTop || 0;
+        $.Msg('[StageSelect] Background drag started');
+        return true;
+    });
+    
+    dragBg.SetPanelEvent('onmousemove', () => {
+        if (!isDragging) return false;
+        const cursorPos = GameUI.GetCursorPosition();
+        const deltaX = dragStartX - cursorPos[0];
+        const deltaY = dragStartY - cursorPos[1];
+        mapContainer.ScrollToLeftOffset(scrollStartX + deltaX, false);
+        mapContainer.ScrollToTopOffset(scrollStartY + deltaY, false);
+        return true;
+    });
+    
+    dragBg.SetPanelEvent('onmouseup', () => {
+        if (isDragging) {
+            $.Msg('[StageSelect] Background drag ended');
+            isDragging = false;
+        }
+        return true;
+    });
+    
     // Nodes layer
     const nodesLayer = $.CreatePanel('Panel', mapContent, 'StageNodesLayer');
     nodesLayer.AddClass('stage_nodes_layer');
     nodesLayer.style.width = '100%';
     nodesLayer.style.height = '100%';
+    // 节点层本身不拦截事件，但子节点（节点按钮）会拦截
+    
+    // Setup mouse wheel scroll
+    $.Schedule(0.1, () => setupDragScroll(mapContainer));
 }
 
 function createFooter(parent: Panel): void {
@@ -456,7 +523,7 @@ function createStageNode(parent: Panel, node: StageNode): Panel {
     $.Msg(`[StageSelect] 创建节点 ${node.id}，状态: ${node.status}`);
     
     // Calculate position
-    const mapWidth = 1200;
+    const mapWidth = 1800;
     const mapHeight = 700;
     const nodeX = (node.x / 100) * mapWidth - STAGE_THEME.nodeSize / 2;
     const nodeY = (node.y / 100) * mapHeight - STAGE_THEME.nodeSize / 2;
@@ -554,7 +621,7 @@ function drawConnections(parent: Panel, nodes: StageNode[]): void {
 }
 
 function drawConnection(parent: Panel, from: StageNode, to: StageNode): void {
-    const mapWidth = 1200;
+    const mapWidth = 1800;
     const mapHeight = 700;
     
     const x1 = (from.x / 100) * mapWidth;
@@ -861,6 +928,29 @@ function toggleStageSelect(): void {
     } else {
         showStageSelect();
     }
+}
+
+// ============================================================================
+// Drag Scroll Functionality
+// ============================================================================
+
+function setupDragScroll(mapContainer: Panel): void {
+    $.Msg('[StageSelect] Setting up mouse wheel horizontal scroll...');
+    
+    // 使用鼠标滚轮进行水平滚动（Shift+滚轮）
+    mapContainer.SetPanelEvent('onmousewheelup', () => {
+        const currentScroll = mapContainer.scrollLeft || 0;
+        mapContainer.ScrollToLeftOffset(Math.max(0, currentScroll - 100), true);
+        return true;
+    });
+    
+    mapContainer.SetPanelEvent('onmousewheeldown', () => {
+        const currentScroll = mapContainer.scrollLeft || 0;
+        mapContainer.ScrollToLeftOffset(currentScroll + 100, true);
+        return true;
+    });
+    
+    $.Msg('[StageSelect] Mouse wheel scroll setup complete');
 }
 
 // ============================================================================

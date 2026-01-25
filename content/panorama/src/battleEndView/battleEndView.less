@@ -124,3 +124,25 @@
     }
 }
 
+// ==================================================
+// 海克斯强化选择区域样式
+// ==================================================
+
+.augment_card {
+    cursor: pointer;
+    transition-property: transform, box-shadow;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out;
+    
+    &:hover {
+        transform: scale3d(1.05, 1.05, 1.0);
+        box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.3);
+    }
+}
+
+.augment_card_selected {
+    box-shadow: 0px 0px 25px rgba(255, 215, 0, 0.9);
+    transform: scale3d(1.08, 1.08, 1.0);
+    border-color: #ffd700;
+}
+
