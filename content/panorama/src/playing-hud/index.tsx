@@ -495,11 +495,11 @@ function createTopInfoBar(parent: Panel): void {
 
 // 旧的英雄信息面板函数已删除，替换为羁绊面板
 
-// 创建右侧战斗信息面板
+// 创建右侧海克斯强化面板
 function createRightBattlePanel(parent: Panel): void {
     const rightPanel = $.CreatePanel('Panel', parent, 'RightBattlePanel');
     rightPanel.style.width = '280px';
-    rightPanel.style.height = '400px';
+    rightPanel.style.maxHeight = '600px';
     rightPanel.style.horizontalAlign = 'right';
     rightPanel.style.verticalAlign = 'top';
     rightPanel.style.marginTop = '100px';
@@ -510,92 +510,129 @@ function createRightBattlePanel(parent: Panel): void {
     rightPanel.style.padding = '20px';
     rightPanel.style.boxShadow = '0px 4px 20px rgba(0, 0, 0, 0.5)';
     rightPanel.style.flowChildren = 'down';
+    rightPanel.style.overflow = 'squish scroll';
     
     // 面板标题
-    const title = $.CreatePanel('Label', rightPanel, 'BattlePanelTitle');
-    title.text = '⚔️ 战斗信息';
+    const title = $.CreatePanel('Label', rightPanel, 'AugmentPanelTitle');
+    title.text = '✨ 海克斯强化';
     title.style.fontSize = '20px';
     title.style.fontWeight = 'bold';
     title.style.color = PLAYING_HUD_THEME.textAccent;
     title.style.marginBottom = '15px';
+    title.style.textAlign = 'center';
     
-    // 伤害统计
-    createDamageStats(rightPanel);
-    
-    // 战斗记录
-    createBattleLog(rightPanel);
+    // 海克斯强化列表容器
+    const augmentList = $.CreatePanel('Panel', rightPanel, 'AugmentList');
+    augmentList.style.width = '100%';
+    augmentList.style.flowChildren = 'down';
 }
 
-// 创建伤害统计
-function createDamageStats(parent: Panel): void {
-    const statsSection = $.CreatePanel('Panel', parent, 'DamageStatsSection');
-    statsSection.style.width = '100%';
-    statsSection.style.height = '150px';
-    statsSection.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
-    statsSection.style.borderRadius = '10px';
-    statsSection.style.padding = '10px';
-    statsSection.style.marginBottom = '15px';
-    statsSection.style.flowChildren = 'down';
+// 创建单个海克斯强化项
+function createAugmentItem(parent: Panel, augment: any): void {
+    const augmentItem = $.CreatePanel('Panel', parent, `Augment_${augment.id}`);
+    augmentItem.style.width = '100%';
+    augmentItem.style.marginBottom = '12px';
+    augmentItem.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
+    augmentItem.style.borderRadius = '10px';
+    augmentItem.style.padding = '12px';
+    augmentItem.style.flowChildren = 'right';
     
-    const statsTitle = $.CreatePanel('Label', statsSection, 'StatsTitle');
-    statsTitle.text = '📊 伤害统计';
-    statsTitle.style.fontSize = '14px';
-    statsTitle.style.fontWeight = 'bold';
-    statsTitle.style.color = PLAYING_HUD_THEME.textSecondary;
-    statsTitle.style.marginBottom = '10px';
+    // 稀有度边框颜色
+    const rarityColors: Record<string, string> = {
+        'common': 'rgba(148, 163, 184, 0.6)',
+        'rare': 'rgba(59, 130, 246, 0.8)',
+        'epic': 'rgba(168, 85, 247, 0.8)'
+    };
+    augmentItem.style.border = `2px solid ${rarityColors[augment.rarity] || rarityColors['common']}`;
     
-    const stats = [
-        { id: 'damage_dealt', label: '造成伤害:', value: '0' },
-        { id: 'damage_taken', label: '受到伤害:', value: '0' },
-        { id: 'healing', label: '治疗量:', value: '0' },
-        { id: 'dps', label: 'DPS:', value: '0' },
-    ];
+    // 图标
+    const icon = $.CreatePanel('Image', augmentItem, `AugmentIcon_${augment.id}`);
+    icon.SetImage(augment.icon);
+    icon.style.width = '48px';
+    icon.style.height = '48px';
+    icon.style.marginRight = '12px';
+    icon.style.borderRadius = '8px';
+    icon.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+    icon.style.backgroundColor = '#2a2a3a';
     
-    stats.forEach((stat, index) => {
-        const statRow = $.CreatePanel('Panel', statsSection, `StatRow_${stat.id}`);
-        statRow.style.width = '100%';
-        statRow.style.height = '25px';
-        statRow.style.marginBottom = '5px';
-        statRow.style.flowChildren = 'right';
-        
-        const label = $.CreatePanel('Label', statRow, `${stat.id}_Label`);
-        label.text = stat.label;
-        label.style.fontSize = '12px';
-        label.style.color = PLAYING_HUD_THEME.textSecondary;
-        label.style.width = '100px';
-        
-        const value = $.CreatePanel('Label', statRow, `${stat.id}_Value`);
-        value.text = stat.value;
-        value.style.fontSize = '12px';
-        value.style.fontWeight = 'bold';
-        value.style.color = PLAYING_HUD_THEME.textPrimary;
-        value.style.horizontalAlign = 'right';
-        value.style.width = 'fill-parent-flow(1)';
-    });
+    // 信息区域
+    const infoPanel = $.CreatePanel('Panel', augmentItem, `AugmentInfo_${augment.id}`);
+    infoPanel.style.width = 'fill-parent-flow(1)';
+    infoPanel.style.flowChildren = 'down';
+    
+    // 名称和稀有度行
+    const nameRow = $.CreatePanel('Panel', infoPanel, `AugmentNameRow_${augment.id}`);
+    nameRow.style.width = '100%';
+    nameRow.style.height = '22px';
+    nameRow.style.flowChildren = 'right';
+    nameRow.style.marginBottom = '4px';
+    
+    const name = $.CreatePanel('Label', nameRow, `AugmentName_${augment.id}`);
+    name.text = augment.displayName;
+    name.style.fontSize = '16px';
+    name.style.fontWeight = 'bold';
+    name.style.color = '#ffffff';
+    name.style.width = 'fill-parent-flow(1)';
+    
+    // 稀有度标签
+    const rarityLabel = $.CreatePanel('Label', nameRow, `AugmentRarity_${augment.id}`);
+    const rarityText: Record<string, string> = {
+        'common': '普通',
+        'rare': '稀有',
+        'epic': '史诗'
+    };
+    rarityLabel.text = rarityText[augment.rarity] || '';
+    rarityLabel.style.fontSize = '11px';
+    rarityLabel.style.color = rarityColors[augment.rarity] || rarityColors['common'];
+    rarityLabel.style.padding = '2px 8px';
+    rarityLabel.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+    rarityLabel.style.borderRadius = '4px';
+    rarityLabel.style.marginLeft = '8px';
+    
+    // 描述
+    const description = $.CreatePanel('Label', infoPanel, `AugmentDesc_${augment.id}`);
+    description.text = augment.description || '';
+    description.style.fontSize = '12px';
+    description.style.color = '#cbd5e1';
+    description.style.width = '100%';
 }
 
-// 创建战斗记录
-function createBattleLog(parent: Panel): void {
-    const logSection = $.CreatePanel('Panel', parent, 'BattleLogSection');
-    logSection.style.width = '100%';
-    logSection.style.height = 'fill-parent-flow(1)';
-    logSection.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
-    logSection.style.borderRadius = '10px';
-    logSection.style.padding = '10px';
-    logSection.style.flowChildren = 'down';
-    logSection.style.overflow = 'squish scroll';
+// 更新海克斯强化显示
+function updateAugmentsDisplay(augments: any[]): void {
+    $.Msg(`[PlayingHUD] 🔄 Updating augments display with ${augments.length} augments`);
     
-    const logTitle = $.CreatePanel('Label', logSection, 'LogTitle');
-    logTitle.text = '📝 战斗记录';
-    logTitle.style.fontSize = '14px';
-    logTitle.style.fontWeight = 'bold';
-    logTitle.style.color = PLAYING_HUD_THEME.textSecondary;
-    logTitle.style.marginBottom = '10px';
+    const rootPanel = $.GetContextPanel();
+    if (!rootPanel) {
+        $.Msg('[PlayingHUD] ⚠️ Root panel not found');
+        return;
+    }
     
-    const logContainer = $.CreatePanel('Panel', logSection, 'LogContainer');
-    logContainer.style.width = '100%';
-    logContainer.style.height = 'fill-parent-flow(1)';
-    logContainer.style.flowChildren = 'down';
+    const augmentList = rootPanel.FindChildInLayoutFile('AugmentList');
+    if (!augmentList) {
+        $.Msg('[PlayingHUD] ⚠️ Augment list container not found');
+        return;
+    }
+    
+    // 清空现有内容
+    augmentList.RemoveAndDeleteChildren();
+    
+    if (augments.length === 0) {
+        // 显示空状态提示
+        const emptyHint = $.CreatePanel('Label', augmentList, 'EmptyAugmentHint');
+        emptyHint.text = '暂无已选强化';
+        emptyHint.style.fontSize = '14px';
+        emptyHint.style.color = '#94a3b8';
+        emptyHint.style.textAlign = 'center';
+        emptyHint.style.marginTop = '20px';
+        emptyHint.style.opacity = '0.7';
+    } else {
+        // 显示强化列表
+        for (const augment of augments) {
+            createAugmentItem(augmentList, augment);
+        }
+    }
+    
+    $.Msg(`[PlayingHUD] ✅ Augments display updated`);
 }
 
 // 创建底部快捷栏
@@ -667,25 +704,6 @@ function createBottomQuickBar(parent: Panel): void {
     $.Msg(`🎮 Bottom quick bar created with ${quickActions.length} buttons`);
 }
 
-// 添加战斗记录
-function addBattleLog(message: string, type: string = 'info'): void {
-    const logContainer = $.GetContextPanel().FindChildInLayoutFile('LogContainer');
-    if (!logContainer) return;
-    
-    const logEntry = $.CreatePanel('Label', logContainer, `LogEntry_${Date.now()}`);
-    logEntry.text = message;
-    logEntry.style.fontSize = '11px';
-    logEntry.style.color = type === 'kill' ? PLAYING_HUD_THEME.success : 
-                           type === 'death' ? PLAYING_HUD_THEME.danger : 
-                           PLAYING_HUD_THEME.textSecondary;
-    logEntry.style.marginBottom = '2px';
-    
-    // 限制日志数量
-    const children = logContainer.Children();
-    if (children.length > 10) {
-        children[0].DeleteAsync(0);
-    }
-}
 
 // 🔑 更新羁绊UI显示
 function updateSynergyUI(synergiesData: any[]): void {
@@ -824,8 +842,13 @@ GameEvents.Subscribe('hero_stats_update', (data: any) => {
     }
 });
 
-GameEvents.Subscribe('battle_log', (data: any) => {
-    addBattleLog(data.message, data.type);
+// 🔑 监听海克斯强化更新事件
+GameEvents.Subscribe('update_player_augments', (data: any) => {
+    $.Msg(`[PlayingHUD] 🎯 Player augments update received`);
+    $.Msg(`[PlayingHUD] Augments count: ${data.augments.length}`);
+    
+    // 更新海克斯强化显示
+    updateAugmentsDisplay(data.augments);
 });
 
 // 🔑 监听战斗结束事件，确保原生UI保持隐藏
@@ -1047,13 +1070,17 @@ function startGameStateMonitor(): void {
     create: createPlayingHUD,
     show: showPlayingHUD,
     checkState: checkGameStateAndShowHUD,
-    addLog: addBattleLog,
     hideNativeUI: hideNativeUI,
     // 🔑 已删除showNativeUI - 不再需要恢复原生UI
-    // 预留羁绊更新接口
+    // 羁绊更新接口
     updateSynergy: (synergyData: any) => {
         $.Msg('Synergy update received:', synergyData);
         // TODO: 实现羁绊数据更新逻辑
+    },
+    // 海克斯强化更新接口
+    updateAugments: (augments: any[]) => {
+        $.Msg('Augments update received:', augments);
+        updateAugmentsDisplay(augments);
     }
 };
 

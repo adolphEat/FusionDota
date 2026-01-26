@@ -158,6 +158,24 @@ export class GameModeManager {
                 newMode: this.settings.currentMode,
                 config: this.getModeConfig()
             });
+            
+            // 如果是自走棋模式，在这里添加全地图视野（确保地图已加载）
+            if (this.settings.currentMode === GameMode.AUTOCHESS) {
+                const mapCenter = Vector(0, 0, 0);
+                const visionRadius = 99999;
+                const visionDuration = 99999;
+                
+                AddFOWViewer(DotaTeam.GOODGUYS, mapCenter, visionRadius, visionDuration, false);
+                print('[GameModeManager] Full map vision added for GOODGUYS team');
+                
+                // 每30秒刷新一次视野
+                Timers.CreateTimer(30, () => {
+                    AddFOWViewer(DotaTeam.GOODGUYS, mapCenter, visionRadius, visionDuration, false);
+                    print('[GameModeManager] Vision refreshed');
+                    return 30;
+                });
+            }
+            
             return undefined;
         });
     }
@@ -276,9 +294,9 @@ export class GameModeManager {
         
         // 启用作弊模式并关闭战争迷雾 (battlemap专用)
         SendToServerConsole('sv_cheats 1');
-        SendToServerConsole('dota_fog_of_war_disabled 1');
+        SendToServerConsole('dota_all_vision'); // 启用全地图视野（控制台命令）
         
-        print('[GameModeManager] AutoChess mode configured with fog disabled');
+        print('[GameModeManager] AutoChess mode configured, vision will be added after map loads');
     }
 
     /**
